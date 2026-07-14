@@ -73,7 +73,9 @@ Body text.
 
 test('assemble: an em dash in the design is rejected', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'agentify-assemble-neg-'));
-  const md = '---\ntitle: Bad\n---\n\n## 1. Summary\n\nThis has an em dash — which is banned.\n';
+  // Build the em dash from its code point so this test file itself stays lint-clean.
+  const emDash = String.fromCharCode(0x2014);
+  const md = `---\ntitle: Bad\n---\n\n## 1. Summary\n\nThis has an em dash ${emDash} which is banned.\n`;
   const mdPath = path.join(tmp, 'design.md');
   fs.writeFileSync(mdPath, md);
   const res = run(mdPath, path.join(tmp, 'out.html'));

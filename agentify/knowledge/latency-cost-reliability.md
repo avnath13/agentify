@@ -30,7 +30,7 @@ Order the tiers by specificity; each has distinct hit-rate economics.
 | Property | Anthropic | OpenAI |
 |---|---|---|
 | Activation | Explicit cache_control breakpoints or request-level automatic | Automatic on eligible prompts |
-| Minimum prefix | Model-dependent, roughly 512-4,096 tokens | 1,024 tokens |
+| Minimum prefix | Model-dependent, roughly 1,024-2,048 tokens | 1,024 tokens |
 | Write cost | 1.25x base input (5-min TTL), 2x (1-hour TTL) | Free on older models; 1.25x on newer ones |
 | Read cost | 0.1x base input (90 percent discount) | Discounted cached-input rate |
 | Retention | 5 minutes (refreshes on hit) or 1 hour | Minutes by default, extended options; routing improved by consistent prompt_cache_key |

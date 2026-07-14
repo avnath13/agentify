@@ -164,7 +164,8 @@ const me = template.indexOf('</main>') + '</main>'.length;
 const final = template.slice(0, ms) + '<main id="doc-body">\n' + main + '\n    </main>' + template.slice(me);
 
 // ---- house-rule guard: no em dashes in the deliverable ----
-if (final.includes('—')) fail('Assembled document contains an em dash; replace it before assembling.');
+// The em dash is written by code point so this source file stays lint-clean.
+if (final.includes(String.fromCharCode(0x2014))) fail('Assembled document contains an em dash; replace it before assembling.');
 
 const outPath = output || path.join(srcDir, `${slug(fm.title)}.design.html`);
 fs.writeFileSync(outPath, final);
