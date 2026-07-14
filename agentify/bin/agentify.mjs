@@ -17,6 +17,7 @@ function usage() {
   agentify validate <type> <input.json> [--json] [--layout-json]
   agentify inspect <type> <input.json>
   agentify check <output.html>
+  agentify assemble <design.md> [output.html]
   agentify examples
   agentify doctor
   agentify demo [output-directory]
@@ -65,6 +66,13 @@ function commandCheck(args) {
   if (result.status !== 0) exitFrom(result);
 }
 
+function commandAssemble(args) {
+  const [design, output] = args;
+  if (!design) fail(usage());
+  const result = runNode([path.join(skillRoot, 'renderers/doc/assemble-doc.mjs'), design, ...(output ? [output] : [])]);
+  if (result.status !== 0) exitFrom(result);
+}
+
 function commandExamples() {
   const result = runNode([path.join(skillRoot, 'scripts/render-examples.mjs')], { cwd: skillRoot });
   if (result.status !== 0) exitFrom(result);
@@ -85,6 +93,15 @@ async function commandDoctor() {
     label: 'Core template',
     ok: fs.existsSync(template),
     missing: fs.existsSync(template) ? 0 : 1,
+  });
+
+  const docPath = path.join(skillRoot, 'templates/design-doc.html');
+  const assembler = path.join(skillRoot, 'renderers/doc/assemble-doc.mjs');
+  const deliverableOk = fs.existsSync(docPath) && fs.existsSync(assembler);
+  checks.push({
+    label: 'Design document assembler and template',
+    ok: deliverableOk,
+    missing: deliverableOk ? 0 : 1,
   });
 
   const examplesRenderer = path.join(skillRoot, 'scripts/render-examples.mjs');
@@ -256,6 +273,9 @@ switch (command) {
     break;
   case 'check':
     commandCheck(args);
+    break;
+  case 'assemble':
+    commandAssemble(args);
     break;
   case 'examples':
     commandExamples();

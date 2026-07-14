@@ -109,7 +109,11 @@ For a voice or multimodal system, show the modality boundary in the architecture
 
 ### Step 6: Render and deliver
 
-Assemble one self-contained HTML document from `templates/design-doc.html` with the diagrams embedded inline (see template instructions). Also offer the markdown source. Name files `<use-case-slug>.design.html`.
+Do not hand-build the HTML. Write the design as a markdown file and let the CLI assemble it:
+
+1. Write `<use-case-slug>.design.md` with front matter (`title`, `subtitle`, `mode`, `date`) and one `## ` heading per section. Use normal markdown (paragraphs, `-`/`1.` lists, `|` tables, `**bold**`, `` `code` ``, `[links](url)`). For callouts and interview-mode blocks, write the raw HTML directly (any line starting with `<` passes through): `<div class="callout decision">...</div>`, `<details class="interview"><summary>Interview notes</summary>...</details>`. Embed a rendered diagram with `![Figure N. caption](<diagram>.html)`, which lifts that diagram's SVG into the document.
+2. Assemble: `node bin/agentify.mjs assemble <use-case-slug>.design.md <use-case-slug>.design.html`
+3. The command fills the template, embeds the diagrams, and refuses to emit a document containing an em dash. Offer the user both the `.design.html` and the `.design.md` source.
 
 ### Step 7: Self-check
 
