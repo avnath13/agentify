@@ -82,6 +82,53 @@ Provenance for the knowledge base. Every document in this directory cites primar
 | Mei et al., mRAG: Design Space of Multimodal RAG | https://arxiv.org/pdf/2505.24073 | 2026-07-14 |
 | A Survey of Multimodal Hallucination Evaluation and Detection | https://arxiv.org/html/2507.19024v2 | 2026-07-14 |
 
+## Model and platform primitives
+
+| Source | URL | Consulted |
+|---|---|---|
+| Anthropic, Tool use with Claude | https://platform.claude.com/docs/en/build-with-claude/tool-use | 2026-07-14 |
+| Anthropic, Extended thinking | https://platform.claude.com/docs/en/build-with-claude/extended-thinking | 2026-07-14 |
+| Anthropic, Prompt caching | https://platform.claude.com/docs/en/build-with-claude/prompt-caching | 2026-07-14 |
+| OpenAI, Function calling | https://developers.openai.com/api/docs/guides/function-calling | 2026-07-14 |
+| OpenAI, Structured outputs | https://developers.openai.com/api/docs/guides/structured-outputs | 2026-07-14 |
+| OpenAI Agents SDK (Python) | https://openai.github.io/openai-agents-python/ | 2026-07-14 |
+| Google Agent Development Kit (ADK) | https://google.github.io/adk-docs/ | 2026-07-14 |
+| Hugging Face, smolagents | https://huggingface.co/docs/smolagents/en/index | 2026-07-14 |
+| Meta, Llama Guard 4 12B model card | https://github.com/meta-llama/PurpleLlama/blob/main/Llama-Guard4/12B/MODEL_CARD.md | 2026-07-14 |
+
+## Retrieval techniques
+
+| Source | URL | Consulted |
+|---|---|---|
+| Anthropic, Introducing Contextual Retrieval | https://www.anthropic.com/engineering/contextual-retrieval | 2026-07-14 |
+| Microsoft, GraphRAG documentation | https://microsoft.github.io/graphrag/ | 2026-07-14 |
+| Microsoft Research, GraphRAG: Unlocking LLM discovery on narrative private data | https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/ | 2026-07-14 |
+| Jina AI, Late Chunking in Long-Context Embedding Models | https://jina.ai/news/late-chunking-in-long-context-embedding-models/ | 2026-07-14 |
+| Gunther et al., Late Chunking: Contextual Chunk Embeddings | https://arxiv.org/abs/2409.04701 | 2026-07-14 |
+| Khattab and Zaharia, ColBERT: Late Interaction over BERT | https://arxiv.org/abs/2004.12832 | 2026-07-14 |
+
+## Agent benchmarks
+
+| Source | URL | Consulted |
+|---|---|---|
+| OpenAI, Introducing SWE-bench Verified | https://openai.com/index/introducing-swe-bench-verified/ | 2026-07-14 |
+| SWE-bench Verified leaderboard and dataset | https://www.swebench.com/verified.html | 2026-07-14 |
+| OpenAI, Why we no longer evaluate SWE-bench Verified | https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/ | 2026-07-14 |
+| Zhou et al., WebArena: A Realistic Web Environment | https://arxiv.org/abs/2307.13854 | 2026-07-14 |
+| Mialon et al., GAIA: a Benchmark for General AI Assistants | https://arxiv.org/abs/2311.12983 | 2026-07-14 |
+| Terminal-Bench | https://www.tbench.ai/ | 2026-07-14 |
+
+## Injection defenses and safety
+
+| Source | URL | Consulted |
+|---|---|---|
+| Debenedetti et al. (Google DeepMind), Defeating Prompt Injections by Design (CaMeL) | https://arxiv.org/abs/2503.18813 | 2026-07-14 |
+| Hines et al. (Microsoft), Defending Against Indirect Prompt Injection With Spotlighting | https://arxiv.org/abs/2403.14720 | 2026-07-14 |
+| NVIDIA, NeMo Guardrails | https://docs.nvidia.com/nemo/guardrails/home | 2026-07-14 |
+| Bai et al. (Anthropic), Constitutional AI: Harmlessness from AI Feedback | https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback | 2026-07-14 |
+| Mitchell et al., Model Cards for Model Reporting | https://arxiv.org/abs/1810.03993 | 2026-07-14 |
+| Hugging Face, Model card authoring guidance and template | https://huggingface.co/docs/hub/model-cards | 2026-07-14 |
+
 ## Courses
 
 | Source | URL | Consulted |

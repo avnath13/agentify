@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Knowledge base expansion, grounded against primary sources: a new `model-platform-primitives.md` (tool-use loop, parallel calls and tool_choice, structured outputs, extended thinking, prompt caching, agent SDKs, Llama Guard), named retrieval techniques in `rag-patterns.md` (Contextual Retrieval, GraphRAG, late chunking, ColBERT), an agent-benchmarks section in `evaluation.md` (SWE-bench Verified, WebArena, GAIA, Terminal-Bench, with a benchmark-leakage caveat), and concrete injection defenses in `security-governance.md` (CaMeL, spotlighting, NeMo Guardrails, Constitutional AI, model and system cards) mapped onto the layered-guardrail stack. Index, consultation map, and SOURCES updated; all new citation URLs link-checked.
 - `agentify assemble` now re-runs the post-render checks (single finite SVG, orthogonal arrows, legend clearance) on every embedded diagram and refuses to embed one that fails, so a design document can never ship an unverified or messy diagram.
 - `agentify diff`: compare two design documents for the same use case and render a visual diff report.
 

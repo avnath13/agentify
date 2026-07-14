@@ -74,6 +74,32 @@ No single guardrail is sufficient; specify defense in depth with each layer name
 
 Record for each layer: what it blocks, its expected false-positive rate, and where its verdicts are logged. Guardrail trigger rates are a first-class operational metric (see knowledge/interoperability-observability.md).
 
+### Concrete injection defenses and guardrail primitives
+
+The stance above names the layers; this section names the specific, citable techniques that instantiate each, so a design cites primitives rather than gesturing at defense in depth. None is sufficient alone. The composition to specify: input provenance, then architectural containment, then a programmable rail layer, then a model-level layer, then transparency artifacts.
+
+- Input provenance (spotlighting): mark untrusted content so the model can separate instructions from data. Microsoft's spotlighting family uses delimiting (wrap the content in explicit boundaries), datamarking (interleave a marker token through the text), or encoding (transform the content, for example base64) to carry a continuous provenance signal. In their study, indirect-injection attack success fell from above 50 percent to below 2 percent with minimal task-quality loss [Microsoft, Spotlighting]. This is the concrete form of layer 3 (content provenance separation): it reduces risk, it is not the boundary.
+
+- Architectural containment (CaMeL): the leading non-classifier defense, and the direct substantiation of this document's security-from-architecture thesis. CaMeL extracts the control flow and the data flow from the trusted user query up front, so untrusted data the agent later reads can never change what the agent does. A capability model then confines that data, enforcing security policies at each tool call to block exfiltration over unauthorized flows. It reports provable security on 77 percent of AgentDojo tasks [DeepMind, CaMeL]. Because the defense is structural, a prompt injection in retrieved content cannot redirect the program: this is trifecta severing done in code, not in the prompt.
+
+- Programmable rail layer (NeMo Guardrails): NVIDIA's open-source toolkit is a concrete instantiation of the layered stack, with five rail types that map almost one to one onto the layers above. Input rails validate or mask user input (layer 1); dialog rails constrain conversational flow; retrieval rails screen or mask RAG chunks (layer 3); execution rails validate tool calls, arguments, and results (layer 5); output rails screen model output before it is returned (layer 4) [NVIDIA, NeMo Guardrails]. Rails are code and configuration, not prompt text, which is why they count as enforcement rather than suggestion.
+
+- Model-level layer (Constitutional AI): principle-based alignment is the guardrail inside the model. Anthropic's Constitutional AI trains harmlessness from a written list of principles (a constitution) through self-critique and reinforcement learning from AI feedback (RLAIF), with human oversight expressed as the principles rather than per-example harm labels [Anthropic, Constitutional AI]. Treat this as raising the model's baseline refusal behavior, never as the enforcement boundary for consequential actions, which still lives at the tool layer (layer 5) and the human gates (layer 6).
+
+- Transparency artifacts: the concrete document that the EU AI Act technical-documentation duty implies. A model card reports intended use, evaluation conditions, and performance across groups so downstream users can judge fitness for a use case [Mitchell et al., Model Cards], and vendor system cards extend the same disclosure to a deployed system. Hugging Face's model-card guidance provides a ready template and authoring workflow for producing one [Hugging Face, Model Cards].
+
+Two distinctions keep this composition honest. First, spotlighting and CaMeL are not substitutes: spotlighting supplies a provenance signal the model can attend to, while CaMeL removes the model's ability to act on that content at all, so a design that consumes untrusted content wants both, the signal as risk reduction and the structural containment as the boundary. Second, these are structural and architectural defenses, distinct in kind from the classifier guards at layer 2, which are statistical and probabilistic; a classifier lowers the odds an attack lands, whereas CaMeL and the tool-boundary and human gates decide what a landed attack is allowed to do. Do not let a good classifier score substitute for either.
+
+Mapped onto the layered stack:
+
+- Layer 1 (input validation): NeMo input rails.
+- Layer 2 (classifier guards): statistical screening, complementary to the structural defenses below, never the boundary.
+- Layer 3 (content provenance separation): spotlighting delimiting, datamarking, or encoding, delivered as NeMo retrieval rails.
+- Layer 4 (output handling): NeMo output rails.
+- Layer 5 (tool-layer enforcement): NeMo execution rails plus CaMeL capability policies at the tool call.
+- Layer 6 (human-in-the-loop gates): unchanged, and the last line a hijack must pass.
+- Cross-cutting: CaMeL contains the agent architecturally so a hijack cannot reach the gates in the first place, Constitutional AI raises the model baseline underneath all layers, and model and system cards make the resulting posture auditable.
+
 ### Identity and least privilege
 
 - Identity propagation: the agent acts with the requesting user's permissions, not a super-service-account. Every tool call carries the user's identity (token exchange or on-behalf-of delegation), so the database, search index, and APIs enforce their existing ACLs. A super-privileged agent converts any successful injection into a full-privilege breach (ASI03) [OWASP, Agentic Top 10 2026].
@@ -168,3 +194,9 @@ The AI RMF organizes risk management into four functions: GOVERN (cross-cutting 
 - [NIST, AI RMF 1.0] Artificial Intelligence Risk Management Framework (NIST AI 100-1). https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf
 - [NIST, AI 600-1] AI RMF: Generative Artificial Intelligence Profile (NIST AI 600-1). https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf
 - [MCP, Architecture] Model Context Protocol: architecture overview. https://modelcontextprotocol.io/docs/learn/architecture
+- [DeepMind, CaMeL] Defeating Prompt Injections by Design (Debenedetti, Shumailov, Carlini, Tramèr, et al., Google DeepMind, 2025). arXiv:2503.18813. https://arxiv.org/abs/2503.18813
+- [Microsoft, Spotlighting] Defending Against Indirect Prompt Injection Attacks With Spotlighting (Hines, Lopez, Hall, Zarfati, Zunger, Kiciman, Microsoft, 2024). arXiv:2403.14720. https://arxiv.org/abs/2403.14720
+- [NVIDIA, NeMo Guardrails] NeMo Guardrails: an open-source toolkit for programmable input, dialog, retrieval, execution, and output rails. https://docs.nvidia.com/nemo/guardrails/home
+- [Anthropic, Constitutional AI] Constitutional AI: Harmlessness from AI Feedback (Bai et al., Anthropic, 2022). arXiv:2212.08073. https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback
+- [Mitchell et al., Model Cards] Model Cards for Model Reporting (Mitchell, Wu, Zaldivar, Barnes, Vasserman, Hutchinson, Spitzer, Raji, Gebru, 2019). arXiv:1810.03993. https://arxiv.org/abs/1810.03993
+- [Hugging Face, Model Cards] Model card authoring guidance and template. https://huggingface.co/docs/hub/model-cards

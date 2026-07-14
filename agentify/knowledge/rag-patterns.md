@@ -60,6 +60,15 @@ The user's literal query is often the wrong retrieval key. Named techniques, in 
 
 Designs should name which of these they use and why. Each adds one model call of latency to the retrieval path, so the latency budget must absorb it [knowledge/latency-cost-reliability.md].
 
+### Named retrieval techniques worth reaching for
+
+Beyond the Advanced RAG staples above, four named techniques target specific failure modes. Reach for one only when the failure it fixes is the measured bottleneck.
+
+- Contextual Retrieval: prepend a short chunk-specific context blurb (50 to 100 tokens, generated per chunk) before embedding, and index the same contextualized text under BM25. This is a direct upgrade to the doc's chunking plus hybrid-search guidance, fixing the context loss that isolated chunks suffer. Contextual embeddings plus contextual BM25 cut the top-20 retrieval failure rate by 49 percent (5.7 to 2.9 percent), and by 67 percent (5.7 to 1.9 percent) with reranking added [Anthropic, Contextual Retrieval]. When to apply: recall on a large corpus is the bottleneck and chunks read as ambiguous out of context.
+- GraphRAG: extract entities and relationships into a knowledge graph, cluster it into communities (Leiden), and precompute community summaries, then answer with global search over those summaries for corpus-wide questions and local search for entity-specific ones [Microsoft, GraphRAG]. It answers global sensemaking and multi-hop questions that flat top-k chunk retrieval cannot, since the answer is spread across fragments no single chunk holds [Microsoft, GraphRAG Blog]. This is the authoritative anchor for the graph-based agentic RAG variants named above. When to apply: questions are global (themes across the whole corpus) or multi-hop across entities, and flat retrieval answers them poorly. It carries graph-construction and summarization cost, so do not reach for it on straightforward lookup corpora.
+- Late chunking: run the long-context embedding model (for example an 8192-token model) over the full document first, then mean-pool the token embeddings within each chunk boundary, so every chunk vector is conditioned on surrounding document context. It is training-free and reuses existing models, differing from naive chunking only in ordering: embed then split, not split then embed [Jina, Late Chunking]. Gains grow with document length [Günther et al., Late Chunking]. When to apply: chunk-level context loss hurts (pronouns, references, and terms that only resolve document-wide) but you do not want the per-chunk generation cost of Contextual Retrieval.
+- Late interaction (ColBERT): encode query and document into per-token multi-vector representations and score by summing each query token's best match against document tokens (MaxSim), preserving fine-grained term matching that single-vector dense retrieval averages away [Khattab and Zaharia, ColBERT]. Document vectors precompute offline, but the index stores one vector per token, so storage and retrieval cost rise sharply versus one vector per chunk. When to apply: you need higher recall than single-vector dense gives and can afford the multi-vector index.
+
 ### Indexing pipeline: ingestion, freshness, and permission-aware retrieval
 
 A production RAG design must show the write path, not just the read path:
@@ -150,4 +159,10 @@ A RAG design must expose measurement points, because retrieval and generation fa
 - Gao et al., RAG Survey: Retrieval-Augmented Generation for Large Language Models: A Survey. https://arxiv.org/abs/2312.10997
 - Singh et al., Agentic RAG Survey: Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG. https://arxiv.org/abs/2501.09136
 - Sharma, RAG Comprehensive Survey: Retrieval-Augmented Generation: A Comprehensive Survey of Architectures, Enhancements, and Robustness Frontiers. https://arxiv.org/abs/2506.00054
+- Anthropic, Contextual Retrieval: Introducing Contextual Retrieval. https://www.anthropic.com/engineering/contextual-retrieval
+- Microsoft, GraphRAG: GraphRAG documentation. https://microsoft.github.io/graphrag/
+- Microsoft, GraphRAG Blog: GraphRAG: Unlocking LLM discovery on narrative private data. https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/
+- Jina, Late Chunking: Late Chunking in Long-Context Embedding Models. https://jina.ai/news/late-chunking-in-long-context-embedding-models/
+- Günther et al., Late Chunking: Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models. https://arxiv.org/abs/2409.04701
+- Khattab and Zaharia, ColBERT: ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT. https://arxiv.org/abs/2004.12832
 - Cross-references: knowledge/decision-trees.md, knowledge/security-governance.md, knowledge/interoperability-observability.md, knowledge/evaluation.md, knowledge/latency-cost-reliability.md

@@ -15,6 +15,7 @@ This directory is the grounding layer for agentify. Every generated design consu
 | Design: voice, image, or other non-text modality | voice-and-multimodal.md |
 | Design: evaluation plan | evaluation.md |
 | Design: observability and tools | interoperability-observability.md |
+| Design: model and platform primitives (tool use, structured outputs, thinking, caching, SDKs) | model-platform-primitives.md |
 | Design: NFRs, scaling, cost, DR | enterprise-architecture.md, latency-cost-reliability.md |
 | Final gate before emitting | decision-trees.md (gate checklist) |
 
@@ -30,6 +31,7 @@ This directory is the grounding layer for agentify. Every generated design consu
 - evaluation.md: eval-driven development, golden datasets, LLM-as-judge with bias mitigations, agent-specific evals, rollout gates.
 - security-governance.md: threat model, layered guardrails, identity propagation, autonomy tiers, audit, OWASP and NIST mappings.
 - interoperability-observability.md: MCP, tool interface quality, OpenTelemetry GenAI tracing, debugging from traces.
+- model-platform-primitives.md: the provider API surface designs sit on: tool-use loop, parallel calls and tool_choice, structured outputs, extended thinking, prompt caching, agent SDKs (OpenAI/Google ADK/smolagents), and safety classifiers (Llama Guard).
 - voice-and-multimodal.md: cascaded vs speech-to-speech voice, the conversational latency budget, turn-taking (VAD, endpointing, barge-in), multimodal input and RAG, visual hallucination, audio-native evaluation.
 - context-memory.md: context budgeting, compaction, memory tiers, persistence, retention and tenant isolation.
 - latency-cost-reliability.md: streaming, caching tiers, model routing, fallbacks, SLO design, tail latency in chains.

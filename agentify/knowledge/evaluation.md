@@ -85,6 +85,17 @@ Agents add tool use, multi-turn state, and non-determinism; the eval design must
 - Rule adherence: tau-bench's second finding is that agents fail to follow domain policy consistently; include eval cases where the correct behavior is refusal or escalation, not task completion [Yao et al., tau-bench].
 - Statistical rigor: run multiple trials per case for non-deterministic agents and compare distributions, not single runs; treat differences within run-to-run noise as ties rather than wins.
 
+### Agent benchmarks by task type
+
+When a design needs an external reference point beyond its own golden dataset, cite the public benchmark whose task distribution matches the agent's job, not a generic leaderboard. Each of the following pairs a fixed task set with an execution-based grader, so the score reflects task completion rather than judge opinion. A strong coding-agent score says nothing about web navigation, so pick by task type:
+
+- SWE-bench and SWE-bench Verified: real GitHub issues resolved as patches that must pass the repository's hidden tests. Verified is the 500-task, human-filtered subset (built with OpenAI) that removes underspecified or broken-test instances and is the coding-agent standard [OpenAI, SWE-bench Verified; SWE-bench, Verified]. Use when the agent edits code in existing repositories. Teachable caveat: OpenAI later stopped reporting Verified, citing contamination (models could reproduce gold patches verbatim from a task ID, and diagnostic subtasks reached about 76 percent from memorization alone) and saturation (frontier scores crept from 74.9 to 80.9 percent over six months), and now recommends SWE-bench Pro [OpenAI, SWE-bench Retirement]. The lesson: a public, saturating benchmark eventually leaks into training data, so treat a high score as necessary, not sufficient.
+- WebArena: 812 tasks across five self-hosted web apps (an e-commerce store, a Postmill forum, GitLab, a CMS, and a map), each graded by a deterministic success function over final state rather than surface text; the web-agent standard [Zhou et al., WebArena]. Use when the agent drives a browser through multi-step tasks against real web software.
+- GAIA: 466 real-world assistant questions in three difficulty tiers requiring reasoning, multimodality, web browsing, and tool use. Humans reach about 92 percent while strong assistant systems score far lower, so it measures whether a tool-using assistant is robust on tasks that are easy for people [Mialon et al., GAIA]. Use when the agent is a general assistant composing search, files, and tools toward a single verified answer.
+- Terminal-Bench: Docker-sandboxed shell and terminal tasks (software builds, sysadmin, security, data work) verified by inspecting the container's end state; the terminal-agent standard [Terminal-Bench]. Use when the agent operates a command line to change system state.
+
+These benchmarks report single-run success, which overstates reliability for the same reason pass@1 does (see reliability under repetition above): an enterprise agent runs a task thousands of times, so treat a headline benchmark number as a ceiling and keep the system's own pass^k target as the operative bar [Yao et al., tau-bench]. Cite the matching benchmark to justify a capability claim, but live-source the specific leaderboard score at design time rather than freezing a number here, since these leaderboards move monthly and saturate.
+
 ### Online evaluation
 
 Offline evals bound quality before exposure; online evaluation measures it under real traffic.
@@ -148,4 +159,10 @@ Production tracing and evaluation form one loop. Traces that capture full prompt
 - [TruLens, RAG Triad] TruLens core concepts: RAG Triad. https://www.trulens.org/getting_started/core_concepts/rag_triad/
 - [Li et al., LLMs-as-Judges Survey] LLMs-as-Judges: A Comprehensive Survey on LLM-based Evaluation Methods (arXiv:2412.05579). https://arxiv.org/abs/2412.05579
 - [Yao et al., tau-bench] tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains (arXiv:2406.12045). https://arxiv.org/abs/2406.12045
+- [OpenAI, SWE-bench Verified] Introducing SWE-bench Verified. https://openai.com/index/introducing-swe-bench-verified/
+- [SWE-bench, Verified] SWE-bench Verified leaderboard and dataset. https://www.swebench.com/verified.html
+- [OpenAI, SWE-bench Retirement] Why SWE-bench Verified no longer measures frontier coding capabilities. https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/
+- [Zhou et al., WebArena] WebArena: A Realistic Web Environment for Building Autonomous Agents (arXiv:2307.13854). https://webarena.dev/ , https://arxiv.org/abs/2307.13854
+- [Mialon et al., GAIA] GAIA: a Benchmark for General AI Assistants (arXiv:2311.12983). https://arxiv.org/abs/2311.12983 , https://huggingface.co/spaces/gaia-benchmark/leaderboard
+- [Terminal-Bench] Terminal-Bench: benchmarks for AI agents in terminal environments. https://www.tbench.ai/
 - [NIST, AI 600-1] Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile (NIST AI 600-1). https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf
