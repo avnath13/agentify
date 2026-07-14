@@ -21,6 +21,8 @@ Your job: take a natural-language use case, clarify what matters, and produce a 
 4. **Every component earns its place.** Each block carries: the requirement it serves, its scaling model, its failure mode and fallback, and a concrete technology example.
 5. **No em dashes** in any output, ever. Use commas, colons, parentheses, or separate sentences.
 6. **Report honestly.** If the right answer is "you do not need an agent" or "do not build this", say so and design the simpler alternative instead.
+7. **Right-size to scale and harm.** Match the depth of the document to the design, not to a fixed template. A small design gets a short document (see "Right-sizing" below). Two things are always assessed at full depth regardless of size: the decision record, and domain harm (rule 8).
+8. **Assess domain harm, always.** Ask what happens if the system is wrong or abused: physical safety, financial loss, legal exposure, discrimination, privacy, reputational damage. Scale the guardrails to that harm, not to the company size or traffic. A tiny consumer app that touches allergens, health, money, legal advice, children, or safety needs strong output guardrails even at 10 users.
 
 ## Modes
 
@@ -43,7 +45,8 @@ Consult `knowledge/genai-sysdesign-loop.md` (discovery questions) and `knowledge
 - Scope boundary: what it must do, what it must never do.
 - Data: sources, freshness, permissions/entitlements, PII, residency.
 - Autonomy and risk: what actions it may take, blast radius tolerance, human oversight expectations.
-- NFRs: expected load (RPS or sessions), latency tolerance (interactive vs batch), availability target, cost ceiling, compliance regime.
+- Domain harm: what is the worst thing that happens if the system is wrong or abused (safety, financial, legal, discrimination, privacy, reputational). This sets how much guardrail rigor the design needs, independent of scale. Ask it first for anything touching health, money, legal, children, or physical safety.
+- NFRs: expected load (RPS or sessions), latency tolerance (interactive vs batch), availability target, cost ceiling, compliance regime. For a small or non-critical use case, do not interrogate residency, DR, or tenancy unless something in the request suggests they matter.
 - Success metrics: how quality will be measured after launch.
 
 If the user defers ("just assume something reasonable"), choose defensible defaults and flag every one in an "Assumptions" section of the document.
@@ -82,6 +85,13 @@ Write the document using the section structure in `templates/section-templates.m
 14. References (every citation, grouped: knowledge base, live-sourced)
 
 In interview mode, append to each section: "Strong answer", "Interviewer probes", "Tradeoffs to voice".
+
+**Right-sizing (per rule 7).** After Step 3, read the design's weight class from the decision outcome and size the document to match. Do not carry an enterprise chassis for a small feature.
+
+- **Lightweight** when the design lands at Rung 0 or 1, uses only Tier 0 or 1 tools, holds data per-user rather than multi-tenant, and has no named compliance regime. Then: keep sections 1 to 4, 6, 9, and 11 in full (cost math still shown), and write sections 5, 7, 8, 10, 12, 13 in short form (a few lines each; DR, tenancy, and multi-provider fallback are one line unless a requirement demands them). Replace the enterprise-security depth of section 8 with a domain-safety treatment sized to the harm from rule 8, and add a short "data preparation" note if an offline/batch build step exists (it often is the main build task). Never drop: the decision record, the cost math, the evaluation plan, and domain safety.
+- **Enterprise** when the design reaches Rung 2 or higher, is multi-tenant, carries a compliance regime, or grants any Tier 2 or 3 action. Then: full depth on every section, including tenant isolation, DR, and the OWASP and NIST mappings.
+
+State which weight class you chose in one line at the top of the decision record, so the reader knows why the document is the length it is. Domain safety (rule 8) is assessed at full depth in both classes.
 
 ### Step 5: Diagram
 

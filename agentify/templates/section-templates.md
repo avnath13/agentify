@@ -4,6 +4,8 @@ Scaffolds for every section of a generated design document. Each template lists 
 
 Style for all sections: plain confident prose, quantified wherever possible, citations inline as [knowledge/<doc>.md] or [live-sourced YYYY-MM-DD: <url>]. No em dashes.
 
+**Proportionality.** These are the full-depth requirements, calibrated for an enterprise design. For a lightweight design (SKILL.md "Right-sizing": Rung 0 to 1, Tier 0 to 1 tools, per-user data, no compliance regime), write sections 5, 7, 8, 10, 12, and 13 in short form (a few lines each) and do not manufacture content to fill them. Sections 1 to 4, 6, 9, and 11 stay in full at any size. Domain safety (below, in section 8) is assessed at full depth regardless of size. Marking a section "not applicable" with a one-line reason is a valid, encouraged outcome, not a failure.
+
 ## 1. Executive summary
 
 Five sentences maximum: the problem, the recommended architecture in one phrase (including the escalation-ladder rung, e.g. "a routed workflow with retrieval, not an autonomous agent"), the one or two decisions that most shaped the design, the headline cost and latency envelope, the rollout posture.
@@ -47,8 +49,10 @@ Required: the memory tier chosen (per decision tree 7) and why; conversation sta
 ## 8. Security, identity, and guardrails
 
 Consult: knowledge/security-governance.md.
-Required: threat model naming the attack surfaces present in THIS design; layered guardrail stack (input, model-based, rules, output handling, human gates) mapped to the specific OWASP risks they mitigate; identity propagation design (the agent acts with the user's permissions; state how); tenant isolation; audit trail (what is logged, retention); the autonomy tier table cross-referenced from section 6.
-Fails if: guardrails are generic ("add guardrails") rather than mapped to named threats, or identity propagation is unaddressed while enterprise data access exists.
+Required (always, at any size): a domain-harm statement naming the worst outcome if the system is wrong or abused (safety, financial, legal, discrimination, privacy, reputational), and a guardrail stack sized to that harm. A tiny app that touches health, money, legal, children, or physical safety still needs strong output guardrails.
+Required (enterprise weight class): threat model naming the attack surfaces present in THIS design; layered guardrail stack (input, model-based, rules, output handling, human gates) mapped to the specific OWASP risks they mitigate; identity propagation design (the agent acts with the user's permissions; state how); tenant isolation; audit trail (what is logged, retention); the autonomy tier table cross-referenced from section 6.
+Lightweight weight class: the domain-harm statement plus the guardrails that harm demands, identity propagation in one line, and skip tenant isolation and the full OWASP and NIST mapping unless a requirement pulls them in.
+Fails if: domain harm is unstated, guardrails are generic ("add guardrails") rather than mapped to the harm or named threats, or (enterprise) identity propagation is unaddressed while shared data access exists.
 
 ## 9. Evaluation plan
 

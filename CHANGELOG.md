@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Domain-harm discovery: the clarify step now asks what happens if the system is wrong or abused (safety, financial, legal, discrimination, privacy, reputational), and the guardrail stack is scaled to that harm rather than to company size. Backed in `knowledge/genai-sysdesign-loop.md` and enforced by a new gate-checklist item. Surfaced by a cold run whose honest answer needed strong allergen guardrails at tiny scale.
+- Right-sizing: SKILL.md now classifies a design as lightweight or enterprise from the decision outcome and sizes the document to match, so a small per-user feature is not padded with tenant-isolation, DR, and full OWASP and NIST ceremony. Section templates and the gate checklist updated to match; "not applicable, with reason" is now an encouraged outcome.
+
 ## [0.1.0] - 2026-07-14
 
 First tagged release. The skill, knowledge base, extended diagram engine, and a flagship gallery example are in place; the packaged skill runs standalone with no install step.

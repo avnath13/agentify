@@ -25,7 +25,9 @@ The organizing insight: "the right answer is rarely 'use RAG' or 'add an agent.'
 
 Ask before proposing anything; discovery precedes architecture [Selamy, GenAI Interview Loop]. Questions: Who are the users and what task are they failing at today? What is the current workaround and its cost? What does the data estate actually look like (formats, systems, owners, volume, freshness, quality)? Is knowledge permissioned, and by what identity system? What has already been tried? What does the customer believe they want vs what problem they have? The real enterprise loop includes "messy enterprise data, permissioned knowledge, ambiguous requirements, changing customer constraints" [Selamy, GenAI Interview Loop].
 
-Strong: leads with 5 to 8 targeted discovery questions, names the messy-data and permissions risks unprompted, restates the problem in the customer's business terms. Weak: accepts "we want a chatbot over our docs" at face value and starts drawing an architecture.
+Domain harm is a first-class discovery question, not just an enterprise concern: what is the worst outcome if the system is wrong or is abused? Physical safety, financial loss, legal exposure, discrimination, privacy breach, or reputational damage. This is independent of scale. A ten-user consumer app that gives medical, allergen, financial, legal, or child-facing guidance carries more harm than a large internal tool that summarizes meeting notes, and the guardrail rigor should track the harm, not the traffic. Ask it early for anything touching health, money, legal, children, or physical safety.
+
+Strong: leads with 5 to 8 targeted discovery questions, names the domain-harm and (where relevant) messy-data and permissions risks unprompted, restates the problem in the customer's business terms. Weak: accepts "we want a chatbot over our docs" at face value and starts drawing an architecture, or interrogates residency and DR for a low-stakes feature while never asking what harm a wrong answer causes.
 
 ### Step 2: name requirements and non-requirements
 

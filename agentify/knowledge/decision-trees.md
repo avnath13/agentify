@@ -136,6 +136,8 @@ Multi-tenant memory                               -> per-tenant isolation,
 8. NFRs stated with numbers (or explicitly flagged assumptions) before component selection [knowledge/enterprise-architecture.md].
 9. Evaluation plan exists with gates tied to rollout phases [knowledge/evaluation.md].
 10. Every architectural claim carries a citation to a knowledge document or a dated live source.
+11. Domain harm assessed (what happens if the system is wrong or abused) and the guardrails scaled to that harm, not to company size [knowledge/security-governance.md].
+12. Weight class (lightweight or enterprise) chosen and stated; the document's depth matches it, so a small design is not padded with enterprise ceremony and an enterprise design is not thinned.
 
 ## Citations
 
