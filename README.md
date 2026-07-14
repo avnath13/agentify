@@ -49,19 +49,110 @@ Facts that go stale (model choices, pricing) are never baked in: designs pull th
 npx skills add avnath13/agentify -g
 ```
 
-Or download `agentify.zip` from the releases page and add it to Claude, Codex CLI, or opencode as a skill.
+Other ways to install:
 
-### Use
+```bash
+# Project-local instead of global
+npx skills add avnath13/agentify
 
-Say what you want to design:
+# Manual: download agentify.zip from the latest release and add it as a skill
+# in Claude, Codex CLI, or opencode.
+```
 
-> Design an AI agent that triages our inbound sales leads: reads the inquiry, enriches it from our CRM, scores it, and drafts a response for rep approval. About 300 leads/day.
+The skill is dependency-free at runtime; nothing to `npm install` to use it.
 
-Agentify will ask only the questions whose answers change the design (data permissions, latency and cost targets, autonomy limits, compliance), walk its decision trees, and produce `<use-case>.design.html`.
+### Use it
 
-For interview practice:
+Describe what you want to design, in your own words:
 
-> In interview mode: design a customer-facing RAG assistant for a bank.
+> Design an AI agent that triages our inbound sales leads: reads the inquiry, enriches it from our CRM, scores it, and drafts a response for rep approval. About 300 leads per day.
+
+Agentify asks only the questions whose answers change the design (data permissions, latency and cost targets, autonomy limits, compliance), walks its decision trees, and writes `<use-case>.design.html`.
+
+Then **iterate in chat**. The design is a conversation, not a one-shot:
+
+> Make it production mode and assume 99.99% availability and a 200ms p50 budget.
+
+> Re-run assuming we cannot use an external model provider, on-prem only.
+
+> The compliance team says this is now in scope for HIPAA. Update the security and data sections.
+
+For interview practice, ask for interview mode:
+
+> In interview mode: design a customer-facing RAG assistant for a retail bank.
+
+## Example prompts
+
+Production designs:
+
+- "Design an AI support agent for our customer portal. It answers product questions from our docs and knowledge base, looks up order and subscription status, and files tickets. About 450 tickets per day, and it should escalate to a human when unsure."
+- "We want an internal copilot that answers questions over our wiki and Slack history, with per-team permissions so nobody sees another team's private channels."
+- "Design a compliance assistant over five years of contracts that answers with citations to the source clause. Strictly read-only."
+- "Design a coding agent that turns a bug ticket into a tested pull request for our monorepo. It must never merge and never touch production."
+- "Design an agent that drafts first-response emails for our support inbox, pulls order data, and hands off anything about refunds to a human."
+
+Interview mode:
+
+- "In interview mode: design a customer-facing RAG assistant for a bank."
+- "In interview mode: design a multi-tenant meeting-notes summarizer with strict tenant isolation."
+
+Refining an existing design (just keep talking):
+
+- "Cut the cost ceiling to 0.05 USD per conversation and show me what changes."
+- "Assume traffic is bursty, 10x peaks around launches. Redo the scale section."
+- "Swap the vector store recommendation for something we can self-host."
+
+## What a design contains
+
+Fifteen sections, each with a defined pass bar: executive summary, requirements and NFRs, decision record (with rejected alternatives), system architecture, data and retrieval, tools and integrations, state and memory, security and guardrails, evaluation plan, observability, scale and cost analysis, failure modes and degradation, rollout plan, a request walkthrough, and references.
+
+In interview mode each section also carries a collapsible "interview notes" block: what a strong candidate says, the follow-ups the interviewer will probe, and the tradeoff to voice.
+
+## Diagram vocabulary
+
+Agentify draws four diagram types, using the bundled engine, and embeds them in the design:
+
+| Type | Shows |
+|---|---|
+| **Architecture** | Components, trust boundaries, and how requests flow between them |
+| **Sequence** | The primary request path, including guardrail and retrieval hops |
+| **Data flow** | Ingestion and retrieval pipelines, PII boundaries, freshness |
+| **Lifecycle** | State machines: an agent run, a ticket, an order, with retries and terminal exits |
+
+Beyond the usual infrastructure boxes, the engine adds an **agent-native component vocabulary** so the picture matches the frameworks, each with its own color family:
+
+| Component | For |
+|---|---|
+| `agent` | an LLM-driven agent loop |
+| `llm-router` | intent or model routing |
+| `model-gateway` | provider gateways, model API front doors, fallback |
+| `retriever` | query-time retrieval services |
+| `vector-store` | vector or hybrid indexes |
+| `memory-state` | conversation state, agent memory |
+| `guardrail` | input/output guardrails, content filters |
+| `eval-loop` | evaluators, critics, quality gates |
+| `human-review` | human approval gates (drawn with a dashed border) |
+| `tool` | tools, MCP servers, function endpoints |
+| `queue` | queues and task buses between agents |
+
+The full palette and semantics are documented in [`schemas/README.md`](agentify/schemas/README.md).
+
+## Using the output
+
+**The design document** (`<use-case>.design.html`) is a single self-contained file:
+
+- **Theme toggle** in the top right, persisted to `localStorage`, respecting your system preference. Force a theme with `?theme=light` or `?theme=dark` for deterministic screenshots.
+- **Table of contents** with scroll-spy that highlights the section you are reading.
+- **Print to PDF** with `Cmd/Ctrl+P`; a print stylesheet flattens it to clean pages (interview notes are hidden in print).
+- **Fully self-contained**: no external requests, no CDNs, no fonts fetched. Safe to email, commit, or open offline.
+
+**Standalone diagrams.** If you render a diagram on its own with the CLI (see below), the generated HTML adds an export and keyboard layer:
+
+- **Export menu**: copy the PNG to your clipboard, or download PNG / JPEG / WebP at up to 4x resolution, or a **dual-theme SVG** that follows the reader's `prefers-color-scheme` (ideal for embedding in a GitHub README).
+- **Keyboard**: press `T` to toggle theme, `E` to open the export menu.
+- **URL params**: `?theme=light|dark` and `?openExport=1`.
+
+To turn a rendered diagram into README-ready images (light and dark PNGs plus a standalone SVG), run `npm run assets:readme` from `agentify/`, or the underlying `scripts/rasterize-diagram.mjs` and `scripts/export-standalone-svg.mjs` on any rendered diagram.
 
 ## Example gallery
 
@@ -73,18 +164,12 @@ Three complete generated designs are committed in [`examples/`](examples/); open
 
 Each design embeds diagrams drawn with the agent-native vocabulary: a component architecture plus a request sequence or a ticket lifecycle state machine.
 
-## What a design contains
-
-Fourteen sections, each with a defined pass bar: executive summary, requirements and NFRs, decision record (with rejected alternatives), system architecture, data and retrieval, tools and integrations, state and memory, security and guardrails, evaluation plan, observability, scale and cost analysis, failure modes and degradation, rollout plan, references.
-
-Plus embedded diagrams rendered by the bundled engine: architecture (with agent-native component types like `agent`, `llm-router`, `retriever`, `vector-store`, `guardrail`, `eval-loop`, `human-review`, `model-gateway`), request sequence, data flow, and orchestration workflow. Diagrams support dark/light themes and export to PNG, JPEG, WebP, and SVG.
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/support-agent-query-dark.png">
   <img alt="Sequence diagram of a support agent query: the customer question passes an input guardrail, an intent router, then the agent runs retrieval under the user identity, looks up subscription data, creates a ticket, and an output guardrail checks groundedness before the reply returns" src="docs/assets/support-agent-query-light.png" width="100%">
 </picture>
 
-<sub>The request sequence for a single turn, from the same design document. Retrieval and tools run under the caller identity, and the output guardrail checks groundedness before the reply is returned.</sub>
+<sub>The request sequence for a single turn, from the support agent design. Retrieval and tools run under the caller identity, and the output guardrail checks groundedness before the reply is returned.</sub>
 
 ## How it works
 
@@ -103,22 +188,41 @@ agentify/            the installable skill
   schemas/           diagram JSON schemas (with agent-native component types)
   renderers/         deterministic JSON-to-SVG/HTML renderers
   templates/         design document shell + per-section requirements
+  scripts/           validators, example rendering, README asset generation
   bin/agentify.mjs   CLI: render / validate / check / examples / doctor
 examples/            generated design documents (the gallery) + diagram sources
-scripts/             build and release tooling
+docs/assets/         rendered diagram previews used in this README
 ```
 
 ## CLI
 
-The bundled renderer also works standalone:
+The bundled renderer works standalone:
 
 ```bash
 cd agentify
 node bin/agentify.mjs render architecture my-system.architecture.json out.html
 node bin/agentify.mjs validate architecture my-system.architecture.json
 node bin/agentify.mjs check out.html
-node bin/agentify.mjs doctor
+node bin/agentify.mjs doctor      # verify the install is healthy
+node bin/agentify.mjs examples    # re-render the bundled examples
 ```
+
+Diagram types: `architecture`, `workflow`, `sequence`, `dataflow`, `lifecycle`.
+
+## Technical details
+
+- **Self-contained output.** Generated HTML has zero runtime dependencies and makes no network calls. Diagrams are inline SVG themed by CSS variables.
+- **Deterministic renderers.** The same JSON always produces the same HTML, enforced by golden tests, so edits are reviewable in `git diff`.
+- **Install-free validation.** JSON Schemas are precompiled to standalone validators and shipped with the skill, so schema and layout checks run with no `npm install` and no network.
+- **Node 18+** for the CLI. The skill itself needs only the agent runtime.
+- **Grounding freshness.** Framework knowledge is bundled and cited; volatile facts (model names, pricing) are pulled live at generation time and dated, never frozen into the repo.
+- **House style.** No em dashes anywhere, enforced by CI.
+
+## Roadmap
+
+Now: the skill, the grounded knowledge base, the extended diagram engine, and three gallery designs are shipping in v0.1.0.
+
+Next: running the skill against a wide set of unscripted prompts to tune the clarification loop, a knowledge-base freshness workflow, design diffing (compare two designs for the same prompt), and export to an ADR format. Non-goals and the full list are in [ROADMAP.md](ROADMAP.md).
 
 ## Contributing
 
