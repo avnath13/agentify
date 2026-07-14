@@ -65,6 +65,7 @@ function slug(title) {
 }
 
 // ---- diagram embed: read a rendered diagram HTML (or .svg) and lift its SVG ----
+let figureCount = 0;
 function diagramFigure(file, caption) {
   const p = path.resolve(srcDir, file);
   if (!fs.existsSync(p)) fail(`Diagram not found: ${file} (resolved ${p})`);
@@ -72,7 +73,22 @@ function diagramFigure(file, caption) {
   const svg = (content.match(/<svg[\s\S]*?<\/svg>/) || [])[0];
   if (!svg) fail(`No <svg> found in ${file}`);
   const cap = caption ? `<figcaption>${inline(caption)}</figcaption>` : '';
+  figureCount += 1;
   return `<figure class="diagram-slot">${svg}${cap}</figure>`;
+}
+
+// Net open-tag delta for a line (opens minus closes); self-closing and void
+// tags count as zero, so raw-HTML blocks can span blank lines until balanced.
+const VOID = new Set(['br', 'hr', 'img', 'input', 'meta', 'link', 'source', 'wbr', 'col']);
+function tagDelta(line) {
+  let d = 0;
+  for (const m of line.matchAll(/<(\/?)([a-zA-Z][\w-]*)([^>]*?)(\/?)>/g)) {
+    const [, close, name, , selfClose] = m;
+    if (close) d -= 1;
+    else if (selfClose || VOID.has(name.toLowerCase())) continue;
+    else d += 1;
+  }
+  return d;
 }
 
 // ---- block-level markdown for a section body ----
@@ -84,10 +100,16 @@ function renderBlocks(lines) {
     let line = lines[i];
     if (line.trim() === '') { i += 1; continue; }
 
-    // Raw HTML passthrough: a run of lines beginning with '<'
+    // Raw HTML passthrough: consume lines (including blank ones) until the
+    // opened tags balance, so multi-paragraph callouts and <details> blocks work.
     if (line.trimStart().startsWith('<')) {
       const buf = [];
-      while (i < lines.length && lines[i].trim() !== '') { buf.push(lines[i]); i += 1; }
+      let depth = 0;
+      do {
+        depth += tagDelta(lines[i]);
+        buf.push(lines[i]);
+        i += 1;
+      } while (i < lines.length && depth > 0);
       out.push(buf.join('\n'));
       continue;
     }
@@ -169,4 +191,4 @@ if (final.includes(String.fromCharCode(0x2014))) fail('Assembled document contai
 
 const outPath = output || path.join(srcDir, `${slug(fm.title)}.design.html`);
 fs.writeFileSync(outPath, final);
-console.log(outPath);
+console.log(`${outPath} (${sections.length} sections, ${figureCount} figure${figureCount === 1 ? '' : 's'} embedded)`);

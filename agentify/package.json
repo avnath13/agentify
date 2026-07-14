@@ -16,7 +16,7 @@
     "check:validators": "node scripts/generate-validators.mjs --check",
     "test": "npm run check:validators && node test/golden.mjs && node --test test/*.test.mjs",
     "render:examples": "node scripts/render-examples.mjs ../examples",
-    "assets:readme": "node scripts/rasterize-diagram.mjs examples/support-agent.html ../docs/assets/support-agent-architecture && node scripts/rasterize-diagram.mjs examples/support-agent-query.html ../docs/assets/support-agent-query && node scripts/export-standalone-svg.mjs examples/support-agent.html ../docs/assets/support-agent-architecture.svg && node scripts/export-standalone-svg.mjs examples/support-agent-query.html ../docs/assets/support-agent-query.svg"
+    "assets:readme": "node scripts/rasterize-diagram.mjs examples/support-agent.html ../docs/assets/support-agent-architecture && node scripts/rasterize-diagram.mjs examples/support-agent-query.html ../docs/assets/support-agent-query && node scripts/rasterize-diagram.mjs ../examples/drive-through-voice.architecture.html ../docs/assets/drive-through-voice && node scripts/export-standalone-svg.mjs examples/support-agent.html ../docs/assets/support-agent-architecture.svg && node scripts/export-standalone-svg.mjs examples/support-agent-query.html ../docs/assets/support-agent-query.svg"
   },
   "devDependencies": {
     "ajv": "^8.17.1"

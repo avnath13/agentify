@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Drive-Through Voice Order Agent",
+    "subtitle": "Cascaded voice stack (ASR then bounded agent then TTS), read-back gated POS submit, human staff always able to take over",
+    "output": "drive-through-voice.architecture.html",
+    "viewBox": [1600, 820]
+  },
+  "components": [
+    { "id": "customer", "type": "external", "label": "Customer", "sublabel": "lane mic + speaker", "pos": [40, 320], "size": [150, 72] },
+    { "id": "audioedge", "type": "frontend", "label": "Audio Edge", "sublabel": "mic array, AEC, VAD", "pos": [300, 316], "size": [160, 72], "tag": "in-store" },
+    { "id": "asr", "type": "asr", "label": "Streaming ASR", "sublabel": "partial + final, confidence", "pos": [570, 320], "size": [150, 64] },
+    { "id": "inguard", "type": "guardrail", "label": "Input Gate", "sublabel": "confidence + scope", "pos": [830, 320], "size": [150, 64], "tag": "OWASP LLM01" },
+    { "id": "agent", "type": "agent", "label": "Order Agent", "sublabel": "bounded loop, max 12 turns", "pos": [1090, 316], "size": [170, 72] },
+    { "id": "gateway", "type": "model-gateway", "label": "Model Gateway", "sublabel": "fast model + fallback", "pos": [1090, 150], "size": [170, 60], "tag": "cached menu prefix" },
+    { "id": "obs", "type": "cloud", "label": "Observability", "sublabel": "OTel spans, cost, WER", "pos": [1360, 150], "size": [170, 60] },
+    { "id": "menu", "type": "database", "label": "Menu + Price Store", "sublabel": "per-location, weekly publish", "pos": [570, 620], "size": [180, 64], "tag": "versioned" },
+    { "id": "cart", "type": "memory-state", "label": "Order State", "sublabel": "in-session cart, no PII", "pos": [830, 620], "size": [160, 64] },
+    { "id": "evals", "type": "eval-loop", "label": "Voice Eval", "sublabel": "simulated calls, WER", "pos": [1090, 620], "size": [170, 64], "tag": "CI gate" },
+    { "id": "allerguard", "type": "guardrail", "label": "Output Gate", "sublabel": "grounding + allergen scan", "pos": [830, 470], "size": [160, 64], "tag": "OWASP LLM09" },
+    { "id": "tts", "type": "tts", "label": "Streaming TTS", "sublabel": "cached fixed clips", "pos": [570, 470], "size": [150, 64] },
+    { "id": "postool", "type": "tool", "label": "POS Submit", "sublabel": "held ticket, staff-visible", "pos": [1360, 316], "size": [170, 72], "tag": "tier 2" },
+    { "id": "human", "type": "human-review", "label": "Staff Takeover", "sublabel": "allergen + low-conf", "pos": [1360, 470], "size": [170, 64] }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Store edge (real-time audio, per-location)",
+      "wraps": ["audioedge", "asr", "tts"]
+    },
+    {
+      "kind": "security-group",
+      "label": "Order agent runtime (per-location identity propagated)",
+      "wraps": ["inguard", "agent", "allerguard", "cart"]
+    }
+  ],
+  "connections": [
+    { "from": "customer", "to": "audioedge", "label": "speech" },
+    { "from": "audioedge", "to": "asr", "label": "clean audio" },
+    { "from": "asr", "to": "inguard", "label": "transcript" },
+    { "from": "inguard", "to": "agent", "label": "admit" },
+    { "from": "agent", "to": "gateway", "label": "reason", "fromSide": "top", "toSide": "bottom" },
+    { "from": "gateway", "to": "obs", "variant": "dashed" },
+    { "from": "agent", "to": "menu", "label": "lookup", "fromSide": "bottom", "toSide": "top", "labelDy": 54 },
+    { "from": "agent", "to": "cart", "label": "update", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+    { "from": "agent", "to": "postool", "label": "submit", "variant": "emphasis" },
+    { "from": "postool", "to": "human", "label": "on-screen", "fromSide": "bottom", "toSide": "top", "labelDy": 24 },
+    { "from": "agent", "to": "human", "label": "escalate", "variant": "security", "fromSide": "bottom", "toSide": "left" },
+    { "from": "agent", "to": "allerguard", "label": "response", "fromSide": "left", "toSide": "right" },
+    { "from": "allerguard", "to": "tts", "label": "grounded" },
+    { "from": "tts", "to": "customer", "label": "speech out", "fromSide": "left", "toSide": "bottom" },
+    { "from": "audioedge", "to": "agent", "label": "barge-in", "variant": "dashed", "fromSide": "bottom", "toSide": "left", "labelDy": 50 },
+    { "from": "obs", "to": "evals", "label": "traces", "variant": "dashed" }
+  ]
+}

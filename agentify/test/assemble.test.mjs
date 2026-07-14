@@ -71,6 +71,37 @@ Body text.
   fs.rmSync(tmp, { recursive: true, force: true });
 });
 
+test('assemble: multi-paragraph raw HTML (details, callouts) survives blank lines', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'agentify-assemble-html-'));
+  const md = `---
+title: HTML Block
+---
+
+## 1. Section
+
+<details class="interview"><summary>Interview notes</summary>
+
+<p><strong>Strong answer.</strong> First paragraph.</p>
+
+<p><strong>Tradeoffs.</strong> Second paragraph after a blank line.</p>
+
+</details>
+
+A trailing paragraph.
+`;
+  const mdPath = path.join(tmp, 'design.md');
+  const outPath = path.join(tmp, 'out.html');
+  fs.writeFileSync(mdPath, md);
+  const res = run(mdPath, outPath);
+  assert.equal(res.status, 0, res.stderr);
+  const html = fs.readFileSync(outPath, 'utf8');
+  // The whole details block, including the paragraph after the blank line, must
+  // be inside one raw block, not escaped or split into literal text.
+  assert.match(html, /<details class="interview">[\s\S]*Second paragraph after a blank line[\s\S]*<\/details>/);
+  assert.match(html, /<p>A trailing paragraph\.<\/p>/);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
 test('assemble: an em dash in the design is rejected', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'agentify-assemble-neg-'));
   // Build the em dash from its code point so this test file itself stays lint-clean.

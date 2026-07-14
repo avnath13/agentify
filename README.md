@@ -176,8 +176,17 @@ Three complete generated designs are committed in [`examples/`](examples/); open
 - [**Enterprise support agent**](examples/enterprise-support-agent.design.html) for a B2B SaaS company. A single tool-using agent behind an intent router, permission-aware RAG, autonomy tiers 0 to 1 with human escalation, and the full cost and latency math.
 - [**Legal document assistant**](examples/rag-document-assistant.design.html) for a 900-lawyer firm. Deliberately not an agent: a routed retrieval workflow where daily-changing ethical walls make permission-aware retrieval the crux. Shows the anti-escalation rule rejecting an agent on the record.
 - [**Autonomous coding system**](examples/multi-agent-coding-system.design.html), in interview mode. A bounded agent per ticket with a reflection loop, sandboxed with no merge or deploy access, and an explicit single vs multi-agent economics argument. Each section carries interview coaching notes.
+- [**Recipe assistant**](examples/recipe-assistant.design.html), a lightweight consumer feature. The right-sizing rule at work: it lands at Rung 1 (a single extraction call over deterministic matching, no agent, no vector RAG) and produces a short document, while still treating allergens as a full-depth safety concern.
+- [**Drive-through voice agent**](examples/drive-through-voice.design.html). A cascaded voice design with the conversational latency budget, turn-taking (VAD, endpointing, barge-in), and audio-native evaluation, drawn with the speech component types.
 
-Each design embeds diagrams drawn with the agent-native vocabulary: a component architecture plus a request sequence or a ticket lifecycle state machine.
+Each design embeds diagrams drawn with the agent-native vocabulary: a component architecture plus a request sequence, a ticket lifecycle state machine, or a voice pipeline.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/drive-through-voice-dark.png">
+  <img alt="Architecture for a drive-through voice agent: a store-edge boundary with audio edge, streaming ASR and streaming TTS; an order-agent runtime with input and output guardrails, a model gateway with a cached menu prefix, order state, a menu store, a bounded order agent, barge-in, POS submit as a tier-2 action, staff takeover for allergens and low confidence, and a voice eval gate" src="docs/assets/drive-through-voice-light.png" width="100%">
+</picture>
+
+<sub>The drive-through voice design, showing the cascaded speech pipeline (streaming ASR and TTS in the store edge), barge-in, the bounded order agent, the tier-2 POS submit gated on read-back, and staff takeover for allergens or low confidence.</sub>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/support-agent-query-dark.png">

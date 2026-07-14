@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Fridge-to-Recipe Assistant",
+    "subtitle": "Rung 1: one LLM extraction call wrapped in deterministic matching. No agent, no vector RAG.",
+    "output": "recipe-assistant.architecture.html",
+    "viewBox": [1180, 760]
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User",
+      "sublabel": "types fridge contents",
+      "pos": [40, 320],
+      "size": [120, 60]
+    },
+    {
+      "id": "inguard",
+      "type": "guardrail",
+      "label": "Input Validation",
+      "sublabel": "length + injection scan",
+      "pos": [200, 320],
+      "size": [130, 60],
+      "tag": "OWASP LLM01"
+    },
+    {
+      "id": "extractor",
+      "type": "model-gateway",
+      "label": "Ingredient Extractor",
+      "sublabel": "small LLM, JSON schema out",
+      "pos": [370, 320],
+      "size": [150, 60],
+      "tag": "no recipe generation"
+    },
+    {
+      "id": "normalizer",
+      "type": "tool",
+      "label": "Ingredient Normalizer",
+      "sublabel": "deterministic, canonical vocab",
+      "pos": [560, 320],
+      "size": [150, 60]
+    },
+    {
+      "id": "matcher",
+      "type": "backend",
+      "label": "Recipe Matcher",
+      "sublabel": "inverted index + coverage rank",
+      "pos": [750, 320],
+      "size": [140, 60]
+    },
+    {
+      "id": "allergen",
+      "type": "guardrail",
+      "label": "Allergen / Diet Filter",
+      "sublabel": "hard filter, fail-closed",
+      "pos": [930, 320],
+      "size": [150, 60],
+      "tag": "safety-critical"
+    },
+    {
+      "id": "outguard",
+      "type": "guardrail",
+      "label": "Output Guardrail",
+      "sublabel": "catalog-only + label disclaimer",
+      "pos": [930, 160],
+      "size": [150, 60]
+    },
+    {
+      "id": "listbuilder",
+      "type": "backend",
+      "label": "Shopping List Builder",
+      "sublabel": "recipe minus fridge diff",
+      "pos": [750, 160],
+      "size": [140, 60]
+    },
+    {
+      "id": "shoplist",
+      "type": "tool",
+      "label": "Shopping List",
+      "sublabel": "in-app store",
+      "pos": [560, 160],
+      "size": [150, 60],
+      "tag": "tier 1 write"
+    },
+    {
+      "id": "catalog",
+      "type": "database",
+      "label": "Recipe Catalog",
+      "sublabel": "12k recipes + allergen tags",
+      "pos": [750, 500],
+      "size": [140, 60]
+    },
+    {
+      "id": "profile",
+      "type": "database",
+      "label": "User Profile",
+      "sublabel": "diet + allergies",
+      "pos": [930, 500],
+      "size": [150, 60]
+    },
+    {
+      "id": "vocab",
+      "type": "database",
+      "label": "Ingredient Vocab",
+      "sublabel": "canonical + synonym map",
+      "pos": [560, 500],
+      "size": [150, 60]
+    },
+    {
+      "id": "normalizerjob",
+      "type": "backend",
+      "label": "Catalog Normalizer",
+      "sublabel": "offline: vocab + allergen tags",
+      "pos": [540, 640],
+      "size": [190, 60],
+      "tag": "batch build"
+    },
+    {
+      "id": "evalsuite",
+      "type": "eval-loop",
+      "label": "Eval Suite",
+      "sublabel": "extraction + allergen recall",
+      "pos": [790, 640],
+      "size": [160, 60],
+      "tag": "100% safety gate"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Deterministic safety path (LLM excluded from the allergen decision)",
+      "wraps": ["matcher", "allergen", "profile", "catalog"]
+    }
+  ],
+  "connections": [
+    { "from": "user", "to": "inguard" },
+    { "from": "inguard", "to": "extractor" },
+    { "from": "extractor", "to": "normalizer" },
+    { "from": "normalizer", "to": "matcher" },
+    { "from": "normalizer", "to": "vocab", "fromSide": "bottom", "toSide": "top", "variant": "dashed" },
+    { "from": "matcher", "to": "catalog", "fromSide": "bottom", "toSide": "top" },
+    { "from": "matcher", "to": "allergen" },
+    { "from": "profile", "to": "allergen", "label": "diet + allergy", "fromSide": "top", "toSide": "bottom" },
+    { "from": "allergen", "to": "outguard", "label": "safe set", "variant": "security", "fromSide": "top", "toSide": "bottom" },
+    { "from": "outguard", "to": "user", "label": "recipes + allergen info", "variant": "dashed", "fromSide": "left", "toSide": "top" },
+    { "from": "matcher", "to": "listbuilder", "label": "selected recipe", "fromSide": "top", "toSide": "bottom" },
+    { "from": "listbuilder", "to": "shoplist" },
+    { "from": "normalizerjob", "to": "catalog", "variant": "dashed", "label": "offline build", "fromSide": "right", "toSide": "bottom" },
+    { "from": "normalizerjob", "to": "vocab", "variant": "dashed", "fromSide": "top", "toSide": "bottom" },
+    { "from": "evalsuite", "to": "allergen", "variant": "dashed", "fromSide": "top", "toSide": "bottom" }
+  ]
+}

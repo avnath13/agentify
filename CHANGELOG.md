@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Right-sizing: SKILL.md now classifies a design as lightweight or enterprise from the decision outcome and sizes the document to match, so a small per-user feature is not padded with tenant-isolation, DR, and full OWASP and NIST ceremony. Section templates and the gate checklist updated to match; "not applicable, with reason" is now an encouraged outcome.
 - Voice and multimodal knowledge doc (`knowledge/voice-and-multimodal.md`): cascaded vs speech-to-speech architecture, the conversational latency budget, turn-taking (VAD, endpointing, barge-in), multimodal input and RAG, visual hallucination, and audio-native evaluation, grounded in OpenAI, LiveKit, ElevenLabs, the voice-agent testing literature, and arXiv multimodal surveys. Wired into the index, sources, gate checklist, and the modality clarify dimension. Prompted by the question of whether the skill covers voice and multimodal agents (it now grounds them rather than winging it).
 - Interview-mode discoverability: when no mode is specified, the skill now makes a single one-line offer of interview mode in its first reply, so the mode is discoverable without nagging production users.
+- Two more gallery examples, both generated through the real render-then-assemble pipeline: a lightweight consumer recipe assistant (demonstrates right-sizing producing a short Rung 1 design) and a drive-through voice agent (demonstrates the voice knowledge doc and the new speech nodes).
+- `asr` and `tts` agent-native diagram component types for voice-channel speech I/O, and a README Features section.
+- The reasoning eval now seeds five committed designs; the assembler gained tag-balanced raw-HTML passthrough (multi-paragraph callouts and interview `<details>` blocks survive blank lines) and a figure-count confirmation.
 
 ## [0.1.0] - 2026-07-14
 
