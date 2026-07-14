@@ -177,10 +177,12 @@ const main = sections.map((s) =>
 // ---- fill the template ----
 let template = fs.readFileSync(path.join(skillRoot, 'templates', 'design-doc.html'), 'utf8');
 template = template.replace(/<!--\s*\n  Agentify design document shell.*?-->\n/s, '');
-template = template.replace('[DOC TITLE]', fm.title)
-  .replace('[DOC SUBTITLE]', fm.subtitle)
-  .replace('[DOC MODE]', `${fm.mode} mode`)
-  .replace('[DOC DATE]', fm.date);
+// replaceAll: [DOC TITLE] appears in both the <title> and the <h1>, so a
+// single-match replace would leave the visible heading as the placeholder.
+template = template.replaceAll('[DOC TITLE]', fm.title)
+  .replaceAll('[DOC SUBTITLE]', fm.subtitle)
+  .replaceAll('[DOC MODE]', `${fm.mode} mode`)
+  .replaceAll('[DOC DATE]', fm.date);
 const ms = template.indexOf('<main id="doc-body">');
 const me = template.indexOf('</main>') + '</main>'.length;
 const final = template.slice(0, ms) + '<main id="doc-body">\n' + main + '\n    </main>' + template.slice(me);

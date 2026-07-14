@@ -59,6 +59,10 @@ Body text.
   const html = fs.readFileSync(outPath, 'utf8');
 
   assert.match(html, /<title>Test Design<\/title>/);
+  // The visible heading must be filled too, not just the <title>: the template
+  // has [DOC TITLE] in both places (replaceAll, not replace).
+  assert.match(html, /<h1>Test Design<\/h1>/);
+  assert.doesNotMatch(html, /\[DOC (TITLE|SUBTITLE|MODE|DATE)\]/);
   assert.match(html, /<section class="doc-section" id="summary">/);
   assert.match(html, /<section class="doc-section" id="details">/);
   assert.match(html, /<table>/);
