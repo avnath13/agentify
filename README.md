@@ -1,6 +1,6 @@
 # Agentify
 
-**Design production-grade agentic AI systems from a plain-English use case.**
+**Turn a use case into a grounded agentic system design.**
 
 [**Quickstart site**](https://avnath13.github.io/agentify/) &middot; [Example gallery](https://avnath13.github.io/agentify/#gallery) &middot; [Releases](https://github.com/avnath13/agentify/releases)
 
