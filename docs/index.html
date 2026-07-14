@@ -93,6 +93,17 @@ section{padding:56px 0}
 .preview .pic-dark{display:block}.preview .pic-light{display:none}
 [data-theme="light"] .preview .pic-dark{display:none}[data-theme="light"] .preview .pic-light{display:block}
 
+/* diagram types */
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.type-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.tshot{position:relative;border-radius:9px;overflow:hidden;border:1px solid var(--border);aspect-ratio:16/10;background:var(--bg2)}
+.tshot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.tshot .pic-light{display:none}
+[data-theme="light"] .tshot .pic-dark{display:none}
+[data-theme="light"] .tshot .pic-light{display:block}
+.type-card h3{font-size:15px;padding:0 6px}
+.type-card p{color:var(--muted);font-size:13.5px;padding:0 6px 6px}
+
 /* steps */
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;counter-reset:s}
 .step{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative}
@@ -124,6 +135,7 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
   <div class="wrap">
     <div class="brand"><span class="dot"></span> agentify</div>
     <nav class="nav-links">
+      <a href="#types">Diagrams</a>
       <a href="#features">Features</a>
       <a href="#how">How it works</a>
       <a href="#gallery">Gallery</a>
@@ -158,6 +170,38 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
       <img class="pic-light" src="assets/support-agent-architecture-light.png" alt="Generated architecture for an enterprise support agent">
       <div class="cap">A generated architecture, drawn with agent-native components. One figure from the support agent design.</div>
     </div>
+  </div>
+</section>
+
+<section id="types">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Five diagram types, one vocabulary</h2>
+      <p>Every design embeds diagrams drawn by the bundled engine, with a component vocabulary built for agentic systems.</p>
+    </div>
+    <div class="types">
+      <div class="type-card">
+        <div class="tshot"><img class="pic-dark" src="assets/types/architecture-dark.png" alt="Architecture diagram example"><img class="pic-light" src="assets/types/architecture-light.png" alt=""></div>
+        <h3>Architecture</h3><p>Components, trust boundaries, and how requests flow between them.</p>
+      </div>
+      <div class="type-card">
+        <div class="tshot"><img class="pic-dark" src="assets/types/sequence-dark.png" alt="Sequence diagram example"><img class="pic-light" src="assets/types/sequence-light.png" alt=""></div>
+        <h3>Sequence</h3><p>The primary request path, including guardrail and retrieval hops.</p>
+      </div>
+      <div class="type-card">
+        <div class="tshot"><img class="pic-dark" src="assets/types/dataflow-dark.png" alt="Data-flow diagram example"><img class="pic-light" src="assets/types/dataflow-light.png" alt=""></div>
+        <h3>Data flow</h3><p>Ingestion and retrieval pipelines, PII boundaries, and freshness.</p>
+      </div>
+      <div class="type-card">
+        <div class="tshot"><img class="pic-dark" src="assets/types/workflow-dark.png" alt="Workflow diagram example"><img class="pic-light" src="assets/types/workflow-light.png" alt=""></div>
+        <h3>Workflow</h3><p>The orchestration pattern: routing, chaining, and lanes.</p>
+      </div>
+      <div class="type-card">
+        <div class="tshot"><img class="pic-dark" src="assets/types/lifecycle-dark.png" alt="Lifecycle diagram example"><img class="pic-light" src="assets/types/lifecycle-light.png" alt=""></div>
+        <h3>Lifecycle</h3><p>State machines: an agent run, a ticket, an order, with retries and exits.</p>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:14px;margin-top:22px">Agent-native components: <span class="tag">agent</span>, router, retriever, vector store, guardrail, eval loop, human review, tool, memory, queue, ASR, TTS.</p>
   </div>
 </section>
 
