@@ -3,10 +3,10 @@
 ## v0.1.0 (launch)
 
 - [x] Vendored, tested diagram engine (architecture, workflow, sequence, dataflow, lifecycle)
-- [ ] Knowledge base: 12 grounded reference documents plus decision trees and source provenance
-- [ ] Skill definition: enterprise architect persona, clarification loop, framework decision tree, production and interview modes
-- [ ] Agent-native diagram vocabulary (llm-router, retriever, vector-store, guardrail, eval-loop, tool, memory-state, queue, human-review, model-gateway)
-- [ ] Self-contained design document template with embedded diagrams
+- [x] Knowledge base: 12 grounded reference documents plus decision trees and source provenance
+- [x] Skill definition: enterprise architect persona, clarification loop, framework decision tree, production and interview modes
+- [x] Agent-native diagram vocabulary (llm-router, retriever, vector-store, guardrail, eval-loop, tool, memory-state, queue, human-review, model-gateway)
+- [x] Self-contained design document template with embedded diagrams
 - [ ] Three gallery examples: enterprise support agent, RAG document assistant, multi-agent coding system
 
 ## Later
