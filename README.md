@@ -67,17 +67,23 @@ Facts that go stale (model choices, pricing) are never baked in: designs pull th
 npx skills add avnath13/agentify -g
 ```
 
-Other ways to install:
+The installer detects the AI coding agents on your machine (Claude Code, Cursor, Codex, Gemini CLI, and many others) and asks which ones to install the skill into. Use Space to select and Enter to confirm. This adds the single `agentify` skill to the agents you pick, it does not install anything else.
+
+To install to one agent without the prompt (for example Claude Code):
 
 ```bash
-# Project-local instead of global
-npx skills add avnath13/agentify
-
-# Manual: download agentify.zip from the latest release and add it as a skill
-# in Claude, Codex CLI, or opencode.
+npx skills add avnath13/agentify -g --agent claude-code -y
 ```
 
-The skill is dependency-free at runtime; nothing to `npm install` to use it.
+Other options:
+
+```bash
+npx skills add avnath13/agentify           # project-local instead of global
+npx skills add avnath13/agentify --list    # show the skill(s) in the repo, install nothing
+npx skills remove agentify                 # uninstall
+```
+
+Or download `agentify.zip` from the latest release and add it as a skill manually. The skill is dependency-free at runtime; nothing to `npm install` to use it.
 
 ### Use it
 
