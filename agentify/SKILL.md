@@ -98,12 +98,10 @@ State which weight class you chose in one line at the top of the decision record
 
 ### Step 5: Diagram
 
-Generate diagrams with the bundled engine (see "Rendering" below). Minimum set:
+Generate diagrams with the bundled engine (see "Rendering" below). Scale the set to the design's weight class; do not draw a diagram that would not teach the reader something the architecture diagram already shows.
 
-- Architecture diagram: components and boundaries (always)
-- Sequence diagram: the primary request path including guardrail and retrieval hops (always)
-- Data-flow diagram: ingestion/retrieval pipeline (when RAG or data pipelines exist)
-- Workflow diagram: the orchestration pattern (when rung 2+; use the agent-native node types)
+- **Lightweight**: one architecture diagram. Add a second only if the flow is genuinely non-obvious.
+- **Enterprise**: an architecture diagram plus a sequence diagram of the primary request path (including guardrail and retrieval hops). Add a data-flow diagram only when there is a real ingestion or retrieval pipeline, a workflow diagram only at rung 2+ where the orchestration is the point, and a lifecycle diagram only when a state machine (a run, a ticket, an order) is central.
 
 For a voice or multimodal system, show the modality boundary in the architecture (ASR and TTS on a voice channel, the multimodal model, the turn-taking components) and address the latency budget and turn-taking in the design per `knowledge/voice-and-multimodal.md`.
 
@@ -139,6 +137,15 @@ Workflow per diagram:
 Diagram types: `architecture`, `workflow`, `sequence`, `dataflow`, `lifecycle`.
 
 Agent-native components (routers, retrievers, vector stores, guardrails, eval loops, memory, human review gates, model gateways) use the semantic types documented in `schemas/README.md` so they render with consistent iconography and theming.
+
+**Lay it out to pass on the first try.** The layout validator rejects overlaps and unreadable geometry, and each rejection costs a fix-and-rerender cycle, so avoid them up front. The biggest time sink is edge labels colliding with tightly packed boxes:
+
+- Space adjacent boxes with a gap at least as wide as the longest edge label between them. When in doubt, spread out; a larger viewBox is free.
+- Keep labels short and move detail to `sublabel` and `tag`. Put a label on a vertical or a long edge, not on a short horizontal segment between two neighbors, and drop the label entirely on obvious edges.
+- Align the centers of two boxes you connect horizontally (equal `y` center), so the connector is truly orthogonal rather than a near-horizontal diagonal that fails the check.
+- Keep to roughly ten to twelve components. A denser diagram is both harder to place and harder to read; split it or raise the altitude instead.
+
+Draft all diagram JSON first, then render, check, and only then assemble, rather than interleaving. `agentify assemble` re-runs the post-render check on every embedded diagram and refuses to embed one that fails, so a design never ships a messy diagram.
 
 ## Tone
 

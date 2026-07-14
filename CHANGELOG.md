@@ -7,7 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- `agentify diff`: compare two design documents for the same use case and render a visual diff report. The summary shows the headline decision and metric deltas (escalation rung, weight class, cost, availability); below it, each section carries a color-coded line diff, with a badge for changed, added, and removed sections. Self-contained and theme-aware.
+- `agentify assemble` now re-runs the post-render checks (single finite SVG, orthogonal arrows, legend clearance) on every embedded diagram and refuses to embed one that fails, so a design document can never ship an unverified or messy diagram.
+- `agentify diff`: compare two design documents for the same use case and render a visual diff report.
+
+### Changed
+
+- Faster output without quality loss: the skill now scales the diagram set to the design's weight class (a lightweight design draws one architecture diagram instead of several), and SKILL.md adds first-pass layout guidance to cut the validate-fix-rerender loop that was the main time sink in real runs. The summary shows the headline decision and metric deltas (escalation rung, weight class, cost, availability); below it, each section carries a color-coded line diff, with a badge for changed, added, and removed sections. Self-contained and theme-aware.
 - `agentify adr`: export the design's decisions as architecture decision records. The skill writes a decision log (one `## ` heading per decision with Status/Context/Decision/Consequences); the command emits standard numbered ADR files plus a linked index, the artifact teams keep in-repo. Example decision log and generated ADRs in `examples/support-agent-adr/`.
 
 ### Fixed

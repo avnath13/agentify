@@ -24,6 +24,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -72,6 +73,15 @@ function diagramFigure(file, caption) {
   const content = fs.readFileSync(p, 'utf8');
   const svg = (content.match(/<svg[\s\S]*?<\/svg>/) || [])[0];
   if (!svg) fail(`No <svg> found in ${file}`);
+  // A rendered diagram HTML must pass the post-render checks (single finite
+  // SVG, orthogonal arrows, legend clearance) before it can be embedded, so a
+  // design never ships an unverified or messy diagram.
+  if (/\.html?$/i.test(file)) {
+    const res = spawnSync(process.execPath, [path.join(skillRoot, 'scripts/check-render-output.mjs'), p], { encoding: 'utf8' });
+    if (res.status !== 0) {
+      fail(`Diagram "${file}" failed post-render checks, so it was not embedded. Fix it and re-render, then re-run. Run "agentify check ${file}" to see the problems.\n${(res.stdout || '') + (res.stderr || '')}`.trim());
+    }
+  }
   const cap = caption ? `<figcaption>${inline(caption)}</figcaption>` : '';
   figureCount += 1;
   return `<figure class="diagram-slot">${svg}${cap}</figure>`;

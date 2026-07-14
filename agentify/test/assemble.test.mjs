@@ -106,6 +106,20 @@ A trailing paragraph.
   fs.rmSync(tmp, { recursive: true, force: true });
 });
 
+test('assemble: a diagram that fails post-render checks is not embedded', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'agentify-assemble-badfig-'));
+  // A rendered diagram HTML with a diagonal arrow (fails the orthogonal_arrows check).
+  fs.writeFileSync(path.join(tmp, 'bad.html'),
+    '<!doctype html><svg viewBox="0 0 200 100"><path d="M 10 10 L 190 90" class="a-default" marker-end="url(#arrowhead)"/></svg>');
+  const md = '---\ntitle: Bad Fig\n---\n\n## 1. Section\n\ntext\n\n![fig](bad.html)\n';
+  const mdPath = path.join(tmp, 'design.md');
+  fs.writeFileSync(mdPath, md);
+  const res = run(mdPath, path.join(tmp, 'out.html'));
+  assert.notEqual(res.status, 0, 'should refuse to embed an unchecked diagram');
+  assert.match(res.stderr, /post-render checks/i);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
 test('assemble: an em dash in the design is rejected', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'agentify-assemble-neg-'));
   // Build the em dash from its code point so this test file itself stays lint-clean.
