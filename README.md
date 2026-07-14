@@ -58,15 +58,16 @@ For interview practice:
 
 ## Example gallery
 
-Three complete generated designs are in [`examples/`](examples/):
+A complete generated design is committed in [`examples/`](examples/); open it in a browser, it is fully self-contained:
 
-| Example | Shape of the answer |
+- [**Enterprise support agent**](examples/enterprise-support-agent.design.html) for a B2B SaaS company. A single tool-using agent behind an intent router, permission-aware RAG, autonomy tiers 0 to 1 with human escalation, and the full cost and latency math. The two embedded diagrams (component architecture and query sequence) use the agent-native diagram vocabulary.
+
+Two more prompts make good next examples to generate yourself, chosen because they exercise the parts of the decision process the support agent does not:
+
+| Prompt | What it exercises |
 |---|---|
-| [Enterprise support agent](examples/enterprise-support-agent.design.html) | A single tool-using agent behind an intent router, permission-aware RAG, autonomy tiers 0-1 with human escalation |
-| [Legal document assistant](examples/rag-document-assistant.design.html) | Deliberately NOT an agent: a routed retrieval workflow where daily-changing ethical walls make permission-aware retrieval the crux |
-| [Autonomous coding system](examples/multi-agent-coding-system.design.html) | Interview mode: a bounded agent loop per ticket, with the single-vs-multi-agent economics argued explicitly |
-
-Open any of them in a browser; they are fully self-contained.
+| A document assistant for a 900-lawyer firm with daily-changing ethical walls | The anti-escalation rule: the right answer is a routed retrieval workflow, NOT an agent, with permission-aware retrieval as the crux |
+| An autonomous coding system that turns tickets into reviewed pull requests | Interview mode, and an honest single vs multi-agent economics argument |
 
 ## What a design contains
 

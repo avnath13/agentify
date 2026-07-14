@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Support Agent Query Path",
+    "subtitle": "Primary request: guardrails, intent routing, agent tool loop, grounded response",
+    "output": "support-agent-query.html",
+    "viewBox": [960, 780]
+  },
+  "participants": [
+    { "id": "user", "type": "external", "label": "Customer", "sublabel": "portal session" },
+    { "id": "ingress", "type": "security", "label": "Input Guard", "sublabel": "injection + PII" },
+    { "id": "router", "type": "backend", "label": "Router", "sublabel": "intent, cheap model" },
+    { "id": "agent", "type": "backend", "label": "Agent", "sublabel": "tool loop" },
+    { "id": "retriever", "type": "database", "label": "Retriever", "sublabel": "ACL-scoped RAG" },
+    { "id": "tools", "type": "backend", "label": "Ticket Tools", "sublabel": "MCP server" },
+    { "id": "egress", "type": "security", "label": "Output Guard", "sublabel": "groundedness" }
+  ],
+  "segments": [
+    { "from": 150, "to": 250, "label": "Admit" },
+    { "from": 270, "to": 560, "label": "Reason + act" },
+    { "from": 580, "to": 700, "label": "Ground + return" }
+  ],
+  "messages": [
+    { "from": "user", "to": "ingress", "y": 185, "label": "question", "variant": "default" },
+    { "from": "ingress", "to": "router", "y": 226, "label": "clean text", "variant": "security" },
+    { "from": "router", "to": "agent", "y": 268, "label": "intent + context", "variant": "emphasis" },
+    { "from": "agent", "to": "retriever", "y": 318, "label": "search KB (user identity)", "variant": "default" },
+    { "from": "retriever", "to": "agent", "y": 356, "label": "entitled passages", "variant": "return" },
+    { "from": "agent", "to": "tools", "y": 405, "label": "lookup order status", "variant": "default" },
+    { "from": "tools", "to": "agent", "y": 443, "label": "subscription data", "variant": "return" },
+    { "from": "agent", "to": "tools", "y": 492, "label": "create ticket (tier 1)", "variant": "emphasis" },
+    { "from": "tools", "to": "agent", "y": 530, "label": "ticket id", "variant": "return" },
+    { "from": "agent", "to": "egress", "y": 592, "label": "draft answer + citations", "variant": "default" },
+    { "from": "egress", "to": "user", "y": 660, "label": "grounded reply", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "ingress", "from": 180, "to": 231, "type": "security" },
+    { "participant": "router", "from": 221, "to": 273, "type": "backend" },
+    { "participant": "agent", "from": 263, "to": 597, "type": "backend" },
+    { "participant": "retriever", "from": 313, "to": 361, "type": "database" },
+    { "participant": "tools", "from": 400, "to": 535, "type": "backend" },
+    { "participant": "egress", "from": 587, "to": 665, "type": "security" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Grounded happy path",
+      "items": [
+        "Every user turn passes an input guardrail before any model sees it",
+        "Retrieval runs under the caller identity, so entitlements filter results",
+        "The output guardrail checks groundedness before the reply reaches the user"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Autonomy boundary",
+      "items": [
+        "Reading subscription data and creating a ticket are tier 0 and tier 1 actions",
+        "Anything tier 2 or above (billing, refunds) is not wired to the agent at all",
+        "Low retrieval confidence routes the turn to human escalation instead of a guess"
+      ]
+    }
+  ]
+}
