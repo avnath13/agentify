@@ -47,10 +47,11 @@ Agentify ships with a versioned knowledge base (in [`agentify/knowledge/`](agent
 | Agent design | Anthropic (Building Effective Agents, context engineering, multi-agent research system), OpenAI (A Practical Guide to Building Agents), Google/Kaggle Agents whitepaper, Andrew Ng's agentic patterns |
 | System design | The customer-facing GenAI design loop (Selamy), Chip Huyen's AI Engineering, the a16z LLM application stack |
 | Enterprise architecture | AWS Well-Architected Generative AI Lens, Azure WAF AI workloads, Google Cloud Architecture Framework |
-| Research | arXiv surveys covering RAG, agentic RAG, multi-agent collaboration and orchestration, LLM-as-judge, the tau-bench reliability benchmark, agentic multimodal models, and multimodal hallucination |
+| Platform primitives | The provider API surface designs sit on: tool-use loops, parallel calls and tool_choice, structured outputs, extended thinking, prompt caching, and agent SDKs (Anthropic, OpenAI, Google ADK, smolagents), plus the Llama Guard safety classifier |
+| Research | arXiv surveys covering RAG, agentic RAG, multi-agent collaboration and orchestration, LLM-as-judge, the tau-bench reliability benchmark, agentic multimodal models, and multimodal hallucination, plus named retrieval techniques (Contextual Retrieval, GraphRAG, late chunking, ColBERT) |
 | Voice and multimodal | Cascaded vs speech-to-speech architecture, turn-taking (VAD, endpointing, barge-in), the conversational latency budget, and audio-native evaluation, from OpenAI, LiveKit, ElevenLabs, and the voice-agent testing literature |
-| Standards | OWASP Top 10 for LLM Applications (2025) and for Agentic Applications (2026), NIST AI RMF and its GenAI Profile, the Model Context Protocol, OpenTelemetry GenAI semantic conventions |
-| Evaluation | RAGAS, the TruLens RAG Triad, eval-driven development practice |
+| Standards and defenses | OWASP Top 10 for LLM Applications (2025) and for Agentic Applications (2026), NIST AI RMF and its GenAI Profile, the Model Context Protocol, OpenTelemetry GenAI semantic conventions, and concrete injection defenses (CaMeL, spotlighting, NeMo Guardrails, Constitutional AI, model and system cards) |
+| Evaluation | RAGAS, the TruLens RAG Triad, eval-driven development practice, and agent benchmarks by task type (SWE-bench Verified, WebArena, GAIA, Terminal-Bench) |
 
 Facts that go stale (model choices, pricing) are never baked in: designs pull them live at generation time and stamp them with the retrieval date. Provenance for every source lives in [`SOURCES.md`](agentify/knowledge/SOURCES.md).
 
