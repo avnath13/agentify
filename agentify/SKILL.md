@@ -111,7 +111,9 @@ Do not hand-build the HTML. Write the design as a markdown file and let the CLI 
 
 1. Write `<use-case-slug>.design.md` with front matter (`title`, `subtitle`, `mode`, `date`) and one `## ` heading per section. Use normal markdown (paragraphs, `-`/`1.` lists, `|` tables, `**bold**`, `` `code` ``, `[links](url)`). For callouts and interview-mode blocks, write the raw HTML directly (any line starting with `<` passes through): `<div class="callout decision">...</div>`, `<details class="interview"><summary>Interview notes</summary>...</details>`. Embed a rendered diagram with `![Figure N. caption](<diagram>.html)`, which lifts that diagram's SVG into the document.
 2. Assemble: `node bin/agentify.mjs assemble <use-case-slug>.design.md <use-case-slug>.design.html`
-3. The command fills the template, embeds the diagrams, and refuses to emit a document containing an em dash. Offer the user both the `.design.html` and the `.design.md` source.
+3. The command fills the template, embeds the diagrams, and refuses to emit a document containing an em dash or a diagram that failed its checks. It prints a `file://` URL on the first line.
+
+**Make the output easy to open.** Do not hand the user a bare file path. Present the deliverable as a clickable link: give them the `file://` URL the command printed (most terminals and editors let you click or cmd/ctrl-click it to open in a browser), or a markdown link to the file. Offer to open it for them (`open <file>` on macOS, `xdg-open <file>` on Linux, `start <file>` on Windows), and mention the `.design.md` source is available too. The `adr` and `diff` commands print a `file://` URL the same way.
 
 **Optional: architecture decision records.** If the user wants the decisions as ADRs (the artifact teams keep in-repo), write the key choices from the decision record as a decision log: front matter (`title`, `date`) and one `## ` heading per decision, each with `Status:`, `Context:`, `Decision:`, and `Consequences:` lines (put the rejected alternatives in Consequences). Then run `node bin/agentify.mjs adr <use-case-slug>.decisions.md`, which emits numbered ADR files plus an index in standard format.
 

@@ -27,6 +27,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 function fail(m) { console.error(m); process.exit(2); }
 
@@ -114,6 +115,9 @@ ${consequences || 'Not recorded.'}
 const heading = fm.title ? `# ${fm.title}: architecture decision records` : '# Architecture decision records';
 const indexMd = `${heading}\n\n${index.map((a) => `- [${a.n}. ${a.title}](${a.file}) - ${a.status}`).join('\n')}\n`;
 if (indexMd.includes(EMDASH)) fail('ADR index contains an em dash.');
-fs.writeFileSync(path.join(outDir, 'README.md'), indexMd);
+const indexPath = path.join(outDir, 'README.md');
+fs.writeFileSync(indexPath, indexMd);
 
-console.log(`${outDir} (${blocks.length} ADR${blocks.length === 1 ? '' : 's'} + index)`);
+console.log(pathToFileURL(indexPath).href);
+console.log(`${outDir}`);
+console.log(`(${blocks.length} ADR${blocks.length === 1 ? '' : 's'} + index)`);

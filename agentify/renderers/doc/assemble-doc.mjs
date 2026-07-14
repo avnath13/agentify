@@ -25,7 +25,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const skillRoot = path.resolve(__dirname, '..', '..');
@@ -201,6 +201,8 @@ const final = template.slice(0, ms) + '<main id="doc-body">\n' + main + '\n    <
 // The em dash is written by code point so this source file stays lint-clean.
 if (final.includes(String.fromCharCode(0x2014))) fail('Assembled document contains an em dash; replace it before assembling.');
 
-const outPath = output || path.join(srcDir, `${slug(fm.title)}.design.html`);
+const outPath = path.resolve(output || path.join(srcDir, `${slug(fm.title)}.design.html`));
 fs.writeFileSync(outPath, final);
-console.log(`${outPath} (${sections.length} sections, ${figureCount} figure${figureCount === 1 ? '' : 's'} embedded)`);
+console.log(pathToFileURL(outPath).href);
+console.log(`${outPath}`);
+console.log(`(${sections.length} sections, ${figureCount} figure${figureCount === 1 ? '' : 's'} embedded) - open the link above in a browser`);

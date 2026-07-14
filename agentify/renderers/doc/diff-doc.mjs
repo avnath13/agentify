@@ -11,6 +11,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 function fail(m) { console.error(m); process.exit(2); }
 
@@ -207,6 +208,8 @@ ${sectionsHtml}
 </div></body></html>`;
 
 if (html.includes(EMDASH)) fail('Diff report contains an em dash; check the inputs.');
-const out = outArg || path.join(path.dirname(path.resolve(bPath)), 'design-diff.html');
+const out = path.resolve(outArg || path.join(path.dirname(path.resolve(bPath)), 'design-diff.html'));
 fs.writeFileSync(out, html);
-console.log(`${out} (${counts.changed || 0} changed, ${counts.added || 0} added, ${counts.removed || 0} removed sections)`);
+console.log(pathToFileURL(out).href);
+console.log(`${out}`);
+console.log(`(${counts.changed || 0} changed, ${counts.added || 0} added, ${counts.removed || 0} removed sections) - open the link above in a browser`);
