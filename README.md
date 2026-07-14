@@ -65,15 +65,15 @@ For interview practice:
 
 ## Example gallery
 
-A complete generated design is committed in [`examples/`](examples/); open it in a browser, it is fully self-contained:
+Complete generated designs are committed in [`examples/`](examples/); open any in a browser, each is fully self-contained:
 
-- [**Enterprise support agent**](examples/enterprise-support-agent.design.html) for a B2B SaaS company. A single tool-using agent behind an intent router, permission-aware RAG, autonomy tiers 0 to 1 with human escalation, and the full cost and latency math. The two embedded diagrams (component architecture and query sequence) use the agent-native diagram vocabulary.
+- [**Enterprise support agent**](examples/enterprise-support-agent.design.html) for a B2B SaaS company. A single tool-using agent behind an intent router, permission-aware RAG, autonomy tiers 0 to 1 with human escalation, and the full cost and latency math.
+- [**Legal document assistant**](examples/rag-document-assistant.design.html) for a 900-lawyer firm. Deliberately not an agent: a routed retrieval workflow where daily-changing ethical walls make permission-aware retrieval the crux. Shows the anti-escalation rule rejecting an agent on the record.
 
-Two more prompts make good next examples to generate yourself, chosen because they exercise the parts of the decision process the support agent does not:
+Each design embeds a component architecture and a request sequence drawn with the agent-native diagram vocabulary. One more prompt makes a good next example to generate yourself:
 
 | Prompt | What it exercises |
 |---|---|
-| A document assistant for a 900-lawyer firm with daily-changing ethical walls | The anti-escalation rule: the right answer is a routed retrieval workflow, NOT an agent, with permission-aware retrieval as the crux |
 | An autonomous coding system that turns tickets into reviewed pull requests | Interview mode, and an honest single vs multi-agent economics argument |
 
 ## What a design contains

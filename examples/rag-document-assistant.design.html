@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="agentify 0.1.0">
+  <title>Legal Document Assistant for Meridian Legal</title>
+  <script>
+    // Apply the theme before first paint to avoid a flash.
+    (function () {
+      try {
+        var theme = null;
+        try {
+          var param = new URLSearchParams(window.location.search).get('theme');
+          if (param === 'light' || param === 'dark') theme = param;
+        } catch (_) {}
+        if (!theme) {
+          try { theme = localStorage.getItem('agentify-theme'); } catch (_) {}
+        }
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (_) {}
+    })();
+  </script>
+  <style>
+    :root, [data-theme="dark"] {
+      --bg: #0b1220;
+      --bg-raised: #0f172a;
+      --grid: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --text-faint: #64748b;
+      --panel: #0f172a;
+      --panel-border: #1e293b;
+      --lane-fill: rgba(15, 23, 42, 0.55);
+      --lane-stroke: #334155;
+      --arrow: #64748b;
+      --arrow-emphasis: #34d399;
+      --mask: #0f172a;
+      --accent: #818cf8;
+      --link: #7dd3fc;
+
+      --frontend-fill:    rgba(8, 51, 68, 0.4);
+      --frontend-stroke:  #22d3ee;
+      --backend-fill:     rgba(6, 78, 59, 0.4);
+      --backend-stroke:   #34d399;
+      --database-fill:    rgba(76, 29, 149, 0.4);
+      --database-stroke:  #a78bfa;
+      --cloud-fill:       rgba(120, 53, 15, 0.3);
+      --cloud-stroke:     #fbbf24;
+      --security-fill:    rgba(136, 19, 55, 0.4);
+      --security-stroke:  #fb7185;
+      --messagebus-fill:  rgba(251, 146, 60, 0.3);
+      --messagebus-stroke:#fb923c;
+      --external-fill:    rgba(30, 41, 59, 0.5);
+      --external-stroke:  #94a3b8;
+      --agent-fill:       rgba(49, 46, 129, 0.45);
+      --agent-stroke:     #818cf8;
+      --model-fill:       rgba(19, 78, 74, 0.45);
+      --model-stroke:     #2dd4bf;
+      --retrieval-fill:   rgba(30, 58, 138, 0.4);
+      --retrieval-stroke: #60a5fa;
+      --eval-fill:        rgba(54, 83, 20, 0.4);
+      --eval-stroke:      #a3e635;
+      --human-fill:       rgba(112, 26, 117, 0.35);
+      --human-stroke:     #e879f9;
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-raised: #ffffff;
+      --grid: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --text-faint: #64748b;
+      --panel: #ffffff;
+      --panel-border: #e2e8f0;
+      --lane-fill: rgba(248, 250, 252, 0.65);
+      --lane-stroke: #cbd5e1;
+      --arrow: #94a3b8;
+      --arrow-emphasis: #059669;
+      --mask: #ffffff;
+      --accent: #4f46e5;
+      --link: #0369a1;
+
+      --frontend-fill:    rgba(34, 211, 238, 0.15);
+      --frontend-stroke:  #0891b2;
+      --backend-fill:     rgba(52, 211, 153, 0.18);
+      --backend-stroke:   #059669;
+      --database-fill:    rgba(167, 139, 250, 0.2);
+      --database-stroke:  #7c3aed;
+      --cloud-fill:       rgba(251, 191, 36, 0.18);
+      --cloud-stroke:     #d97706;
+      --security-fill:    rgba(251, 113, 133, 0.15);
+      --security-stroke:  #e11d48;
+      --messagebus-fill:  rgba(251, 146, 60, 0.15);
+      --messagebus-stroke:#ea580c;
+      --external-fill:    rgba(148, 163, 184, 0.18);
+      --external-stroke:  #64748b;
+      --agent-fill:       rgba(129, 140, 248, 0.16);
+      --agent-stroke:     #4f46e5;
+      --model-fill:       rgba(45, 212, 191, 0.16);
+      --model-stroke:     #0d9488;
+      --retrieval-fill:   rgba(96, 165, 250, 0.16);
+      --retrieval-stroke: #2563eb;
+      --eval-fill:        rgba(163, 230, 53, 0.2);
+      --eval-stroke:      #65a30d;
+      --human-fill:       rgba(232, 121, 249, 0.14);
+      --human-stroke:     #c026d3;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      max-width: 1240px;
+      margin: 0 auto;
+      gap: 32px;
+      padding: 32px 24px 96px;
+    }
+
+    /* Sidebar / TOC */
+    nav.toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      font-size: 13px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    nav.toc .toc-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    nav.toc ol { list-style: none; }
+    nav.toc li { margin: 2px 0; }
+    nav.toc a {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: block;
+      padding: 4px 10px;
+      border-left: 2px solid var(--panel-border);
+      transition: color 120ms, border-color 120ms;
+    }
+    nav.toc a:hover { color: var(--text); }
+    nav.toc a.active { color: var(--accent); border-left-color: var(--accent); }
+
+    /* Header */
+    header.doc-header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 20px;
+    }
+    header.doc-header h1 { font-size: 26px; line-height: 1.25; letter-spacing: -0.01em; }
+    header.doc-header .subtitle { color: var(--text-muted); margin-top: 6px; font-size: 14px; }
+    header.doc-header .meta-line { color: var(--text-dim); font-size: 12px; margin-top: 10px; }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      margin-right: 6px;
+    }
+
+    #btn-theme {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #btn-theme:hover { border-color: var(--text-dim); }
+
+    /* Content */
+    main { min-width: 0; }
+    section.doc-section { margin-bottom: 44px; scroll-margin-top: 24px; }
+    section.doc-section h2 {
+      font-size: 19px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--panel-border);
+      letter-spacing: -0.01em;
+    }
+    section.doc-section h3 {
+      font-size: 15px;
+      margin: 20px 0 8px;
+      color: var(--text);
+    }
+    section.doc-section p { margin: 10px 0; color: var(--text); }
+    section.doc-section p.lead { font-size: 16px; }
+    section.doc-section ul, section.doc-section ol { margin: 10px 0 10px 22px; }
+    section.doc-section li { margin: 4px 0; }
+    section.doc-section a { color: var(--link); }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin: 14px 0;
+      display: block;
+      overflow-x: auto;
+    }
+    th, td {
+      text-align: left;
+      padding: 8px 12px;
+      border: 1px solid var(--panel-border);
+      vertical-align: top;
+    }
+    th {
+      background: var(--panel);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(even) { background: color-mix(in srgb, var(--panel) 45%, transparent); }
+
+    /* Callouts */
+    .callout {
+      border: 1px solid var(--panel-border);
+      border-left: 3px solid var(--accent);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+    .callout.assumption { border-left-color: var(--cloud-stroke); }
+    .callout.risk { border-left-color: var(--security-stroke); }
+    .callout.decision { border-left-color: var(--eval-stroke); }
+    .callout .callout-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* Interview mode blocks */
+    details.interview {
+      border: 1px dashed var(--panel-border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+    details.interview summary {
+      cursor: pointer;
+      color: var(--human-stroke);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Citations */
+    .cite {
+      font-size: 12px;
+      color: var(--text-dim);
+      vertical-align: super;
+      line-height: 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88em;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+    pre {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+    pre code { background: none; border: none; padding: 0; }
+
+    /* Embedded diagrams */
+    figure.diagram-slot {
+      background: var(--bg-raised);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+    figure.diagram-slot svg { width: 100%; height: auto; display: block; }
+    figure.diagram-slot figcaption {
+      margin-top: 10px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* SVG classes shared with the diagram engine, so embedded SVGs theme correctly */
+    .c-mask       { fill: var(--mask); stroke: none; }
+    .c-frontend   { fill: var(--frontend-fill);   stroke: var(--frontend-stroke); }
+    .c-backend    { fill: var(--backend-fill);    stroke: var(--backend-stroke); }
+    .c-database   { fill: var(--database-fill);   stroke: var(--database-stroke); }
+    .c-cloud      { fill: var(--cloud-fill);      stroke: var(--cloud-stroke); }
+    .c-security   { fill: var(--security-fill);   stroke: var(--security-stroke); }
+    .c-messagebus { fill: var(--messagebus-fill); stroke: var(--messagebus-stroke); }
+    .c-external   { fill: var(--external-fill);   stroke: var(--external-stroke); }
+    .c-agent      { fill: var(--agent-fill);      stroke: var(--agent-stroke); }
+    .c-model      { fill: var(--model-fill);      stroke: var(--model-stroke); }
+    .c-retrieval  { fill: var(--retrieval-fill);  stroke: var(--retrieval-stroke); }
+    .c-eval       { fill: var(--eval-fill);       stroke: var(--eval-stroke); }
+    .c-human      { fill: var(--human-fill);      stroke: var(--human-stroke); stroke-dasharray: 6,3; }
+    .c-security-group { fill: transparent; stroke: var(--security-stroke); stroke-dasharray: 4,4; }
+    .c-region     { fill: var(--lane-fill); stroke: var(--lane-stroke); }
+
+    .t-primary    { fill: var(--text); }
+    .t-muted      { fill: var(--text-muted); }
+    .t-dim        { fill: var(--text-dim); }
+    .t-frontend   { fill: var(--frontend-stroke); }
+    .t-backend    { fill: var(--backend-stroke); }
+    .t-database   { fill: var(--database-stroke); }
+    .t-cloud      { fill: var(--cloud-stroke); }
+    .t-security   { fill: var(--security-stroke); }
+    .t-messagebus { fill: var(--messagebus-stroke); }
+    .t-external   { fill: var(--external-stroke); }
+    .t-agent      { fill: var(--agent-stroke); }
+    .t-model      { fill: var(--model-stroke); }
+    .t-retrieval  { fill: var(--retrieval-stroke); }
+    .t-eval       { fill: var(--eval-stroke); }
+    .t-human      { fill: var(--human-stroke); }
+
+    .a-default    { stroke: var(--arrow); fill: none; }
+    .a-emphasis   { stroke: var(--arrow-emphasis); fill: none; }
+    .a-security   { stroke: var(--security-stroke); fill: none; stroke-dasharray: 5,5; }
+    .a-dashed     { stroke: var(--arrow); fill: none; stroke-dasharray: 5,5; }
+    .arrowhead          { fill: var(--arrow); }
+    .arrowhead-emphasis { fill: var(--arrow-emphasis); }
+    .arrowhead-security { fill: var(--security-stroke); }
+    .lane         { fill: var(--lane-fill); stroke: var(--lane-stroke); }
+
+    /* Print */
+    @media print {
+      :root, [data-theme="dark"], [data-theme="light"] {
+        --bg: #ffffff;
+        --bg-raised: #ffffff;
+        --text: #0f172a;
+        --text-muted: #475569;
+        --text-dim: #94a3b8;
+        --panel: #ffffff;
+        --panel-border: #e2e8f0;
+        --mask: #ffffff;
+        --lane-fill: rgba(248, 250, 252, 0.65);
+        --lane-stroke: #cbd5e1;
+        --arrow: #94a3b8;
+        --arrow-emphasis: #059669;
+        --link: #0369a1;
+        --accent: #4f46e5;
+        --frontend-fill:    rgba(34, 211, 238, 0.15);
+        --frontend-stroke:  #0891b2;
+        --backend-fill:     rgba(52, 211, 153, 0.18);
+        --backend-stroke:   #059669;
+        --database-fill:    rgba(167, 139, 250, 0.2);
+        --database-stroke:  #7c3aed;
+        --cloud-fill:       rgba(251, 191, 36, 0.18);
+        --cloud-stroke:     #d97706;
+        --security-fill:    rgba(251, 113, 133, 0.15);
+        --security-stroke:  #e11d48;
+        --messagebus-fill:  rgba(251, 146, 60, 0.15);
+        --messagebus-stroke:#ea580c;
+        --external-fill:    rgba(148, 163, 184, 0.18);
+        --external-stroke:  #64748b;
+        --agent-fill:       rgba(129, 140, 248, 0.16);
+        --agent-stroke:     #4f46e5;
+        --model-fill:       rgba(45, 212, 191, 0.16);
+        --model-stroke:     #0d9488;
+        --retrieval-fill:   rgba(96, 165, 250, 0.16);
+        --retrieval-stroke: #2563eb;
+        --eval-fill:        rgba(163, 230, 53, 0.2);
+        --eval-stroke:      #65a30d;
+        --human-fill:       rgba(232, 121, 249, 0.14);
+        --human-stroke:     #c026d3;
+      }
+      .layout { grid-template-columns: 1fr; padding: 0; }
+      nav.toc, #btn-theme { display: none !important; }
+      section.doc-section { break-inside: avoid-page; }
+      figure.diagram-slot { break-inside: avoid; }
+      details.interview { display: none; }
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; order: -1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <header class="doc-header">
+      <div>
+        <h1>Legal Document Assistant for Meridian Legal</h1>
+        <div class="subtitle">A routed retrieval workflow, deliberately not an agent, where daily-changing ethical walls make permission-aware retrieval the crux</div>
+        <div class="meta-line">
+          <span class="badge">agentify design document</span>
+          <span class="badge">production mode</span>
+          <span class="badge">2026-07-14</span>
+        </div>
+      </div>
+      <button id="btn-theme" type="button" aria-pressed="false">
+        <span id="theme-icon">&#9790;</span> <span id="theme-label">Dark</span>
+      </button>
+    </header>
+
+    <nav class="toc" aria-label="Table of contents">
+      <div class="toc-title">Contents</div>
+      <ol id="toc-list"></ol>
+    </nav>
+
+    <main id="doc-body">
+<section class="doc-section" id="executive-summary">
+<h2>1. Executive summary</h2>
+
+<p class="lead">Meridian should build a <strong>routed retrieval workflow, not an agent</strong>. Lawyers ask questions and get cited answers over 40 million documents; the task is retrieve-then-synthesize with no autonomous actions, which sits at rung 2 of the escalation ladder <span class="cite">[knowledge/decision-trees.md]</span>. Adding an agent loop would add cost, latency, and unpredictability with no benefit, so the anti-escalation rule rejects it.</p>
+<p>The entire design turns on one requirement: <strong>zero confidentiality breaches</strong>. Ethical walls change daily as conflicts arise, so entitlements must be enforced at the retriever under the caller identity and refreshed daily, never inferred by the model or embedded in a prompt <span class="cite">[knowledge/rag-patterns.md]</span>. The system is strictly read-only (tier 0), every answer carries source citations, and an unsourced claim is refused rather than shown. At 2,500 queries per day the design runs well inside the 25,000 USD per month ceiling, dominated by vector index infrastructure rather than model spend.</p>
+<div class="callout decision"><span class="callout-label">Recommendation</span> Build a workflow, not an agent. Enforce ethical walls at retrieval time against a daily-synced ACL, verify every citation, and keep the system read-only.</div>
+
+</section>
+
+<section class="doc-section" id="requirements">
+<h2>2. Requirements and NFRs</h2>
+
+<ul>
+<li>Answer questions across matter files, contracts, briefs, and firm precedent, with citations to source documents.</li>
+<li>Summarize documents on request.</li>
+<li>Read-only against the document management system. Draft nothing that leaves the firm. Give no legal advice to clients.</li>
+</ul>
+<p><strong>Non-goals:</strong> no document creation, no client-facing output, no writes of any kind.</p>
+<table>
+<thead><tr><th>NFR</th><th>Target</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td>Throughput</td><td>2,500 queries/day peak, bursty around filings</td><td>customer</td></tr>
+<tr><td>Latency</td><td>First token &lt; 3s, complex query &lt; 15s p95</td><td>customer</td></tr>
+<tr><td>Availability</td><td>99.5% (business hours), RTO 8h</td><td>customer</td></tr>
+<tr><td>Corpus</td><td>40M documents, +30k/week, variable OCR quality</td><td>customer</td></tr>
+<tr><td>Cost</td><td>&le; 25,000 USD/month all in</td><td>customer</td></tr>
+<tr><td>Compliance</td><td>ABA Model Rule 1.6, GDPR (EU matters)</td><td>customer</td></tr>
+<tr><td>Confidentiality</td><td>Zero cross-matter leaks (hard requirement)</td><td>customer</td></tr>
+</tbody>
+</table>
+<div class="callout risk"><span class="callout-label">The requirement that dominates</span> A single confidentiality breach is career-ending for the lawyer and firm. Confidentiality is therefore designed as a hard invariant enforced in the architecture, not a quality metric to optimize.</div>
+
+</section>
+
+<section class="doc-section" id="decision-record">
+<h2>3. Decision record</h2>
+
+<table>
+<thead><tr><th>Gate</th><th>Decision</th><th>Why, and what lost</th></tr></thead>
+<tbody>
+<tr><td>Need generative AI?</td><td>Yes, for synthesis</td><td>Lawyers need composed, cited answers across documents, not just a hit list. Rejected: search alone (no synthesis).</td></tr>
+<tr><td>Escalation ladder</td><td>Rung 2, routed workflow</td><td>The path is fixed: retrieve, rerank, synthesize, verify. Nothing branches on intermediate model decisions <span class="cite">[knowledge/building-effective-agents.md]</span>. <strong>Anti-escalation rule applied: an agent was explicitly rejected.</strong> A tool-loop agent would add latency and unpredictability and a wider blast radius, with no capability this task needs.</td></tr>
+<tr><td>Knowledge strategy</td><td>Advanced RAG, permission-aware</td><td>40M documents, growing weekly, per-matter entitlements. This is the textbook case for retrieval with entitlement filtering <span class="cite">[knowledge/rag-patterns.md]</span>. Rejected: fine-tuning (corpus churns weekly, and a model cannot hold per-matter walls) and long-context (40M docs do not fit anything).</td></tr>
+<tr><td>Autonomy</td><td>Tier 0, read-only</td><td>No writes exist in the design, so there is no autonomous action to govern <span class="cite">[knowledge/security-governance.md]</span>.</td></tr>
+<tr><td>Memory</td><td>None beyond the query</td><td>No cross-session personalization is required, and less stored state means a smaller confidentiality surface <span class="cite">[knowledge/context-memory.md]</span>.</td></tr>
+</tbody>
+</table>
+<div class="callout decision"><span class="callout-label">The headline decision</span> The right answer here is explicitly not an agent. Recognizing that is the design.</div>
+
+</section>
+
+<section class="doc-section" id="architecture">
+<h2>4. System architecture</h2>
+
+<p>A fixed pipeline: identity resolution applies the current ethical walls, a cheap router classifies the query, the retriever runs an entitlement-filtered hybrid search, a reranker selects passages, a synthesis model writes a cited answer, and a citation guard verifies every claim resolves to a retrieved source before anything returns.</p>
+<figure class="diagram-slot"><svg viewBox="0 0 1320 820" role="img" aria-label="Legal Document Assistant: Routed retrieval workflow, not an agent: ethical walls enforced at the retriever (architecture diagram)">
+        <!-- Definitions -->
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-default" />
+          </marker>
+          <marker id="arrowhead-emphasis" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-emphasis" />
+          </marker>
+          <marker id="arrowhead-security" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-security" />
+          </marker>
+          <marker id="arrowhead-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-dashed" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" class="c-grid" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <!-- Background Grid -->
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- Boundaries (behind everything) -->
+        <rect x="600" y="330" width="430" height="290" rx="8" class="c-security-group" stroke-width="1"/>
+        <text x="608" y="348" class="t-security" font-size="9" font-weight="600">Ethical wall enforcement (retrieval time)</text>
+
+        <!-- Connection paths (before components for correct z-order) -->
+        <path d="M 190 392 L 240 392" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 380 392 L 430 392" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 580 392 L 630 392" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 705 424 L 705 540" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 780 570 L 850 570" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 925 540 L 925 424" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 1000 392 L 1070 392" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path d="M 485 210 L 549.5 210 Q 557.5 210 557.5 218 L 557.5 562 Q 557.5 570 565.5 570 L 630 570" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path d="M 705 210 L 705 360" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <path d="M 925 360 L 925 210" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path d="M 1000 180 L 1027 180 Q 1035 180 1035 188 L 1035 562 Q 1035 570 1043 570 L 1070 570" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+
+        <!-- Components -->
+        <rect x="40" y="360" width="150" height="64" rx="6" class="c-mask"/>
+        <rect x="40" y="360" width="150" height="64" rx="6" class="c-external" stroke-width="1.5"/>
+        <text x="115" y="390" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Lawyers &amp; Paralegals</text>
+        <text x="115" y="406" class="t-muted" font-size="9" text-anchor="middle">SSO via Entra ID</text>
+
+        <rect x="240" y="360" width="140" height="64" rx="6" class="c-mask"/>
+        <rect x="240" y="360" width="140" height="64" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="310" y="390" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Identity + Walls</text>
+        <text x="310" y="406" class="t-muted" font-size="9" text-anchor="middle">per-matter ACL</text>
+        <text x="310" y="416" class="t-security" font-size="7" text-anchor="middle">ABA 1.6</text>
+
+        <rect x="430" y="360" width="150" height="64" rx="6" class="c-mask"/>
+        <rect x="430" y="360" width="150" height="64" rx="6" class="c-model" stroke-width="1.5"/>
+        <text x="505" y="390" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Query Router</text>
+        <text x="505" y="406" class="t-muted" font-size="9" text-anchor="middle">intent, cheap model</text>
+
+        <rect x="630" y="360" width="150" height="64" rx="6" class="c-mask"/>
+        <rect x="630" y="360" width="150" height="64" rx="6" class="c-retrieval" stroke-width="1.5"/>
+        <text x="705" y="390" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Retriever</text>
+        <text x="705" y="406" class="t-muted" font-size="9" text-anchor="middle">ACL-filtered</text>
+        <text x="705" y="416" class="t-retrieval" font-size="7" text-anchor="middle">ethical walls</text>
+
+        <rect x="850" y="360" width="150" height="64" rx="6" class="c-mask"/>
+        <rect x="850" y="360" width="150" height="64" rx="6" class="c-model" stroke-width="1.5"/>
+        <text x="925" y="390" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Answer Synthesis</text>
+        <text x="925" y="406" class="t-muted" font-size="9" text-anchor="middle">grounded, cited</text>
+
+        <rect x="1070" y="360" width="150" height="64" rx="6" class="c-mask"/>
+        <rect x="1070" y="360" width="150" height="64" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="1145" y="390" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Citation Guard</text>
+        <text x="1145" y="406" class="t-muted" font-size="9" text-anchor="middle">every claim sourced</text>
+
+        <rect x="630" y="540" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="630" y="540" width="150" height="60" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="705" y="568" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Vector Index</text>
+        <text x="705" y="584" class="t-muted" font-size="9" text-anchor="middle">40M documents</text>
+
+        <rect x="850" y="540" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="850" y="540" width="150" height="60" rx="6" class="c-eval" stroke-width="1.5"/>
+        <text x="925" y="568" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Reranker</text>
+        <text x="925" y="584" class="t-muted" font-size="9" text-anchor="middle">cross-encoder</text>
+
+        <rect x="400" y="150" width="170" height="60" rx="6" class="c-mask"/>
+        <rect x="400" y="150" width="170" height="60" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="485" y="178" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Document Mgmt System</text>
+        <text x="485" y="194" class="t-muted" font-size="9" text-anchor="middle">source of truth</text>
+
+        <rect x="630" y="150" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="630" y="150" width="150" height="60" rx="6" class="c-messagebus" stroke-width="1.5"/>
+        <text x="705" y="178" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Wall Sync</text>
+        <text x="705" y="194" class="t-muted" font-size="9" text-anchor="middle">daily ACL job</text>
+        <text x="705" y="202" class="t-messagebus" font-size="7" text-anchor="middle">conflicts</text>
+
+        <rect x="850" y="150" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="850" y="150" width="150" height="60" rx="6" class="c-cloud" stroke-width="1.5"/>
+        <text x="925" y="178" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Observability</text>
+        <text x="925" y="194" class="t-muted" font-size="9" text-anchor="middle">OTel + audit log</text>
+
+        <rect x="1070" y="540" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="1070" y="540" width="150" height="60" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="1145" y="568" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Eval Harness</text>
+        <text x="1145" y="584" class="t-muted" font-size="9" text-anchor="middle">citation accuracy</text>
+
+        <!-- Connection labels -->
+        <rect x="190.8" y="372" width="48.4" height="14" rx="3" class="c-mask"/>
+        <text x="215" y="382" class="t-muted" font-size="8" text-anchor="middle">question</text>
+        <rect x="380.8" y="372" width="48.4" height="14" rx="3" class="c-mask"/>
+        <text x="405" y="382" class="t-muted" font-size="8" text-anchor="middle">identity</text>
+        <rect x="585.6" y="372" width="38.8" height="14" rx="3" class="c-mask"/>
+        <text x="605" y="382" class="t-muted" font-size="8" text-anchor="middle">search</text>
+
+
+
+        <rect x="1001.2" y="372" width="67.6" height="14" rx="3" class="c-mask"/>
+        <text x="1035" y="382" class="t-backend" font-size="8" text-anchor="middle">cited answer</text>
+        <rect x="525.6" y="460" width="38.8" height="14" rx="3" class="c-mask"/>
+        <text x="545" y="470" class="t-messagebus" font-size="8" text-anchor="middle">ingest</text>
+        <rect x="788.6" y="275" width="62.8" height="14" rx="3" class="c-mask"/>
+        <text x="820" y="285" class="t-security" font-size="8" text-anchor="middle">ACL refresh</text>
+
+
+
+        <!-- Legend -->
+        <text x="40" y="791" class="t-primary" font-size="9" font-weight="600">Legend</text>
+        <rect x="40" y="796" width="14" height="9" rx="2" class="c-external" stroke-width="1"/>
+        <text x="60" y="804" class="t-muted" font-size="8">External</text>
+        <rect x="138" y="796" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
+        <text x="158" y="804" class="t-muted" font-size="8">Security</text>
+        <rect x="236" y="796" width="14" height="9" rx="2" class="c-model" stroke-width="1"/>
+        <text x="256" y="804" class="t-muted" font-size="8">LLM router</text>
+        <rect x="344" y="796" width="14" height="9" rx="2" class="c-retrieval" stroke-width="1"/>
+        <text x="364" y="804" class="t-muted" font-size="8">Retriever</text>
+        <rect x="447" y="796" width="14" height="9" rx="2" class="c-model" stroke-width="1"/>
+        <text x="467" y="804" class="t-muted" font-size="8">Model gateway</text>
+        <rect x="570" y="796" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
+        <text x="590" y="804" class="t-muted" font-size="8">Guardrail</text>
+        <rect x="673" y="796" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+        <text x="693" y="804" class="t-muted" font-size="8">Vector store</text>
+        <rect x="791" y="796" width="14" height="9" rx="2" class="c-eval" stroke-width="1"/>
+        <text x="811" y="804" class="t-muted" font-size="8">Eval loop</text>
+        <rect x="894" y="796" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+        <text x="914" y="804" class="t-muted" font-size="8">Database</text>
+        <rect x="992" y="796" width="14" height="9" rx="2" class="c-messagebus" stroke-width="1"/>
+        <text x="1012" y="804" class="t-muted" font-size="8">Queue</text>
+        <rect x="1075" y="796" width="14" height="9" rx="2" class="c-cloud" stroke-width="1"/>
+        <text x="1095" y="804" class="t-muted" font-size="8">Cloud</text>
+        <rect x="1158" y="796" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
+        <text x="1178" y="804" class="t-muted" font-size="8">Backend</text>
+      </svg><figcaption>Figure 1. The retrieval workflow. The dashed boundary is the ethical-wall enforcement zone; the Wall Sync job refreshes entitlements daily, and there is no agent and no tool loop.</figcaption></figure>
+<table>
+<thead><tr><th>Component</th><th>Serves</th><th>Scaling</th><th>Failure mode and fallback</th><th>Tech example</th></tr></thead>
+<tbody>
+<tr><td>Identity + walls</td><td>Entitlement resolution</td><td>Stateless, horizontal</td><td>Fail closed: no walls, no retrieval</td><td>Entra ID + DMS ACL sync</td></tr>
+<tr><td>Query router</td><td>Cheap triage</td><td>Stateless, horizontal</td><td>Default to full retrieval</td><td>Haiku-class model</td></tr>
+<tr><td>Retriever</td><td>Entitlement-filtered search</td><td>Stateless, read replicas</td><td>Degrade recall, never bypass ACL</td><td>Hybrid dense + BM25 <span class="cite">[knowledge/rag-patterns.md]</span></td></tr>
+<tr><td>Vector index</td><td>40M doc embeddings</td><td>Stateful, sharded</td><td>Rebuildable from the DMS</td><td>OpenSearch or pgvector-class, disk-ANN</td></tr>
+<tr><td>Reranker</td><td>Passage precision</td><td>Stateless, horizontal</td><td>Fall back to retriever order</td><td>Cross-encoder</td></tr>
+<tr><td>Answer synthesis</td><td>Grounded, cited answer</td><td>Stateless, horizontal</td><td>Refuse rather than guess</td><td>Sonnet-class model</td></tr>
+<tr><td>Citation guard</td><td>Every claim sourced</td><td>Stateless, horizontal</td><td>Suppress unsourced claims</td><td>Claim-to-source check <span class="cite">[knowledge/evaluation.md]</span></td></tr>
+<tr><td>Wall sync</td><td>Daily entitlement refresh</td><td>Batch job</td><td>Stale walls block, not leak</td><td>Scheduled ACL pipeline</td></tr>
+</tbody>
+</table>
+<div class="callout"><span class="callout-label">Trust boundary</span> Entitlements are resolved before retrieval and enforced inside the retriever. The model never sees a document the caller is not entitled to, so no prompt-level mistake can cause a cross-matter leak.</div>
+
+</section>
+
+<section class="doc-section" id="data-retrieval">
+<h2>5. Data and retrieval</h2>
+
+<p>This is the heart of the design <span class="cite">[knowledge/rag-patterns.md]</span>.</p>
+<h3>Ingestion</h3>
+<p>40M documents with variable OCR quality, growing 30k per week. The pipeline OCRs, chunks (with small-to-big passage windows so citations point to precise spans), embeds, and writes each chunk with its matter id and entitlement metadata. Incremental ingestion keeps the index within a week of the DMS; a full rebuild is acceptable over a weekend per the RTO.</p>
+<h3>Permission-aware retrieval, and why it is the crux</h3>
+<p>Every chunk carries its matter entitlement. At query time the retriever receives the caller identity and the current ethical walls, and filters candidates by entitlement <em>before</em> ranking <span class="cite">[knowledge/security-governance.md]</span>. Walls change daily as conflicts arise, so a <strong>daily Wall Sync job</strong> refreshes the ACL the retriever reads. The failure direction is deliberate: if the sync is stale, access is denied (a lawyer waits), never granted (a wall is breached).</p>
+<h3>Retrieval quality</h3>
+<p>Hybrid dense plus keyword search handles both concept and exact-term legal queries; a cross-encoder reranker lifts precision so the synthesis model sees only the strongest passages, which also controls token cost on a large-context model.</p>
+
+</section>
+
+<section class="doc-section" id="tools">
+<h2>6. Tools and integrations</h2>
+
+<p>There are no action tools. The only integration is a read-only connection to the document management system and its ACLs <span class="cite">[knowledge/interoperability-observability.md]</span>.</p>
+<table>
+<thead><tr><th>Integration</th><th>Contract</th><th>Tier</th><th>Enforcement</th></tr></thead>
+<tbody>
+<tr><td>DMS read</td><td>doc id + identity &rarr; content</td><td>0 (read)</td><td>Read-only credential, ACL-checked</td></tr>
+<tr><td>ACL sync</td><td>daily &rarr; entitlement snapshot</td><td>0 (read)</td><td>Batch, fail-closed on error</td></tr>
+</tbody>
+</table>
+<div class="callout risk"><span class="callout-label">No writes by construction</span> The system has no tool that mutates anything. Read-only is enforced by absence of any write path, not by policy.</div>
+
+</section>
+
+<section class="doc-section" id="state-memory">
+<h2>7. State and memory</h2>
+
+<p>No persistent memory. Each query is answered from retrieval alone <span class="cite">[knowledge/context-memory.md]</span>. Declining to store conversation history or user memories is a deliberate confidentiality choice: there is no store of matter content to leak, subpoena, or mis-scope. Within a single session the current question and its retrieved context live only for the duration of the request.</p>
+
+</section>
+
+<section class="doc-section" id="security">
+<h2>8. Security, identity, and guardrails</h2>
+
+<p>Attack surfaces <span class="cite">[knowledge/security-governance.md]</span>: user queries (prompt injection) and retrieved document text (indirect injection from adversarial or quoted content). Because the system is read-only, the excessive-agency and lethal-trifecta risks are largely designed out: there is no exfiltration channel and no write.</p>
+<table>
+<thead><tr><th>Control</th><th>Purpose (OWASP / rule)</th></tr></thead>
+<tbody>
+<tr><td>Entitlement-filtered retrieval</td><td>LLM02 sensitive-info disclosure; ABA 1.6 confidentiality</td></tr>
+<tr><td>Identity propagation (caller permissions)</td><td>No broad service account can over-retrieve</td></tr>
+<tr><td>Citation guard</td><td>LLM09 misinformation; unsourced claims refused</td></tr>
+<tr><td>Injection handling on query and passages</td><td>LLM01 prompt injection</td></tr>
+<tr><td>Full audit log of query, retrieved doc ids, answer</td><td>Conflicts audits, ABA compliance evidence</td></tr>
+</tbody>
+</table>
+<p><strong>Governance:</strong> maps to NIST AI RMF MAP (contextualize the confidentiality risk), MEASURE (leak testing in evals), and MANAGE (audit and access review) <span class="cite">[knowledge/security-governance.md]</span>. GDPR applies to EU matters: retrieval respects data residency and the audit log supports access requests.</p>
+
+</section>
+
+<section class="doc-section" id="evaluation">
+<h2>9. Evaluation plan</h2>
+
+<p>Confidentiality and citation accuracy are the two things that must be measured before launch <span class="cite">[knowledge/evaluation.md]</span>.</p>
+<ul>
+<li><strong>Leak testing (gating):</strong> a red-team set of cross-matter queries that must return zero entitled-but-walled documents. Any leak is a launch blocker.</li>
+<li><strong>Golden set:</strong> real lawyer questions with known correct sources, stratified by practice area, refreshed as precedent grows.</li>
+<li><strong>Retrieval metrics:</strong> recall@k and reranked precision measured separately, since a citation is only as good as the retrieval behind it.</li>
+<li><strong>Citation faithfulness:</strong> every claim must resolve to a retrieved passage (RAGAS-style faithfulness, the TruLens groundedness leg) <span class="cite">[knowledge/evaluation.md]</span>.</li>
+<li><strong>Refusal quality:</strong> the system should refuse when sources are weak rather than fabricate, measured explicitly.</li>
+</ul>
+<table>
+<thead><tr><th>Gate</th><th>Unlocks</th></tr></thead>
+<tbody>
+<tr><td>Zero leaks on the red-team set, citation faithfulness above threshold</td><td>Shadow with a pilot practice group</td></tr>
+<tr><td>Pilot precision and refusal quality hold, zero reported leaks</td><td>Firm-wide rollout</td></tr>
+</tbody>
+</table>
+
+</section>
+
+<section class="doc-section" id="observability">
+<h2>10. Observability</h2>
+
+<p>Every query emits a trace with retrieval, rerank, and synthesis as spans, capturing the retrieved document ids, tokens, latency, and cost, using OpenTelemetry GenAI conventions <span class="cite">[knowledge/interoperability-observability.md]</span>. A tamper-evident audit log records who asked what and which documents were surfaced, which is required for conflicts audits and ABA compliance. Dashboards track p95 latency, cost per query, refusal rate, and citation-faithfulness drift; alerts fire on any entitlement-filter error (treated as a security incident, not a bug) and on latency or cost anomalies.</p>
+
+</section>
+
+<section class="doc-section" id="scale-cost">
+<h2>11. Scale and cost analysis</h2>
+
+<p>Model pricing used, <span class="cite">[live-sourced 2026-07-14]</span>: Haiku 4.5 at 1.00 / 5.00 USD and Sonnet 4.6 at 3.00 / 15.00 USD per million input / output tokens, with prompt caching near 10% of input price on cached tokens.</p>
+<h3>Per-query cost</h3>
+<table>
+<thead><tr><th>Element</th><th>Tokens</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td>Router (Haiku)</td><td>~1k in, ~50 out</td><td>~0.001 USD</td></tr>
+<tr><td>Embedding + cross-encoder rerank</td><td>query-scale + candidate set</td><td>~0.002 USD</td></tr>
+<tr><td>Synthesis (Sonnet), 1 call</td><td>~1k cached + ~9k passages in, ~800 out</td><td>~0.040 USD</td></tr>
+<tr><td><strong>Total per query</strong></td><td></td><td><strong>~0.045 USD</strong></td></tr>
+</tbody>
+</table>
+<p><strong>Monthly:</strong> ~50,000 queries at ~0.045 USD is only ~2,250 USD in model spend. The budget is dominated by fixed infrastructure: hosting a 40M-document vector index (roughly 250 GB of vectors before overhead, so a sharded disk-ANN cluster), the OCR and embedding pipeline for 30k new docs per week, rerank compute, and 25-year audit retention. Estimate the index and pipeline at 10,000 to 14,000 USD per month, bringing the all-in figure to roughly 16,000 to 18,000 USD, inside the 25,000 USD ceiling with headroom.</p>
+<h3>Latency budget (p95 &le; 15s)</h3>
+<p>Identity and walls ~0.3s, router ~0.5s, retrieval over 40M docs ~1.5s, rerank ~0.8s, synthesis with large legal context ~9s (first token under 3s via streaming), citation guard ~0.6s. There is no agent loop, so there is no tail-latency multiplication across steps <span class="cite">[knowledge/latency-cost-reliability.md]</span>.</p>
+<h3>At 10x (25,000 queries/day)</h3>
+<p>Model spend approaches ~22,000 USD/month, which alone nears the ceiling. The index size does not grow with query volume (it grows with the corpus), so the levers are on the query path: cache repeated precedent lookups (legal research repeats heavily within a matter), route simple lookups to a smaller synthesis model, and add retrieval and rerank replicas. The fixed index cost stays roughly flat.</p>
+
+</section>
+
+<section class="doc-section" id="failure-modes">
+<h2>12. Failure modes and degradation</h2>
+
+<table>
+<thead><tr><th>Failure</th><th>Degradation</th></tr></thead>
+<tbody>
+<tr><td>Wall Sync stale or failed</td><td>Deny access on affected matters (fail closed), page an admin. Never widen access.</td></tr>
+<tr><td>Model provider outage</td><td>Retrieval still returns cited passages; synthesis queued or served by a fallback model <span class="cite">[knowledge/latency-cost-reliability.md]</span></td></tr>
+<tr><td>Retrieval degraded (index node down)</td><td>Reduced recall, flagged to the user; never bypass the ACL filter</td></tr>
+<tr><td>Weak or no sources</td><td>Refuse with an explanation rather than synthesize an unsupported answer</td></tr>
+<tr><td>OCR failure on a document</td><td>Document excluded from the index with a quality flag, not silently half-indexed</td></tr>
+</tbody>
+</table>
+
+</section>
+
+<section class="doc-section" id="rollout">
+<h2>13. Rollout plan</h2>
+
+<ol>
+<li><strong>Crawl:</strong> one pilot practice group, read-only, with lawyers instructed to report any surprising document surfacing. Gate: zero leaks on the red-team set and in the pilot.</li>
+<li><strong>Walk:</strong> expand to several practice areas, monitor citation faithfulness and refusal quality. Gate: metrics hold, zero reported confidentiality issues <span class="cite">[knowledge/evaluation.md]</span>.</li>
+<li><strong>Run:</strong> firm-wide. Ongoing conflicts-audit review of the access log, and sampled queries feed the golden and red-team sets <span class="cite">[knowledge/genai-sysdesign-loop.md]</span>.</li>
+</ol>
+
+</section>
+
+<section class="doc-section" id="query-path">
+<h2>14. Request walkthrough</h2>
+
+<p>A single query, from authorization through a verified, cited answer.</p>
+<figure class="diagram-slot"><svg viewBox="0 0 900 720" role="img" aria-label="Legal Assistant Query Path: Ethical-wall filtering at retrieval, citation verification before any answer returns (sequence diagram)">
+        <!-- Definitions -->
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-default" />
+          </marker>
+          <marker id="arrowhead-emphasis" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-emphasis" />
+          </marker>
+          <marker id="arrowhead-security" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-security" />
+          </marker>
+          <marker id="arrowhead-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-dashed" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" class="c-grid" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <!-- Background Grid -->
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- Time Segments -->
+        <rect x="48" y="150" width="804" height="100" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="62" y="168" class="t-dim" font-size="9" font-weight="600">Authorize</text>
+
+        <rect x="48" y="270" width="804" height="210" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="62" y="288" class="t-dim" font-size="9" font-weight="600">Retrieve within walls</text>
+
+        <rect x="48" y="500" width="804" height="140" rx="10" class="c-lane" stroke-width="1"/>
+        <text x="62" y="518" class="t-dim" font-size="9" font-weight="600">Ground + verify</text>
+
+        <!-- Lifelines -->
+        <path d="M 62 142 L 62 655" class="a-default" stroke-width="0.8" stroke-dasharray="3,7"/>
+        <path d="M 170 142 L 170 655" class="a-default" stroke-width="0.8" stroke-dasharray="3,7"/>
+        <path d="M 278 142 L 278 655" class="a-default" stroke-width="0.8" stroke-dasharray="3,7"/>
+        <path d="M 386 142 L 386 655" class="a-default" stroke-width="0.8" stroke-dasharray="3,7"/>
+        <path d="M 494 142 L 494 655" class="a-default" stroke-width="0.8" stroke-dasharray="3,7"/>
+        <path d="M 602 142 L 602 655" class="a-default" stroke-width="0.8" stroke-dasharray="3,7"/>
+
+        <!-- Messages -->
+        <path d="M 69 190 L 163 190" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <rect x="89.2" y="170" width="53.6" height="16" rx="3" class="c-mask"/>
+        <text x="116" y="180" class="t-backend" font-size="9" text-anchor="middle">question</text>
+
+        <path d="M 177 232 L 271 232" class="a-security" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
+        <rect x="166" y="212" width="116" height="16" rx="3" class="c-mask"/>
+        <text x="224" y="222" class="t-security" font-size="9" text-anchor="middle">query + entitlements</text>
+
+        <path d="M 285 300 L 379 300" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <rect x="261" y="280" width="142" height="16" rx="3" class="c-mask"/>
+        <text x="332" y="290" class="t-backend" font-size="9" text-anchor="middle">hybrid search, ACL filter</text>
+
+        <path d="M 379 342 L 285 342" class="a-default" stroke-width="1.4" stroke-dasharray="3,5" marker-end="url(#arrowhead)"/>
+        <rect x="263.6" y="322" width="136.8" height="16" rx="3" class="c-mask"/>
+        <text x="332" y="332" class="t-muted" font-size="9" text-anchor="middle">entitled candidates only</text>
+
+        <path d="M 285 410 L 487 410" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <rect x="335.8" y="390" width="100.4" height="16" rx="3" class="c-mask"/>
+        <text x="386" y="400" class="t-backend" font-size="9" text-anchor="middle">reranked passages</text>
+
+        <path d="M 501 478 L 595 478" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <rect x="477" y="458" width="142" height="16" rx="3" class="c-mask"/>
+        <text x="548" y="468" class="t-backend" font-size="9" text-anchor="middle">answer + inline citations</text>
+
+        <path d="M 595 540 L 501 540" class="a-security" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
+        <rect x="474.4" y="520" width="147.20000000000002" height="16" rx="3" class="c-mask"/>
+        <text x="548" y="530" class="t-security" font-size="9" text-anchor="middle">reject any unsourced claim</text>
+
+        <path d="M 595 606 L 69 606" class="a-default" stroke-width="1.4" stroke-dasharray="3,5" marker-end="url(#arrowhead)"/>
+        <rect x="266.2" y="586" width="131.60000000000002" height="16" rx="3" class="c-mask"/>
+        <text x="332" y="596" class="t-muted" font-size="9" text-anchor="middle">cited answer or refusal</text>
+
+        <!-- Activations -->
+        <rect x="165" y="185" width="10" height="52" rx="3" class="c-mask"/>
+        <rect x="165" y="185" width="10" height="52" rx="3" class="c-security" stroke-width="1"/>
+        <rect x="273" y="227" width="10" height="318" rx="3" class="c-mask"/>
+        <rect x="273" y="227" width="10" height="318" rx="3" class="c-database" stroke-width="1"/>
+        <rect x="381" y="295" width="10" height="52" rx="3" class="c-mask"/>
+        <rect x="381" y="295" width="10" height="52" rx="3" class="c-database" stroke-width="1"/>
+        <rect x="489" y="405" width="10" height="140" rx="3" class="c-mask"/>
+        <rect x="489" y="405" width="10" height="140" rx="3" class="c-backend" stroke-width="1"/>
+        <rect x="597" y="473" width="10" height="138" rx="3" class="c-mask"/>
+        <rect x="597" y="473" width="10" height="138" rx="3" class="c-security" stroke-width="1"/>
+
+        <!-- Participants -->
+        <rect x="19" y="72" width="86" height="54" rx="6" class="c-mask"/>
+        <rect x="19" y="72" width="86" height="54" rx="6" class="c-external" stroke-width="1.5"/>
+        <text x="62" y="94" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Lawyer</text>
+        <text x="62" y="111" class="t-muted" font-size="7" text-anchor="middle">SSO session</text>
+
+        <rect x="127" y="72" width="86" height="54" rx="6" class="c-mask"/>
+        <rect x="127" y="72" width="86" height="54" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="170" y="94" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Identity</text>
+        <text x="170" y="111" class="t-muted" font-size="7" text-anchor="middle">matter walls</text>
+
+        <rect x="235" y="72" width="86" height="54" rx="6" class="c-mask"/>
+        <rect x="235" y="72" width="86" height="54" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="278" y="94" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Retriever</text>
+        <text x="278" y="111" class="t-muted" font-size="7" text-anchor="middle">ACL-filtered</text>
+
+        <rect x="343" y="72" width="86" height="54" rx="6" class="c-mask"/>
+        <rect x="343" y="72" width="86" height="54" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="386" y="94" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Vector Index</text>
+        <text x="386" y="111" class="t-muted" font-size="7" text-anchor="middle">40M docs</text>
+
+        <rect x="451" y="72" width="86" height="54" rx="6" class="c-mask"/>
+        <rect x="451" y="72" width="86" height="54" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="494" y="94" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Synthesis</text>
+        <text x="494" y="111" class="t-muted" font-size="7" text-anchor="middle">grounded LLM</text>
+
+        <rect x="559" y="72" width="86" height="54" rx="6" class="c-mask"/>
+        <rect x="559" y="72" width="86" height="54" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="602" y="94" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Cite Guard</text>
+        <text x="602" y="111" class="t-muted" font-size="7" text-anchor="middle">sourced claims</text>
+
+        <!-- Legend -->
+        <text x="150" y="646" class="t-primary" font-size="10" font-weight="600">Legend</text>
+        <path d="M 150 666 L 184 666" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <text x="193" y="669" class="t-muted" font-size="8">request</text>
+        <path d="M 270 666 L 304 666" class="a-default" stroke-width="1.4" stroke-dasharray="3,5" marker-end="url(#arrowhead)"/>
+        <text x="313" y="669" class="t-muted" font-size="8">return</text>
+        <path d="M 385 666 L 419 666" class="a-security" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
+        <text x="428" y="669" class="t-muted" font-size="8">security</text>
+        <path d="M 530 666 L 564 666" class="a-dashed" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
+        <text x="573" y="669" class="t-muted" font-size="8">async trace</text>
+      </svg><figcaption>Figure 2. The query sequence. Entitlements are resolved before retrieval, the index returns only documents within the caller's walls, and the citation guard verifies sources before any answer returns.</figcaption></figure>
+
+</section>
+
+<section class="doc-section" id="references">
+<h2>15. References</h2>
+
+<h3>Knowledge base</h3>
+<ul>
+<li>knowledge/decision-trees.md, building-effective-agents.md (the workflow vs agent decision and the anti-escalation rule)</li>
+<li>knowledge/rag-patterns.md (permission-aware retrieval, hybrid search, reranking, ingestion)</li>
+<li>knowledge/security-governance.md (identity propagation, confidentiality, OWASP and NIST mappings)</li>
+<li>knowledge/evaluation.md (leak testing, citation faithfulness, refusal quality), interoperability-observability.md (tracing, audit)</li>
+<li>knowledge/latency-cost-reliability.md, enterprise-architecture.md (capacity, cost, fail-closed DR)</li>
+</ul>
+<h3>Live-sourced</h3>
+<ul><li>Anthropic API pricing, retrieved 2026-07-14, for the cost model in section 11.</li></ul>
+<p>Primary-source citations for each knowledge document are in agentify/knowledge/SOURCES.md.</p>
+
+</section>
+    </main>
+  </div>
+
+  <script>
+    // Build the TOC from section h2s.
+    (function () {
+      var list = document.getElementById('toc-list');
+      var sections = document.querySelectorAll('main section.doc-section');
+      sections.forEach(function (sec) {
+        var h2 = sec.querySelector('h2');
+        if (!h2 || !sec.id) return;
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + sec.id;
+        a.textContent = h2.textContent;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+
+      // Highlight the section in view.
+      var links = list.querySelectorAll('a');
+      if ('IntersectionObserver' in window && links.length) {
+        var byId = {};
+        links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var link = byId[entry.target.id];
+            if (!link) return;
+            if (entry.isIntersecting) {
+              links.forEach(function (a) { a.classList.remove('active'); });
+              link.classList.add('active');
+            }
+          });
+        }, { rootMargin: '0px 0px -70% 0px' });
+        sections.forEach(function (sec) { observer.observe(sec); });
+      }
+    })();
+
+    // Theme toggle: persists to localStorage, respects system preference.
+    (function () {
+      var STORAGE_KEY = 'agentify-theme';
+      var html = document.documentElement;
+      var btn = document.getElementById('btn-theme');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+
+      function readStored() {
+        try { return localStorage.getItem(STORAGE_KEY); } catch (_) { return null; }
+      }
+      function writeStored(value) {
+        try { localStorage.setItem(STORAGE_KEY, value); } catch (_) {}
+      }
+      function urlOverride() {
+        try {
+          var param = new URLSearchParams(window.location.search).get('theme');
+          if (param === 'light' || param === 'dark') return param;
+        } catch (_) {}
+        return null;
+      }
+      function resolveInitial() {
+        var fromUrl = urlOverride();
+        if (fromUrl) return fromUrl;
+        var saved = readStored();
+        if (saved === 'light' || saved === 'dark') return saved;
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      function apply(theme) {
+        html.setAttribute('data-theme', theme);
+        icon.innerHTML = theme === 'dark' ? '&#9790;' : '&#9788;';
+        label.textContent = theme === 'dark' ? 'Dark' : 'Light';
+        btn.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
+      }
+      function toggle() {
+        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        apply(next);
+        writeStored(next);
+      }
+      apply(resolveInitial());
+      btn.addEventListener('click', toggle);
+
+      try {
+        var media = window.matchMedia('(prefers-color-scheme: light)');
+        var onChange = function (e) {
+          if (readStored() || urlOverride()) return;
+          apply(e.matches ? 'light' : 'dark');
+        };
+        if (media.addEventListener) media.addEventListener('change', onChange);
+      } catch (_) {}
+    })();
+  </script>
+</body>
+</html>

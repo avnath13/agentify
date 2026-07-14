@@ -1,0 +1,272 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Legal Document Assistant",
+    "subtitle": "Routed retrieval workflow, not an agent: ethical walls enforced at the retriever",
+    "output": "legal-assistant.html",
+    "viewBox": [
+      1320,
+      820
+    ]
+  },
+  "components": [
+    {
+      "id": "lawyers",
+      "type": "external",
+      "label": "Lawyers & Paralegals",
+      "sublabel": "SSO via Entra ID",
+      "pos": [
+        40,
+        360
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "sso",
+      "type": "security",
+      "label": "Identity + Walls",
+      "sublabel": "per-matter ACL",
+      "pos": [
+        240,
+        360
+      ],
+      "size": [
+        140,
+        64
+      ],
+      "tag": "ABA 1.6"
+    },
+    {
+      "id": "router",
+      "type": "llm-router",
+      "label": "Query Router",
+      "sublabel": "intent, cheap model",
+      "pos": [
+        430,
+        360
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "retriever",
+      "type": "retriever",
+      "label": "Retriever",
+      "sublabel": "ACL-filtered",
+      "pos": [
+        630,
+        360
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "tag": "ethical walls"
+    },
+    {
+      "id": "synth",
+      "type": "model-gateway",
+      "label": "Answer Synthesis",
+      "sublabel": "grounded, cited",
+      "pos": [
+        850,
+        360
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "guard",
+      "type": "guardrail",
+      "label": "Citation Guard",
+      "sublabel": "every claim sourced",
+      "pos": [
+        1070,
+        360
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "vectorindex",
+      "type": "vector-store",
+      "label": "Vector Index",
+      "sublabel": "40M documents",
+      "pos": [
+        630,
+        540
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "reranker",
+      "type": "eval-loop",
+      "label": "Reranker",
+      "sublabel": "cross-encoder",
+      "pos": [
+        850,
+        540
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "dms",
+      "type": "database",
+      "label": "Document Mgmt System",
+      "sublabel": "source of truth",
+      "pos": [
+        400,
+        150
+      ],
+      "size": [
+        170,
+        60
+      ]
+    },
+    {
+      "id": "wallsync",
+      "type": "queue",
+      "label": "Wall Sync",
+      "sublabel": "daily ACL job",
+      "pos": [
+        630,
+        150
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "conflicts"
+    },
+    {
+      "id": "obs",
+      "type": "cloud",
+      "label": "Observability",
+      "sublabel": "OTel + audit log",
+      "pos": [
+        850,
+        150
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "eval",
+      "type": "backend",
+      "label": "Eval Harness",
+      "sublabel": "citation accuracy",
+      "pos": [
+        1070,
+        540
+      ],
+      "size": [
+        150,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Ethical wall enforcement (retrieval time)",
+      "wraps": [
+        "retriever",
+        "vectorindex",
+        "reranker"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "lawyers",
+      "to": "sso",
+      "label": "question"
+    },
+    {
+      "from": "sso",
+      "to": "router",
+      "label": "identity"
+    },
+    {
+      "from": "router",
+      "to": "retriever",
+      "label": "search"
+    },
+    {
+      "from": "retriever",
+      "to": "vectorindex",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "vectorindex",
+      "to": "reranker"
+    },
+    {
+      "from": "reranker",
+      "to": "synth",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "from": "synth",
+      "to": "guard",
+      "label": "cited answer",
+      "variant": "emphasis"
+    },
+    {
+      "from": "dms",
+      "to": "vectorindex",
+      "label": "ingest",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "labelAt": [
+        545,
+        470
+      ]
+    },
+    {
+      "from": "wallsync",
+      "to": "retriever",
+      "label": "ACL refresh",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [
+        820,
+        285
+      ]
+    },
+    {
+      "from": "synth",
+      "to": "obs",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "from": "obs",
+      "to": "eval",
+      "variant": "dashed"
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Legal Assistant Query Path",
+    "subtitle": "Ethical-wall filtering at retrieval, citation verification before any answer returns",
+    "output": "legal-assistant-query.html",
+    "viewBox": [
+      900,
+      720
+    ]
+  },
+  "participants": [
+    {
+      "id": "lawyer",
+      "type": "external",
+      "label": "Lawyer",
+      "sublabel": "SSO session"
+    },
+    {
+      "id": "identity",
+      "type": "security",
+      "label": "Identity",
+      "sublabel": "matter walls"
+    },
+    {
+      "id": "retriever",
+      "type": "database",
+      "label": "Retriever",
+      "sublabel": "ACL-filtered"
+    },
+    {
+      "id": "index",
+      "type": "database",
+      "label": "Vector Index",
+      "sublabel": "40M docs"
+    },
+    {
+      "id": "synth",
+      "type": "backend",
+      "label": "Synthesis",
+      "sublabel": "grounded LLM"
+    },
+    {
+      "id": "guard",
+      "type": "security",
+      "label": "Cite Guard",
+      "sublabel": "sourced claims"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 250,
+      "label": "Authorize"
+    },
+    {
+      "from": 270,
+      "to": 480,
+      "label": "Retrieve within walls"
+    },
+    {
+      "from": 500,
+      "to": 640,
+      "label": "Ground + verify"
+    }
+  ],
+  "messages": [
+    {
+      "from": "lawyer",
+      "to": "identity",
+      "y": 190,
+      "label": "question",
+      "variant": "default"
+    },
+    {
+      "from": "identity",
+      "to": "retriever",
+      "y": 232,
+      "label": "query + entitlements",
+      "variant": "security"
+    },
+    {
+      "from": "retriever",
+      "to": "index",
+      "y": 300,
+      "label": "hybrid search, ACL filter",
+      "variant": "emphasis"
+    },
+    {
+      "from": "index",
+      "to": "retriever",
+      "y": 342,
+      "label": "entitled candidates only",
+      "variant": "return"
+    },
+    {
+      "from": "retriever",
+      "to": "synth",
+      "y": 410,
+      "label": "reranked passages",
+      "variant": "default"
+    },
+    {
+      "from": "synth",
+      "to": "guard",
+      "y": 478,
+      "label": "answer + inline citations",
+      "variant": "emphasis"
+    },
+    {
+      "from": "guard",
+      "to": "synth",
+      "y": 540,
+      "label": "reject any unsourced claim",
+      "variant": "security"
+    },
+    {
+      "from": "guard",
+      "to": "lawyer",
+      "y": 606,
+      "label": "cited answer or refusal",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "identity",
+      "from": 185,
+      "to": 237,
+      "type": "security"
+    },
+    {
+      "participant": "retriever",
+      "from": 227,
+      "to": 545,
+      "type": "database"
+    },
+    {
+      "participant": "index",
+      "from": 295,
+      "to": 347,
+      "type": "database"
+    },
+    {
+      "participant": "synth",
+      "from": 405,
+      "to": 545,
+      "type": "backend"
+    },
+    {
+      "participant": "guard",
+      "from": 473,
+      "to": 611,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Confidentiality is the hard requirement",
+      "items": [
+        "Entitlements are resolved before retrieval, so the index only ever returns documents the lawyer may see",
+        "Ethical walls change daily; the retriever reads the freshly synced ACLs, not a stale copy",
+        "A single confidentiality breach is career-ending, so the wall is enforced at retrieval, not in the prompt"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Every answer is sourced",
+      "items": [
+        "The citation guard checks that each claim resolves to a retrieved passage",
+        "An unsourced claim is rejected rather than shown, and the system refuses instead of guessing",
+        "This is a routed workflow, not an agent: no tool loop, no autonomous actions"
+      ]
+    }
+  ]
+}
