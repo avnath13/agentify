@@ -22,6 +22,18 @@ jobs:
         working-directory: agentify
         run: npm test
 
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Reasoning eval (case shape + seeded gallery expectations)
+        run: |
+          node eval/check.mjs --validate
+          node eval/check.mjs --seeded
+
   style:
     runs-on: ubuntu-latest
     steps:
