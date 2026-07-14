@@ -24,8 +24,11 @@ function copyInstalledSkill(target) {
     recursive: true,
     filter(source) {
       const rel = path.relative(skillRoot, source);
+      // .validator-check-* is a transient scratch dir created by
+      // generate-validators.test.mjs running in parallel; copying it races.
       return rel !== 'node_modules' && !rel.startsWith(`node_modules${path.sep}`)
-        && rel !== 'test' && !rel.startsWith(`test${path.sep}`);
+        && rel !== 'test' && !rel.startsWith(`test${path.sep}`)
+        && !rel.startsWith('.validator-check-');
     },
   });
 }

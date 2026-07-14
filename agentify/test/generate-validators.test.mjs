@@ -2,7 +2,6 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -10,9 +9,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const skillRoot = path.resolve(__dirname, '..');
 
 test('validator freshness check accepts CRLF checkouts', () => {
-  // Use the OS temp dir, not skillRoot: cli.test.mjs copies skillRoot recursively
-  // in parallel, and a transient scratch dir inside it makes that copy flaky.
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'agentify-validator-check-'));
+  // The scratch dir must live inside skillRoot so the copied generate-validators
+  // script can resolve ajv from skillRoot/node_modules. cli.test.mjs excludes
+  // .validator-check-* when it copies skillRoot, so the parallel runs do not race.
+  const scratch = fs.mkdtempSync(path.join(skillRoot, '.validator-check-'));
   try {
     fs.mkdirSync(path.join(scratch, 'scripts'));
     fs.mkdirSync(path.join(scratch, 'renderers', 'shared'), { recursive: true });
