@@ -40,7 +40,9 @@
         "eval-loop",
         "human-review",
         "tool",
-        "queue"
+        "queue",
+        "asr",
+        "tts"
       ]
     },
     "variant": {

@@ -60,6 +60,8 @@ the same concept always renders in the same visual family:
 | `human-review` | human family (fuchsia, dashed border) | human approval gates |
 | `tool` | backend family (emerald) | tools, MCP servers, function endpoints |
 | `queue` | message-bus family (orange) | queues, task buses between agents |
+| `asr` | frontend family (cyan) | speech-to-text on a voice channel |
+| `tts` | frontend family (cyan) | text-to-speech on a voice channel |
 
 Lifecycle state `type` is mode-specific (`start`/`active`/`waiting`/...) and
 stays in `lifecycle.schema.json`.

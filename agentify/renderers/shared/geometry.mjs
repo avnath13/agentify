@@ -171,7 +171,9 @@ export const componentFill = {
   'eval-loop': 'c-eval',
   'human-review': 'c-human',
   tool: 'c-backend',
-  queue: 'c-messagebus'
+  queue: 'c-messagebus',
+  asr: 'c-frontend',
+  tts: 'c-frontend'
 };
 
 export const componentText = {
@@ -192,7 +194,9 @@ export const componentText = {
   'eval-loop': 't-eval',
   'human-review': 't-human',
   tool: 't-backend',
-  queue: 't-messagebus'
+  queue: 't-messagebus',
+  asr: 't-frontend',
+  tts: 't-frontend'
 };
 
 export const arrowClassMap = {

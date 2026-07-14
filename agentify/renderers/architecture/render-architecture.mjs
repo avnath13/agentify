@@ -318,6 +318,7 @@ const TYPE_LABELS = {
   retriever: 'Retriever', 'vector-store': 'Vector store', 'memory-state': 'Memory / state',
   guardrail: 'Guardrail', 'eval-loop': 'Eval loop', 'human-review': 'Human review',
   tool: 'Tool / MCP server', queue: 'Queue',
+  asr: 'ASR (speech to text)', tts: 'TTS (text to speech)',
 };
 function renderLegend() {
   const used = [];

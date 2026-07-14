@@ -13,6 +13,20 @@ The output is a single self-contained HTML file with a dark/light theme toggle, 
 
 <sub>A generated architecture, drawn with agent-native components: guardrails, an intent router, the agent runtime boundary where the user identity is propagated, permission-aware retrieval, tools as an MCP server, a human-review gate, and the eval and observability loop. This is one figure from the <a href="examples/enterprise-support-agent.design.html">support agent design document</a>.</sub>
 
+## Features
+
+- **Grounded, cited reasoning.** Every architectural decision cites a knowledge-base document (which carries primary-source citations) or a dated live source. No uncited claims.
+- **The escalation ladder.** Forces the design up from deterministic code, to a single augmented LLM call, to workflow patterns, to an agent, to multi-agent, with a written justification for every climb and an anti-escalation rule that says when a simpler rung wins.
+- **Seven decision trees** for the choices that matter: whether you need generative AI at all, RAG vs fine-tuning vs long context, single vs multi-agent, autonomy tiers with enforcement gates, and memory tiers.
+- **Domain-harm analysis.** Asks what happens if the system is wrong or abused and scales the guardrails to that harm, not to company size.
+- **Right-sizing.** Classifies a design lightweight or enterprise and sizes the document to match, so a small feature is not buried in tenant-isolation and DR ceremony.
+- **Two modes.** Production (the design you should build) and interview (the same rigor framed as a system design interview answer, with per-section coaching).
+- **A self-contained deliverable.** One HTML file with a dark and light theme toggle, a navigable table of contents, print-to-PDF, and embedded interactive diagrams. No dependencies, no network calls.
+- **Agent-native diagrams.** Architecture, sequence, data-flow, and lifecycle diagrams with a vocabulary built for agentic systems (agent, router, retriever, vector store, guardrail, eval loop, human review, tool, memory, queue, ASR, TTS).
+- **A broad, audited knowledge base.** Vendor agent guides, cloud well-architected frameworks, peer-reviewed surveys, standards bodies (OWASP, NIST, MCP, OpenTelemetry), evaluation frameworks, and voice and multimodal design, spot-checked against primary sources.
+- **A reasoning eval harness.** Golden cases with expected decisions guard against regressions in the design logic, run in CI.
+- **Install-free.** Ship as a skill; the CLI and validators run with no `npm install`.
+
 ## Why
 
 Asking an LLM to "design an agentic system" produces plausible-sounding but ungrounded output: components with no justification, agents where a workflow would do, security as an afterthought. Agentify forces the design through the published engineering canon instead:
