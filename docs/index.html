@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Agentify: design production-grade agentic AI systems from a plain-English use case. A grounded, opinionated AI solutions architect as an agent skill.">
+<meta property="og:title" content="Agentify">
+<meta property="og:description" content="Design production-grade agentic AI systems from a plain-English use case.">
+<title>Agentify: grounded agentic system design</title>
+<script>
+(function(){try{var t=null;try{t=localStorage.getItem('agentify-site-theme');}catch(e){}if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+<style>
+:root,[data-theme="dark"]{
+  --bg:#0b1220;--bg2:#0f172a;--panel:#111a2e;--border:#1e293b;
+  --text:#e6edf7;--muted:#94a3b8;--dim:#64748b;
+  --accent:#818cf8;--accent2:#2dd4bf;--link:#7dd3fc;--code-bg:#0a1120;
+  --grid:rgba(129,140,248,0.06);
+}
+[data-theme="light"]{
+  --bg:#f7f9fc;--bg2:#ffffff;--panel:#ffffff;--border:#e2e8f0;
+  --text:#0f172a;--muted:#475569;--dim:#94a3b8;
+  --accent:#4f46e5;--accent2:#0d9488;--link:#0369a1;--code-bg:#0f172a;
+  --grid:rgba(79,70,229,0.05);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+/* nav */
+header.nav{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);
+  background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--border)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.nav-links{display:flex;align-items:center;gap:22px;font-size:14px}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.btn-theme{background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:8px;
+  padding:6px 10px;cursor:pointer;font:inherit;font-size:13px}
+.btn-theme:hover{border-color:var(--dim)}
+@media(max-width:720px){.nav-links a:not(.gh){display:none}}
+
+/* hero */
+.hero{padding:76px 0 40px;text-align:center}
+.eyebrow{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent2);border:1px solid var(--border);border-radius:999px;padding:5px 14px;margin-bottom:22px}
+.hero h1{font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-.03em;font-weight:800;margin-bottom:18px}
+.hero h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lede{font-size:clamp(16px,2.4vw,20px);color:var(--muted);max-width:640px;margin:0 auto 30px}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:12px 20px;font-weight:600;font-size:15px;cursor:pointer;border:1px solid transparent}
+.btn-primary{background:var(--accent);color:#0b1220}
+.btn-primary:hover{filter:brightness(1.08);text-decoration:none}
+.btn-ghost{background:var(--panel);border-color:var(--border);color:var(--text)}
+.btn-ghost:hover{border-color:var(--dim);text-decoration:none}
+.install{display:flex;align-items:center;gap:12px;justify-content:center;max-width:520px;margin:0 auto;
+  background:var(--code-bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.install code{color:#e6edf7;font-size:15px;flex:1;text-align:left}
+.install .prompt{color:var(--accent2)}
+.copy{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:6px 10px;cursor:pointer;font-size:12px}
+.copy:hover{color:var(--text);border-color:var(--dim)}
+
+/* generic section */
+section{padding:56px 0}
+.section-head{text-align:center;margin-bottom:40px}
+.section-head h2{font-size:clamp(24px,3.6vw,34px);letter-spacing:-.02em;font-weight:800}
+.section-head p{color:var(--muted);margin-top:10px;max-width:620px;margin-left:auto;margin-right:auto}
+.tag{color:var(--accent2);font-weight:700}
+
+/* feature grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px}
+.card h3{font-size:16px;margin-bottom:8px;letter-spacing:-.01em}
+.card p{color:var(--muted);font-size:14.5px}
+.card .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);margin-bottom:14px;font-size:18px}
+
+/* preview */
+.preview{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:14px;overflow:hidden}
+.preview img{width:100%;display:block;border-radius:8px}
+.preview .cap{color:var(--dim);font-size:13px;text-align:center;margin-top:12px}
+.preview .pic-dark{display:block}.preview .pic-light{display:none}
+[data-theme="light"] .preview .pic-dark{display:none}[data-theme="light"] .preview .pic-light{display:block}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;counter-reset:s}
+.step{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:16px;right:18px;font-weight:800;font-size:28px;color:var(--border)}
+.step h3{font-size:15px;margin-bottom:6px}
+.step p{color:var(--muted);font-size:14px}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.g-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s,transform .15s}
+.g-card:hover{border-color:var(--accent);transform:translateY(-2px);text-decoration:none}
+.g-card .kind{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);font-weight:700}
+.g-card h3{font-size:17px;color:var(--text);letter-spacing:-.01em}
+.g-card p{color:var(--muted);font-size:14px;flex:1}
+.g-card .open{color:var(--accent);font-size:13.5px;font-weight:600}
+
+/* footer */
+footer{border-top:1px solid var(--border);padding:40px 0 60px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+footer a{color:var(--muted)}footer a:hover{color:var(--text)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:var(--accent);color:#0b1220;padding:9px 16px;border-radius:9px;font-weight:600;font-size:14px;transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> agentify</div>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#quickstart">Quick start</a>
+      <a class="gh" href="https://github.com/avnath13/agentify">GitHub</a>
+      <button class="btn-theme" id="theme" type="button" aria-label="Toggle theme">Theme</button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Agentic system design, grounded</span>
+    <h1>Design agentic AI systems<br><span class="grad">from a plain-English use case.</span></h1>
+    <p class="lede">Agentify is an agent skill that works like a seasoned AI solutions architect. Describe what you want to build, answer a few questions, and get a detailed, defensible system design document with embedded diagrams, where every decision cites an authoritative source.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#quickstart">Get started</a>
+      <a class="btn btn-ghost" href="#gallery">See example designs</a>
+    </div>
+    <div class="install">
+      <span class="prompt">$</span>
+      <code id="install-cmd">npx skills add avnath13/agentify -g</code>
+      <button class="copy" id="copy" type="button">Copy</button>
+    </div>
+  </div>
+</section>
+
+<section id="preview">
+  <div class="wrap">
+    <div class="preview">
+      <img class="pic-dark" src="assets/support-agent-architecture-dark.png" alt="Generated architecture for an enterprise support agent: guardrails, an intent router, an agent runtime with permission-aware retrieval, tools, a human-review gate, and an eval and observability loop">
+      <img class="pic-light" src="assets/support-agent-architecture-light.png" alt="Generated architecture for an enterprise support agent">
+      <div class="cap">A generated architecture, drawn with agent-native components. One figure from the support agent design.</div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Grounded, not guessed</h2>
+      <p>Asking an LLM to "design an agentic system" produces plausible but ungrounded output. Agentify forces the design through the published engineering canon.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="ic">&#9650;</div><h3>The escalation ladder</h3><p>Forces the design up from deterministic code, to a single LLM call, to workflows, to an agent, to multi-agent, with a written justification for every climb and an anti-escalation rule for when a simpler rung wins.</p></div>
+      <div class="card"><div class="ic">&#9707;</div><h3>Seven decision trees</h3><p>Do you need generative AI at all, RAG vs fine-tuning vs long context, single vs multi-agent, autonomy tiers with enforcement gates, and memory tiers.</p></div>
+      <div class="card"><div class="ic">&#9888;</div><h3>Domain-harm analysis</h3><p>Asks what happens if the system is wrong or abused, and scales the guardrails to that harm, not to company size.</p></div>
+      <div class="card"><div class="ic">&#9878;</div><h3>Right-sizing</h3><p>Classifies a design lightweight or enterprise and sizes the document to match, so a small feature is not buried in tenant-isolation and DR ceremony.</p></div>
+      <div class="card"><div class="ic">&#9635;</div><h3>Cited knowledge base</h3><p>Vendor agent guides, cloud well-architected frameworks, peer-reviewed surveys, OWASP, NIST, MCP, OpenTelemetry, and voice and multimodal design, spot-checked against primary sources.</p></div>
+      <div class="card"><div class="ic">&#9733;</div><h3>A self-contained deliverable</h3><p>One HTML file with a theme toggle, a table of contents, print-to-PDF, and embedded interactive diagrams. No dependencies, no network calls.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>How it works</h2>
+      <p>A conversation, then a document.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Clarify</h3><p>It asks only the questions whose answers would change the design: data and permissions, autonomy, load, latency, cost, compliance, and what harm a wrong answer causes.</p></div>
+      <div class="step"><h3>Decide</h3><p>It walks the decision trees, recording the answer, the reasoning, and the citation at every gate, including the alternatives it rejected.</p></div>
+      <div class="step"><h3>Design</h3><p>It writes the document section by section against an enterprise bar, doing the capacity and cost math with live-sourced pricing.</p></div>
+      <div class="step"><h3>Deliver</h3><p>It renders the diagrams, assembles a self-contained HTML document, and runs a final gate checklist that rejects any unjustified or uncited claim.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Example designs</h2>
+      <p>Complete documents produced by the skill. Open any in a browser; each is fully self-contained.</p>
+    </div>
+    <div class="gallery">
+      <a class="g-card" href="examples/enterprise-support-agent.design.html">
+        <span class="kind">Production &middot; agent</span>
+        <h3>Enterprise support agent</h3>
+        <p>A single tool-using agent behind an intent router, permission-aware RAG, autonomy tiers with human escalation, and the full cost and latency math.</p>
+        <span class="open">Open design &rarr;</span>
+      </a>
+      <a class="g-card" href="examples/rag-document-assistant.design.html">
+        <span class="kind">Production &middot; not an agent</span>
+        <h3>Legal document assistant</h3>
+        <p>Deliberately not an agent: a routed retrieval workflow where daily-changing ethical walls make permission-aware retrieval the crux. The anti-escalation rule on the record.</p>
+        <span class="open">Open design &rarr;</span>
+      </a>
+      <a class="g-card" href="examples/multi-agent-coding-system.design.html">
+        <span class="kind">Interview mode</span>
+        <h3>Autonomous coding system</h3>
+        <p>A bounded agent per ticket with a reflection loop, sandboxed with no merge access, and an explicit single vs multi-agent economics argument, with per-section coaching.</p>
+        <span class="open">Open design &rarr;</span>
+      </a>
+      <a class="g-card" href="examples/recipe-assistant.design.html">
+        <span class="kind">Lightweight</span>
+        <h3>Recipe assistant</h3>
+        <p>Right-sizing at work: it lands at Rung 1 (a single extraction call over deterministic matching, no agent, no vector RAG) and stays short, while treating allergens as full-depth safety.</p>
+        <span class="open">Open design &rarr;</span>
+      </a>
+      <a class="g-card" href="examples/drive-through-voice.design.html">
+        <span class="kind">Voice</span>
+        <h3>Drive-through voice agent</h3>
+        <p>A cascaded voice design with the conversational latency budget, turn-taking (VAD, endpointing, barge-in), and audio-native evaluation, drawn with the speech component types.</p>
+        <span class="open">Open design &rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="quickstart">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Quick start</h2>
+      <p>Install the skill, then describe what you want to design.</p>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr">
+      <div class="card">
+        <h3>1. Install</h3>
+        <p style="margin-bottom:12px">Add it to Claude Code, Codex, Cursor, and more:</p>
+        <div class="install" style="max-width:none">
+          <span class="prompt">$</span><code>npx skills add avnath13/agentify -g</code>
+        </div>
+      </div>
+      <div class="card">
+        <h3>2. Describe your use case</h3>
+        <p>In your own words, for example:</p>
+        <p style="color:var(--text);margin-top:8px;font-style:italic">"Design an AI agent that triages our inbound sales leads: reads the inquiry, enriches from our CRM, scores it, and drafts a reply for a rep to approve. About 300 leads a day."</p>
+      </div>
+      <div class="card">
+        <h3>3. Answer a few questions, get the design</h3>
+        <p>Agentify asks only what would change the design, walks its decision trees, and writes a self-contained <code>&lt;use-case&gt;.design.html</code>. Prepping for a system design interview instead? Just say "interview mode".</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Agentify is MIT licensed. The diagram engine is a fork of <a href="https://github.com/tt-a1i/archify">Archify</a>, extended with agent-native components.</div>
+    <div>
+      <a href="https://github.com/avnath13/agentify">GitHub</a> &middot;
+      <a href="https://github.com/avnath13/agentify/releases">Releases</a> &middot;
+      <a href="https://github.com/avnath13/agentify/blob/main/agentify/knowledge/SOURCES.md">Sources</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+(function(){
+  var html=document.documentElement, btn=document.getElementById('theme');
+  function set(t){html.setAttribute('data-theme',t);try{localStorage.setItem('agentify-site-theme',t);}catch(e){}}
+  btn.addEventListener('click',function(){set(html.getAttribute('data-theme')==='dark'?'light':'dark');});
+  try{var m=window.matchMedia('(prefers-color-scheme: light)');m.addEventListener&&m.addEventListener('change',function(e){if(!localStorage.getItem('agentify-site-theme'))set(e.matches?'light':'dark');});}catch(e){}
+  var toast=document.getElementById('toast');
+  document.getElementById('copy').addEventListener('click',function(){
+    var cmd=document.getElementById('install-cmd').textContent;
+    (navigator.clipboard?navigator.clipboard.writeText(cmd):Promise.reject()).then(show,show);
+    function show(){toast.classList.add('show');setTimeout(function(){toast.classList.remove('show');},1400);}
+  });
+})();
+</script>
+</body>
+</html>
