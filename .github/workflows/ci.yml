@@ -44,6 +44,7 @@ jobs:
       - name: Knowledge base link check
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress --accept 200,203,206,301,302,403,429 "agentify/knowledge/**/*.md" "README.md"
+          # 403/429 are anti-bot responses and 415 is a PDF host rejecting the
+          # checker's request; all three mean the resource exists, so accept them.
+          args: --no-progress --accept 200,203,206,301,302,403,415,429 "agentify/knowledge/**/*.md" "README.md"
           fail: true
-        continue-on-error: true
