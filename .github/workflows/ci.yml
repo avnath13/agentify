@@ -58,5 +58,7 @@ jobs:
         with:
           # 403/429 are anti-bot responses and 415 is a PDF host rejecting the
           # checker's request; all three mean the resource exists, so accept them.
-          args: --no-progress --accept 200,203,206,301,302,403,415,429 "agentify/knowledge/**/*.md" "README.md"
+          # Exclude our own Pages site: it deploys in a separate workflow after
+          # this one, so a newly added page 404s here until that finishes.
+          args: --no-progress --accept 200,203,206,301,302,403,415,429 --exclude "avnath13\.github\.io" "agentify/knowledge/**/*.md" "README.md"
           fail: true
