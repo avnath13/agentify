@@ -1,6 +1,6 @@
 {
   "name": "agentify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Agentify: enterprise agentic system design skill. JSON-IR diagram renderers (architecture, workflow, sequence, dataflow, lifecycle).",

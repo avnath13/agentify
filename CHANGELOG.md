@@ -3,7 +3,9 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.1] - 2026-07-14
+
+MVP-hardening release. The design document deliverable became a real tool (`agentify assemble`), the reasoning gained a test harness, the knowledge base was audited against primary sources, and coverage grew to five gallery examples.
 
 ### Added
 
