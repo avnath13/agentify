@@ -157,7 +157,21 @@ export const componentFill = {
   cloud: 'c-cloud',
   security: 'c-security',
   messagebus: 'c-messagebus',
-  external: 'c-external'
+  external: 'c-external',
+  // Agent-native semantic types. New visual families get their own class;
+  // types that share an infrastructure family reuse its class so the
+  // palette stays harmonious.
+  agent: 'c-agent',
+  'llm-router': 'c-model',
+  'model-gateway': 'c-model',
+  retriever: 'c-retrieval',
+  'vector-store': 'c-database',
+  'memory-state': 'c-database',
+  guardrail: 'c-security',
+  'eval-loop': 'c-eval',
+  'human-review': 'c-human',
+  tool: 'c-backend',
+  queue: 'c-messagebus'
 };
 
 export const componentText = {
@@ -167,7 +181,18 @@ export const componentText = {
   cloud: 't-cloud',
   security: 't-security',
   messagebus: 't-messagebus',
-  external: 't-external'
+  external: 't-external',
+  agent: 't-agent',
+  'llm-router': 't-model',
+  'model-gateway': 't-model',
+  retriever: 't-retrieval',
+  'vector-store': 't-database',
+  'memory-state': 't-database',
+  guardrail: 't-security',
+  'eval-loop': 't-eval',
+  'human-review': 't-human',
+  tool: 't-backend',
+  queue: 't-messagebus'
 };
 
 export const arrowClassMap = {

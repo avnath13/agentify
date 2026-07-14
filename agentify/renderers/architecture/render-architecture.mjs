@@ -314,6 +314,10 @@ function renderComponent(c) {
 const TYPE_LABELS = {
   frontend: 'Frontend', backend: 'Backend', database: 'Database', cloud: 'Cloud',
   security: 'Security', messagebus: 'Message bus', external: 'External',
+  agent: 'Agent', 'llm-router': 'LLM router', 'model-gateway': 'Model gateway',
+  retriever: 'Retriever', 'vector-store': 'Vector store', 'memory-state': 'Memory / state',
+  guardrail: 'Guardrail', 'eval-loop': 'Eval loop', 'human-review': 'Human review',
+  tool: 'Tool / MCP server', queue: 'Queue',
 };
 function renderLegend() {
   const used = [];

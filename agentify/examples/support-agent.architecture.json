@@ -1,0 +1,293 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Enterprise Support Agent",
+    "subtitle": "Reference agentic architecture: rendered by Agentify",
+    "output": "support-agent.html",
+    "viewBox": [
+      1160,
+      760
+    ]
+  },
+  "components": [
+    {
+      "id": "users",
+      "type": "external",
+      "label": "Support Users",
+      "sublabel": "Web / Chat widget",
+      "pos": [
+        40,
+        320
+      ],
+      "size": [
+        130,
+        60
+      ]
+    },
+    {
+      "id": "ingress",
+      "type": "guardrail",
+      "label": "Input Guardrails",
+      "sublabel": "injection + PII scan",
+      "pos": [
+        230,
+        320
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "OWASP LLM01"
+    },
+    {
+      "id": "router",
+      "type": "llm-router",
+      "label": "Intent Router",
+      "sublabel": "small model, cached",
+      "pos": [
+        430,
+        320
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "agent",
+      "label": "Support Agent",
+      "sublabel": "tool loop, max 8 steps",
+      "pos": [
+        640,
+        320
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "gateway",
+      "type": "model-gateway",
+      "label": "Model Gateway",
+      "sublabel": "routing + fallback",
+      "pos": [
+        640,
+        140
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "multi-provider"
+    },
+    {
+      "id": "retriever",
+      "type": "retriever",
+      "label": "Retriever",
+      "sublabel": "hybrid + rerank",
+      "pos": [
+        430,
+        480
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "entitlement filter"
+    },
+    {
+      "id": "vectordb",
+      "type": "vector-store",
+      "label": "Vector Index",
+      "sublabel": "KB + tickets",
+      "pos": [
+        230,
+        480
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "memory",
+      "type": "memory-state",
+      "label": "Session Memory",
+      "sublabel": "state + summaries",
+      "pos": [
+        640,
+        480
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "tools",
+      "type": "tool",
+      "label": "Ticket Tools",
+      "sublabel": "MCP server",
+      "pos": [
+        860,
+        480
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "tier 1 writes"
+    },
+    {
+      "id": "review",
+      "type": "human-review",
+      "label": "Human Review",
+      "sublabel": "tier 2+ actions",
+      "pos": [
+        860,
+        320
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "outguard",
+      "type": "guardrail",
+      "label": "Output Guardrails",
+      "sublabel": "groundedness check",
+      "pos": [
+        860,
+        140
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "evals",
+      "type": "eval-loop",
+      "label": "Eval Pipeline",
+      "sublabel": "traces to golden set",
+      "pos": [
+        430,
+        620
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "tag": "offline + canary"
+    },
+    {
+      "id": "otel",
+      "type": "cloud",
+      "label": "Observability",
+      "sublabel": "OTel GenAI spans",
+      "pos": [
+        640,
+        620
+      ],
+      "size": [
+        150,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Agent runtime (user identity propagated)",
+      "wraps": [
+        "router",
+        "agent",
+        "retriever",
+        "memory"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "users",
+      "to": "ingress",
+      "label": "query"
+    },
+    {
+      "from": "ingress",
+      "to": "router"
+    },
+    {
+      "from": "router",
+      "to": "agent",
+      "label": "agentic path"
+    },
+    {
+      "from": "agent",
+      "to": "gateway",
+      "label": "LLM calls"
+    },
+    {
+      "from": "agent",
+      "to": "retriever",
+      "label": "search",
+      "fromSide": "bottom",
+      "toSide": "right",
+      "labelSegment": 0,
+      "labelDy": 24
+    },
+    {
+      "from": "retriever",
+      "to": "vectordb"
+    },
+    {
+      "from": "agent",
+      "to": "memory",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "agent",
+      "to": "tools",
+      "label": "act",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "labelSegment": 0,
+      "labelDy": 24
+    },
+    {
+      "from": "agent",
+      "to": "review",
+      "label": "tier 2+",
+      "variant": "security"
+    },
+    {
+      "from": "review",
+      "to": "outguard",
+      "variant": "security"
+    },
+    {
+      "from": "gateway",
+      "to": "outguard",
+      "label": "response",
+      "labelSegment": 1
+    },
+    {
+      "from": "memory",
+      "to": "evals",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "right"
+    },
+    {
+      "from": "otel",
+      "to": "evals",
+      "label": "traces",
+      "variant": "dashed"
+    }
+  ]
+}

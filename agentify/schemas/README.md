@@ -37,10 +37,29 @@ The five diagram schemas reference `common.schema.json#/$defs/...`:
 - `id`: element identifiers, pattern `^[a-zA-Z][a-zA-Z0-9_-]*$`
 - `point`: an `[x, y]` pair of numbers (used by `via` and `labelAt`)
 - `componentType`: `frontend`, `backend`, `database`, `cloud`, `security`,
-  `messagebus`, `external`
+  `messagebus`, `external`, plus the agent-native types below
 - `variant`: `default`, `emphasis`, `security`, `dashed` (sequence messages
   extend this list locally with `return`)
 - `cards`: the summary-card blocks rendered below the SVG
+
+### Agent-native component types
+
+Architecture components in agentic system designs use these semantic types so
+the same concept always renders in the same visual family:
+
+| Type | Renders as | Use for |
+|---|---|---|
+| `agent` | agent family (indigo) | an LLM-driven agent loop |
+| `llm-router` | model family (teal) | intent/model routing steps |
+| `model-gateway` | model family (teal) | provider gateways, model API front doors |
+| `retriever` | retrieval family (blue) | query-time retrieval services |
+| `vector-store` | database family (violet) | vector/hybrid indexes |
+| `memory-state` | database family (violet) | conversation state, agent memory stores |
+| `guardrail` | security family (rose) | input/output guardrails, content filters |
+| `eval-loop` | eval family (lime) | evaluators, critics, quality gates |
+| `human-review` | human family (fuchsia, dashed border) | human approval gates |
+| `tool` | backend family (emerald) | tools, MCP servers, function endpoints |
+| `queue` | message-bus family (orange) | queues, task buses between agents |
 
 Lifecycle state `type` is mode-specific (`start`/`active`/`waiting`/...) and
 stays in `lifecycle.schema.json`.

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="agentify 0.1.0">
-  <title>Agent Run Lifecycle Diagram</title>
+  <title>Enterprise Support Agent Diagram</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -567,14 +567,14 @@
     <div class="header">
       <div class="header-row">
         <div class="pulse-dot"></div>
-        <h1>Agent Run Lifecycle</h1>
+        <h1>Enterprise Support Agent</h1>
       </div>
-      <p class="subtitle">State machine for planning, tool execution, human approval, retries, and terminal outcomes</p>
+      <p class="subtitle">Reference agentic architecture: rendered by Agentify</p>
     </div>
 
     <!-- Main Diagram -->
     <div class="diagram-container">
-      <svg viewBox="0 0 980 660" role="img" aria-label="Agent Run Lifecycle: State machine for planning, tool execution, human approval, retries, and terminal outcomes (lifecycle diagram)">
+      <svg viewBox="0 0 1160 760" role="img" aria-label="Enterprise Support Agent: Reference agentic architecture: rendered by Agentify (architecture diagram)">
         <!-- Definitions -->
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -597,152 +597,156 @@
         <!-- Background Grid -->
         <rect width="100%" height="100%" fill="url(#grid)" />
 
-        <!-- Lifecycle bands -->
-        <path d="M 72 112 L 908 112" class="a-default" stroke-width="0.8" stroke-dasharray="3,8"/>
-        <text x="72" y="100" class="t-dim" font-size="10" font-weight="600">01 / Lifecycle phases</text>
-        <path d="M 72 264 L 908 264" class="a-default" stroke-width="0.8" stroke-dasharray="3,8"/>
-        <text x="72" y="252" class="t-dim" font-size="10" font-weight="600">02 / Interruptions + Recovery loop</text>
-        <path d="M 72 436 L 908 436" class="a-default" stroke-width="0.8" stroke-dasharray="3,8"/>
-        <text x="72" y="424" class="t-dim" font-size="10" font-weight="600">03 / Terminal exits</text>
+        <!-- Boundaries (behind everything) -->
+        <rect x="400" y="290" width="420" height="270" rx="8" class="c-security-group" stroke-width="1"/>
+        <text x="408" y="308" class="t-security" font-size="9" font-weight="600">Agent runtime (user identity propagated)</text>
 
-        <!-- Primary lifecycle rail -->
-        <path d="M 154 157 L 748 157" class="a-emphasis" stroke-width="2.2" marker-end="url(#arrowhead-emphasis)"/>
+        <!-- Connection paths (before components for correct z-order) -->
+        <path d="M 170 350 L 230 350" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 370 350 L 430 350" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 570 350 L 640 350" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 715 320 L 715 200" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 715 380 L 650.5 380 Q 642.5 380 642.5 388 L 642.5 502 Q 642.5 510 634.5 510 L 570 510" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 430 510 L 370 510" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 715 380 L 715 480" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 715 380 L 779.5 380 Q 787.5 380 787.5 388 L 787.5 502 Q 787.5 510 795.5 510 L 860 510" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 790 350 L 860 350" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <path d="M 930 320 L 930 200" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <path d="M 790 170 L 860 170" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 715 540 L 650.5 540 Q 642.5 540 642.5 548 L 642.5 642 Q 642.5 650 634.5 650 L 570 650" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path d="M 640 650 L 570 650" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
 
-        <!-- Transition paths -->
-        <path d="M 402 188 L 402 278" class="a-security" stroke-width="1.1" marker-end="url(#arrowhead-security)"/>
-        <path d="M 556 188 L 556 233 L 556 233 L 556 278" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
-        <path d="M 343 157 L 340.1621408448257 332.00131456908264 Q 340 342 350 342 L 395 342 Q 402 342 402 349 L 402 356" class="a-security" stroke-width="1.1" marker-end="url(#arrowhead-security)"/>
-        <path d="M 556 336 L 556 450" class="a-security" stroke-width="1.1" marker-end="url(#arrowhead-security)"/>
-        <path d="M 402 336 L 402 450" class="a-security" stroke-width="1.1" marker-end="url(#arrowhead-security)"/>
+        <!-- Components -->
+        <rect x="40" y="320" width="130" height="60" rx="6" class="c-mask"/>
+        <rect x="40" y="320" width="130" height="60" rx="6" class="c-external" stroke-width="1.5"/>
+        <text x="105" y="348" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Support Users</text>
+        <text x="105" y="364" class="t-muted" font-size="9" text-anchor="middle">Web / Chat widget</text>
 
-        <!-- States -->
-        <rect x="35" y="126" width="118" height="62" rx="7" class="c-mask"/>
-        <rect x="35" y="126" width="118" height="62" rx="7" class="c-frontend" stroke-width="1.5"/>
-        <text x="45" y="140" class="t-frontend" font-size="7" font-weight="700">01</text>
-        <text x="94" y="147" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Queued</text>
-        <text x="94" y="163" class="t-muted" font-size="7" text-anchor="middle">request accepted</text>
-        <text x="94" y="177" class="t-frontend" font-size="7" text-anchor="middle">entry</text>
+        <rect x="230" y="320" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="230" y="320" width="140" height="60" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="300" y="348" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Input Guardrails</text>
+        <text x="300" y="364" class="t-muted" font-size="9" text-anchor="middle">injection + PII scan</text>
+        <text x="300" y="372" class="t-security" font-size="7" text-anchor="middle">OWASP LLM01</text>
 
-        <rect x="189" y="126" width="118" height="62" rx="7" class="c-mask"/>
-        <rect x="189" y="126" width="118" height="62" rx="7" class="c-backend" stroke-width="1.5"/>
-        <text x="199" y="140" class="t-backend" font-size="7" font-weight="700">02</text>
-        <text x="248" y="147" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Planning</text>
-        <text x="248" y="163" class="t-muted" font-size="7" text-anchor="middle">build task graph</text>
-        <text x="248" y="177" class="t-backend" font-size="7" text-anchor="middle">model</text>
+        <rect x="430" y="320" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="430" y="320" width="140" height="60" rx="6" class="c-model" stroke-width="1.5"/>
+        <text x="500" y="348" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Intent Router</text>
+        <text x="500" y="364" class="t-muted" font-size="9" text-anchor="middle">small model, cached</text>
 
-        <rect x="343" y="126" width="118" height="62" rx="7" class="c-mask"/>
-        <rect x="343" y="126" width="118" height="62" rx="7" class="c-backend" stroke-width="1.5"/>
-        <text x="353" y="140" class="t-backend" font-size="7" font-weight="700">03</text>
-        <text x="402" y="147" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Executing</text>
-        <text x="402" y="163" class="t-muted" font-size="7" text-anchor="middle">tool calls</text>
-        <text x="402" y="177" class="t-backend" font-size="7" text-anchor="middle">work</text>
+        <rect x="640" y="320" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="640" y="320" width="150" height="60" rx="6" class="c-agent" stroke-width="1.5"/>
+        <text x="715" y="348" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Support Agent</text>
+        <text x="715" y="364" class="t-muted" font-size="9" text-anchor="middle">tool loop, max 8 steps</text>
 
-        <rect x="497" y="126" width="118" height="62" rx="7" class="c-mask"/>
-        <rect x="497" y="126" width="118" height="62" rx="7" class="c-security" stroke-width="1.5"/>
-        <text x="507" y="140" class="t-security" font-size="7" font-weight="700">04</text>
-        <text x="556" y="147" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Reviewing</text>
-        <text x="556" y="163" class="t-muted" font-size="7" text-anchor="middle">quality gate</text>
-        <text x="556" y="177" class="t-security" font-size="7" text-anchor="middle">check</text>
+        <rect x="640" y="140" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="640" y="140" width="150" height="60" rx="6" class="c-model" stroke-width="1.5"/>
+        <text x="715" y="168" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Model Gateway</text>
+        <text x="715" y="184" class="t-muted" font-size="9" text-anchor="middle">routing + fallback</text>
+        <text x="715" y="192" class="t-model" font-size="7" text-anchor="middle">multi-provider</text>
 
-        <rect x="651" y="126" width="118" height="62" rx="7" class="c-mask"/>
-        <rect x="651" y="126" width="118" height="62" rx="7" class="c-database" stroke-width="1.5"/>
-        <text x="661" y="140" class="t-database" font-size="7" font-weight="700">05</text>
-        <text x="710" y="147" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Completed</text>
-        <text x="710" y="163" class="t-muted" font-size="7" text-anchor="middle">final response</text>
-        <text x="710" y="177" class="t-database" font-size="7" text-anchor="middle">done</text>
+        <rect x="430" y="480" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="430" y="480" width="140" height="60" rx="6" class="c-retrieval" stroke-width="1.5"/>
+        <text x="500" y="508" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Retriever</text>
+        <text x="500" y="524" class="t-muted" font-size="9" text-anchor="middle">hybrid + rerank</text>
+        <text x="500" y="532" class="t-retrieval" font-size="7" text-anchor="middle">entitlement filter</text>
 
-        <rect x="339" y="278" width="126" height="58" rx="7" class="c-mask"/>
-        <rect x="339" y="278" width="126" height="58" rx="7" class="c-cloud" stroke-width="1.5"/>
-        <text x="402" y="299" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Needs Approval</text>
-        <text x="402" y="315" class="t-muted" font-size="7" text-anchor="middle">human gate</text>
-        <text x="402" y="325" class="t-cloud" font-size="7" text-anchor="middle">pause</text>
+        <rect x="230" y="480" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="230" y="480" width="140" height="60" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="300" y="508" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Vector Index</text>
+        <text x="300" y="524" class="t-muted" font-size="9" text-anchor="middle">KB + tickets</text>
 
-        <rect x="493" y="278" width="126" height="58" rx="7" class="c-mask"/>
-        <rect x="493" y="278" width="126" height="58" rx="7" class="c-cloud" stroke-width="1.5"/>
-        <text x="556" y="299" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Blocked</text>
-        <text x="556" y="315" class="t-muted" font-size="7" text-anchor="middle">missing input</text>
-        <text x="556" y="325" class="t-cloud" font-size="7" text-anchor="middle">wait</text>
+        <rect x="640" y="480" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="640" y="480" width="150" height="60" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="715" y="508" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Session Memory</text>
+        <text x="715" y="524" class="t-muted" font-size="9" text-anchor="middle">state + summaries</text>
 
-        <rect x="339" y="356" width="126" height="58" rx="7" class="c-mask"/>
-        <rect x="339" y="356" width="126" height="58" rx="7" class="c-security" stroke-width="1.5"/>
-        <text x="402" y="377" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Failed</text>
-        <text x="402" y="393" class="t-muted" font-size="7" text-anchor="middle">recoverable error</text>
-        <text x="402" y="403" class="t-security" font-size="7" text-anchor="middle">retryable</text>
+        <rect x="860" y="480" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="860" y="480" width="140" height="60" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="930" y="508" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Ticket Tools</text>
+        <text x="930" y="524" class="t-muted" font-size="9" text-anchor="middle">MCP server</text>
+        <text x="930" y="532" class="t-backend" font-size="7" text-anchor="middle">tier 1 writes</text>
 
-        <rect x="343" y="450" width="118" height="58" rx="7" class="c-mask"/>
-        <rect x="343" y="450" width="118" height="58" rx="7" class="c-security" stroke-width="1.5"/>
-        <text x="402" y="471" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Cancelled</text>
-        <text x="402" y="487" class="t-muted" font-size="7" text-anchor="middle">user stopped</text>
-        <text x="402" y="497" class="t-security" font-size="7" text-anchor="middle">terminal</text>
+        <rect x="860" y="320" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="860" y="320" width="140" height="60" rx="6" class="c-human" stroke-width="1.5"/>
+        <text x="930" y="348" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Human Review</text>
+        <text x="930" y="364" class="t-muted" font-size="9" text-anchor="middle">tier 2+ actions</text>
 
-        <rect x="497" y="450" width="118" height="58" rx="7" class="c-mask"/>
-        <rect x="497" y="450" width="118" height="58" rx="7" class="c-security" stroke-width="1.5"/>
-        <text x="556" y="471" class="t-primary" font-size="10" font-weight="600" text-anchor="middle">Expired</text>
-        <text x="556" y="487" class="t-muted" font-size="7" text-anchor="middle">timeout</text>
-        <text x="556" y="497" class="t-security" font-size="7" text-anchor="middle">terminal</text>
+        <rect x="860" y="140" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="860" y="140" width="140" height="60" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="930" y="168" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Output Guardrails</text>
+        <text x="930" y="184" class="t-muted" font-size="9" text-anchor="middle">groundedness check</text>
 
-        <!-- Transition labels -->
+        <rect x="430" y="620" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="430" y="620" width="140" height="60" rx="6" class="c-eval" stroke-width="1.5"/>
+        <text x="500" y="648" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Eval Pipeline</text>
+        <text x="500" y="664" class="t-muted" font-size="9" text-anchor="middle">traces to golden set</text>
+        <text x="500" y="672" class="t-eval" font-size="7" text-anchor="middle">offline + canary</text>
+
+        <rect x="640" y="620" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="640" y="620" width="150" height="60" rx="6" class="c-cloud" stroke-width="1.5"/>
+        <text x="715" y="648" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Observability</text>
+        <text x="715" y="664" class="t-muted" font-size="9" text-anchor="middle">OTel GenAI spans</text>
+
+        <!-- Connection labels -->
+        <rect x="183" y="330" width="34" height="14" rx="3" class="c-mask"/>
+        <text x="200" y="340" class="t-muted" font-size="8" text-anchor="middle">query</text>
+
+        <rect x="571.2" y="330" width="67.6" height="14" rx="3" class="c-mask"/>
+        <text x="605" y="340" class="t-muted" font-size="8" text-anchor="middle">agentic path</text>
+        <rect x="688.4" y="300" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
+        <text x="715" y="310" class="t-muted" font-size="8" text-anchor="middle">LLM calls</text>
+        <rect x="659.35" y="384" width="38.8" height="14" rx="3" class="c-mask"/>
+        <text x="678.75" y="394" class="t-muted" font-size="8" text-anchor="middle">search</text>
 
 
+        <rect x="736.25" y="384" width="30" height="14" rx="3" class="c-mask"/>
+        <text x="751.25" y="394" class="t-muted" font-size="8" text-anchor="middle">act</text>
+        <rect x="803.2" y="330" width="43.6" height="14" rx="3" class="c-mask"/>
+        <text x="825" y="340" class="t-security" font-size="8" text-anchor="middle">tier 2+</text>
 
+        <rect x="800.8" y="150" width="48.4" height="14" rx="3" class="c-mask"/>
+        <text x="825" y="160" class="t-muted" font-size="8" text-anchor="middle">response</text>
 
-
+        <rect x="585.6" y="630" width="38.8" height="14" rx="3" class="c-mask"/>
+        <text x="605" y="640" class="t-messagebus" font-size="8" text-anchor="middle">traces</text>
 
         <!-- Legend -->
-        <text x="220" y="542" class="t-primary" font-size="10" font-weight="600">Legend</text>
-        <rect x="220" y="554" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
-        <text x="240" y="562" class="t-muted" font-size="7">active state</text>
-        <rect x="325" y="554" width="14" height="9" rx="2" class="c-cloud" stroke-width="1"/>
-        <text x="345" y="562" class="t-muted" font-size="7">waiting</text>
-        <rect x="415" y="554" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
-        <text x="435" y="562" class="t-muted" font-size="7">terminal success</text>
-        <rect x="560" y="554" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
-        <text x="580" y="562" class="t-muted" font-size="7">failure / exit</text>
+        <text x="40" y="731" class="t-primary" font-size="9" font-weight="600">Legend</text>
+        <rect x="40" y="736" width="14" height="9" rx="2" class="c-external" stroke-width="1"/>
+        <text x="60" y="744" class="t-muted" font-size="8">External</text>
+        <rect x="138" y="736" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
+        <text x="158" y="744" class="t-muted" font-size="8">Guardrail</text>
+        <rect x="241" y="736" width="14" height="9" rx="2" class="c-model" stroke-width="1"/>
+        <text x="261" y="744" class="t-muted" font-size="8">LLM router</text>
+        <rect x="349" y="736" width="14" height="9" rx="2" class="c-agent" stroke-width="1"/>
+        <text x="369" y="744" class="t-muted" font-size="8">Agent</text>
+        <rect x="432" y="736" width="14" height="9" rx="2" class="c-model" stroke-width="1"/>
+        <text x="452" y="744" class="t-muted" font-size="8">Model gateway</text>
+        <rect x="555" y="736" width="14" height="9" rx="2" class="c-retrieval" stroke-width="1"/>
+        <text x="575" y="744" class="t-muted" font-size="8">Retriever</text>
+        <rect x="658" y="736" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+        <text x="678" y="744" class="t-muted" font-size="8">Vector store</text>
+        <rect x="776" y="736" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+        <text x="796" y="744" class="t-muted" font-size="8">Memory / state</text>
+        <rect x="904" y="736" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
+        <text x="924" y="744" class="t-muted" font-size="8">Tool / MCP server</text>
+        <rect x="1047" y="736" width="14" height="9" rx="2" class="c-human" stroke-width="1"/>
+        <text x="1067" y="744" class="t-muted" font-size="8">Human review</text>
+        <rect x="1165" y="736" width="14" height="9" rx="2" class="c-eval" stroke-width="1"/>
+        <text x="1185" y="744" class="t-muted" font-size="8">Eval loop</text>
+        <rect x="1268" y="736" width="14" height="9" rx="2" class="c-cloud" stroke-width="1"/>
+        <text x="1288" y="744" class="t-muted" font-size="8">Cloud</text>
       </svg>
     </div>
 
     <!-- Info Cards -->
     <div class="cards">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-dot emerald"></div>
-          <h3>Main Path</h3>
-        </div>
-        <ul>
-          <li>&bull; The run has five ordered phases from queue to completion</li>
-          <li>&bull; The primary lifecycle is carried by one horizontal rail</li>
-          <li>&bull; Completion is a phase, not a detached side box</li>
-        </ul>
-      </div>
 
-      <div class="card">
-        <div class="card-header">
-          <div class="card-dot amber"></div>
-          <h3>Human + Input Gates</h3>
-        </div>
-        <ul>
-          <li>&bull; Approval pauses execution without ending the run</li>
-          <li>&bull; Blocked waits for missing user input</li>
-          <li>&bull; Wait states can resume back into planning or execution</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-dot rose"></div>
-          <h3>Terminal + Recovery</h3>
-        </div>
-        <ul>
-          <li>&bull; Failed loops back while retry budget remains</li>
-          <li>&bull; Cancelled and Expired are exits from the lifecycle</li>
-          <li>&bull; Terminal exits do not point back into active execution</li>
-        </ul>
-      </div>
     </div>
 
     <!-- Footer -->
     <p class="footer">
-      Lifecycle diagram &bull; Built with Archify<span class="no-print"> &bull; Press <kbd>T</kbd> for theme and <kbd>E</kbd> for export</span>
+      Architecture diagram &bull; Built with Archify<span class="no-print"> &bull; Press <kbd>T</kbd> for theme and <kbd>E</kbd> for export</span>
     </p>
   </div>
 
