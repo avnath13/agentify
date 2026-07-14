@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `agentify diff`: compare two design documents for the same use case and render a visual diff report. The summary shows the headline decision and metric deltas (escalation rung, weight class, cost, availability); below it, each section carries a color-coded line diff, with a badge for changed, added, and removed sections. Self-contained and theme-aware.
 - `agentify adr`: export the design's decisions as architecture decision records. The skill writes a decision log (one `## ` heading per decision with Status/Context/Decision/Consequences); the command emits standard numbered ADR files plus a linked index, the artifact teams keep in-repo. Example decision log and generated ADRs in `examples/support-agent-adr/`.
 
 ### Fixed

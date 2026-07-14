@@ -14,7 +14,7 @@
 
 - Run the skill against a wide set of unscripted prompts and tune the clarification loop from what it asks (and fails to ask)
 - Knowledge base refresh automation: link checking plus a staleness report per source
-- Design diffing: compare two generated designs for the same use case
+- [x] Design diffing: compare two generated designs for the same use case (`agentify diff`)
 - [x] Export to ADR (architecture decision record) format (`agentify adr`)
 - Model-graded eval to complement the current substring and rung checks
 - Additional diagram views: orchestration topology, eval pipeline, cost breakdown

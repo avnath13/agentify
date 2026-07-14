@@ -19,6 +19,7 @@ function usage() {
   agentify check <output.html>
   agentify assemble <design.md> [output.html]
   agentify adr <decision-log.md> [output-dir]
+  agentify diff <design-a.md> <design-b.md> [output.html]
   agentify examples
   agentify doctor
   agentify demo [output-directory]
@@ -81,6 +82,13 @@ function commandAdr(args) {
   if (result.status !== 0) exitFrom(result);
 }
 
+function commandDiff(args) {
+  const [a, b, output] = args;
+  if (!a || !b) fail(usage());
+  const result = runNode([path.join(skillRoot, 'renderers/doc/diff-doc.mjs'), a, b, ...(output ? [output] : [])]);
+  if (result.status !== 0) exitFrom(result);
+}
+
 function commandExamples() {
   const result = runNode([path.join(skillRoot, 'scripts/render-examples.mjs')], { cwd: skillRoot });
   if (result.status !== 0) exitFrom(result);
@@ -106,7 +114,8 @@ async function commandDoctor() {
   const docPath = path.join(skillRoot, 'templates/design-doc.html');
   const assembler = path.join(skillRoot, 'renderers/doc/assemble-doc.mjs');
   const adrGen = path.join(skillRoot, 'renderers/doc/adr.mjs');
-  const deliverableOk = fs.existsSync(docPath) && fs.existsSync(assembler) && fs.existsSync(adrGen);
+  const diffGen = path.join(skillRoot, 'renderers/doc/diff-doc.mjs');
+  const deliverableOk = [docPath, assembler, adrGen, diffGen].every((p) => fs.existsSync(p));
   checks.push({
     label: 'Design document assembler and template',
     ok: deliverableOk,
@@ -288,6 +297,9 @@ switch (command) {
     break;
   case 'adr':
     commandAdr(args);
+    break;
+  case 'diff':
+    commandDiff(args);
     break;
   case 'examples':
     commandExamples();

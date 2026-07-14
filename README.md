@@ -24,6 +24,7 @@ The output is a single self-contained HTML file with a dark/light theme toggle, 
 - **Right-sizing.** Classifies a design lightweight or enterprise and sizes the document to match, so a small feature is not buried in tenant-isolation and DR ceremony.
 - **Two modes.** Production (the design you should build) and interview (the same rigor framed as a system design interview answer, with per-section coaching).
 - **A self-contained deliverable.** One HTML file with a dark and light theme toggle, a navigable table of contents, print-to-PDF, and embedded interactive diagrams. No dependencies, no network calls.
+- **More than one artifact.** Beyond the design document, export the decisions as architecture decision records (`agentify adr`), or compare two designs for the same use case as a visual diff (`agentify diff`) to see exactly what a changed constraint does.
 - **Agent-native diagrams.** Architecture, sequence, data-flow, and lifecycle diagrams with a vocabulary built for agentic systems (agent, router, retriever, vector store, guardrail, eval loop, human review, tool, memory, queue, ASR, TTS).
 - **A broad, audited knowledge base.** Vendor agent guides, cloud well-architected frameworks, peer-reviewed surveys, standards bodies (OWASP, NIST, MCP, OpenTelemetry), evaluation frameworks, and voice and multimodal design, spot-checked against primary sources.
 - **A reasoning eval harness.** Golden cases with expected decisions guard against regressions in the design logic, run in CI.
@@ -231,6 +232,7 @@ node bin/agentify.mjs validate architecture my-system.architecture.json
 node bin/agentify.mjs check out.html
 node bin/agentify.mjs assemble my-system.design.md out.design.html   # design doc
 node bin/agentify.mjs adr my-system.decisions.md                     # ADR files + index
+node bin/agentify.mjs diff v1.design.md v2.design.md diff.html       # visual design diff
 node bin/agentify.mjs doctor      # verify the install is healthy
 node bin/agentify.mjs examples    # re-render the bundled examples
 ```

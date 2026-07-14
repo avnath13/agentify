@@ -117,6 +117,8 @@ Do not hand-build the HTML. Write the design as a markdown file and let the CLI 
 
 **Optional: architecture decision records.** If the user wants the decisions as ADRs (the artifact teams keep in-repo), write the key choices from the decision record as a decision log: front matter (`title`, `date`) and one `## ` heading per decision, each with `Status:`, `Context:`, `Decision:`, and `Consequences:` lines (put the rejected alternatives in Consequences). Then run `node bin/agentify.mjs adr <use-case-slug>.decisions.md`, which emits numbered ADR files plus an index in standard format.
 
+**Optional: compare two designs.** When the user asks what a changed constraint does (for example the same system at a higher availability target, or with a compliance regime added), produce a second design markdown for the changed use case, keeping the same section headings, then run `node bin/agentify.mjs diff <before>.design.md <after>.design.md` to render a visual diff report: a summary of the headline decision and metric deltas (rung, weight class, cost, availability) followed by a section-by-section colored line diff.
+
 ### Step 7: Self-check
 
 Run the gate checklist at the end of `knowledge/decision-trees.md`. If any gate fails, fix the design before delivering. Verify zero em dashes. Verify every section is present or explicitly marked not applicable with a reason.
