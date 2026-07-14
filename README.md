@@ -39,7 +39,7 @@ Facts that go stale (model choices, pricing) are never baked in: designs pull th
 ### Install
 
 ```bash
-npx skills add <your-github-username>/agentify -g
+npx skills add avnath13/agentify -g
 ```
 
 Or download `agentify.zip` from the releases page and add it to Claude, Codex CLI, or opencode as a skill.
