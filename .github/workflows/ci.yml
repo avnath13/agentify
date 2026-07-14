@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: agentify/package-lock.json
+      - name: Install
+        working-directory: agentify
+        run: npm ci
+      - name: Test (validators, goldens, renderers, CLI)
+        working-directory: agentify
+        run: npm test
+
+  style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Em dash lint (project style rule, no em dashes anywhere)
+        run: |
+          emdash="$(printf '\342\200\224')"
+          if grep -rn "$emdash" . --exclude-dir=.git --exclude-dir=node_modules; then
+            echo "Em dashes found. Replace with commas, colons, parentheses, or separate sentences."
+            exit 1
+          fi
+          echo "No em dashes found."
+
+  links:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Knowledge base link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --accept 200,203,206,301,302,403,429 "agentify/knowledge/**/*.md" "README.md"
+          fail: true
+        continue-on-error: true
