@@ -36,9 +36,9 @@ function copyInstalledSkill(target) {
 test('cli: help lists commands and diagram types', () => {
   const result = run(['--help']);
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /archify render <type>/);
-  assert.match(result.stdout, /archify doctor/);
-  assert.match(result.stdout, /archify demo \[output-directory\]/);
+  assert.match(result.stdout, /agentify render <type>/);
+  assert.match(result.stdout, /agentify doctor/);
+  assert.match(result.stdout, /agentify demo \[output-directory\]/);
   assert.match(result.stdout, /architecture, workflow, sequence, dataflow, lifecycle/);
 });
 
@@ -51,7 +51,7 @@ test('cli: doctor reports a complete installation is ready', () => {
   assert.match(result.stdout, /\[ok\] Standalone schema validators/);
   assert.match(result.stdout, /\[ok\] architecture renderer, schema, and example/);
   assert.match(result.stdout, /\[ok\] lifecycle renderer, schema, and example/);
-  assert.match(result.stdout, /Archify is ready\./);
+  assert.match(result.stdout, /Agentify is ready\./);
 });
 
 test('cli: doctor identifies an incomplete installation', () => {
@@ -68,7 +68,7 @@ test('cli: doctor identifies an incomplete installation', () => {
   assert.equal(result.status, 1);
   assert.match(result.stdout, /\[missing\] Core template/);
   assert.match(result.stdout, /\[missing\] workflow renderer, schema, and example/);
-  assert.match(result.stderr, /Archify is not ready: \d+ required files? missing\./);
+  assert.match(result.stderr, /Agentify is not ready: \d+ required files? missing\./);
 });
 
 test('cli: doctor rejects a corrupt standalone validator', () => {
@@ -83,7 +83,7 @@ test('cli: doctor rejects a corrupt standalone validator', () => {
 
   assert.equal(result.status, 1);
   assert.match(result.stdout, /\[invalid\] Standalone schema validators/);
-  assert.match(result.stderr, /Archify is not ready: 1 runtime check failed\./);
+  assert.match(result.stderr, /Agentify is not ready: 1 runtime check failed\./);
 });
 
 test('cli: examples renders from an installed skill', () => {
@@ -109,7 +109,7 @@ test('cli: examples renders from an installed skill', () => {
 
 test('cli: demo creates a ready-to-open diagram in a chosen directory', () => {
   const outputDirectory = path.join(tmp, 'my-demo');
-  const output = path.join(outputDirectory, 'archify-demo.html');
+  const output = path.join(outputDirectory, 'agentify-demo.html');
   const result = run(['demo', outputDirectory]);
 
   assert.equal(result.status, 0, result.stderr);
@@ -117,7 +117,7 @@ test('cli: demo creates a ready-to-open diagram in a chosen directory', () => {
   assert.match(fs.readFileSync(output, 'utf8'), /Sample Web App Diagram/);
   assert.match(result.stdout, new RegExp(`Demo ready: ${output.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
   assert.match(result.stdout, /Next: open the HTML in your browser/);
-  assert.match(result.stdout, /archify render architecture/);
+  assert.match(result.stdout, /agentify render architecture/);
 });
 
 test('cli: demo defaults to the current directory', () => {
@@ -126,7 +126,7 @@ test('cli: demo defaults to the current directory', () => {
   const result = run(['demo'], { cwd: workingDirectory });
 
   assert.equal(result.status, 0, result.stderr);
-  assert.equal(fs.existsSync(path.join(workingDirectory, 'archify-demo.html')), true);
+  assert.equal(fs.existsSync(path.join(workingDirectory, 'agentify-demo.html')), true);
 });
 
 test('cli: render writes a diagram html file', () => {

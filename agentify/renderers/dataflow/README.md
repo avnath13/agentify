@@ -1,6 +1,6 @@
 # Data Flow Renderer
 
-Render `diagram_type: "dataflow"` JSON files into the standard Archify HTML
+Render `diagram_type: "dataflow"` JSON files into the standard Agentify HTML
 template.
 
 ```bash

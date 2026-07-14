@@ -1,6 +1,6 @@
 # Sequence Renderer
 
-Render `diagram_type: "sequence"` JSON files into the standard Archify HTML
+Render `diagram_type: "sequence"` JSON files into the standard Agentify HTML
 template.
 
 ```bash

@@ -16,7 +16,7 @@
           if (param === 'light' || param === 'dark') theme = param;
         } catch (_) {}
         if (!theme) {
-          try { theme = localStorage.getItem('archify-theme'); } catch (_) {}
+          try { theme = localStorage.getItem('agentify-theme'); } catch (_) {}
         }
         if (theme !== 'light' && theme !== 'dark') {
           theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
@@ -309,7 +309,7 @@
       }
       body { background: #ffffff !important; padding: 0; }
       .container { max-width: none; }
-      .toolbar, .archify-toast, .no-print { display: none !important; }
+      .toolbar, .agentify-toast, .no-print { display: none !important; }
       .diagram-container, .card { box-shadow: none; border-color: #e2e8f0; }
       .cards { grid-template-columns: 1fr 1fr; }
       /* Ensure elements break sensibly across pages */
@@ -391,7 +391,7 @@
     }
 
     /* Toast: brief feedback for actions like "copied" */
-    .archify-toast {
+    .agentify-toast {
       position: fixed;
       top: 1rem;
       left: 50%;
@@ -409,7 +409,7 @@
       pointer-events: none;
       box-shadow: 0 4px 20px rgba(0,0,0,0.25);
     }
-    .archify-toast.show {
+    .agentify-toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
@@ -503,19 +503,19 @@
     svg[data-animation="trace"] [data-animate="edge"] {
       stroke-dasharray: 10 8;
       stroke-dashoffset: 54;
-      animation: archify-edge-flow 2.4s linear infinite;
+      animation: agentify-edge-flow 2.4s linear infinite;
       animation-delay: calc(var(--step, 0) * 160ms);
     }
     svg[data-animation="trace"] [data-animate="node"] {
       transform-box: fill-box;
       transform-origin: center;
-      animation: archify-node-pulse 3.6s ease-in-out infinite;
+      animation: agentify-node-pulse 3.6s ease-in-out infinite;
       animation-delay: calc(var(--step, 0) * 160ms);
     }
-    @keyframes archify-edge-flow {
+    @keyframes agentify-edge-flow {
       to { stroke-dashoffset: 0; }
     }
-    @keyframes archify-node-pulse {
+    @keyframes agentify-node-pulse {
       0%, 72%, 100% { filter: none; stroke-width: 1.5; }
       18%, 36% {
         filter: drop-shadow(0 0 8px var(--arrow-emphasis));
@@ -741,7 +741,7 @@
 
     <!-- Footer -->
     <p class="footer">
-      Architecture diagram &bull; Built with Archify<span class="no-print"> &bull; Press <kbd>T</kbd> for theme and <kbd>E</kbd> for export</span>
+      Architecture diagram &bull; Built with Agentify<span class="no-print"> &bull; Press <kbd>T</kbd> for theme and <kbd>E</kbd> for export</span>
     </p>
   </div>
 
@@ -749,10 +749,10 @@
     /* ============================================================
        Theme toggle: persists to localStorage, respects system pref
        ============================================================ */
-    var Archify = {};
+    var Agentify = {};
 
-    Archify.theme = (function () {
-      var STORAGE_KEY = 'archify-theme';
+    Agentify.theme = (function () {
+      var STORAGE_KEY = 'agentify-theme';
       var html = document.documentElement;
       var btn = document.getElementById('btn-theme');
       var icon = document.getElementById('theme-icon');
@@ -1107,7 +1107,7 @@
       // A live region only announces CHANGES to an existing node, so the toast
       // element is created once up front and updated in place.
       var toastEl = document.createElement('div');
-      toastEl.className = 'archify-toast';
+      toastEl.className = 'agentify-toast';
       toastEl.setAttribute('role', 'status');
       document.body.appendChild(toastEl);
       var toastTimer = null;
@@ -1232,7 +1232,7 @@
         if (formatBtn && !formatBtn.disabled) { runExport(formatBtn.dataset.format); }
       });
 
-      Archify.exportMenu = { open: open, close: close, isOpen: isOpen, run: runExport };
+      Agentify.exportMenu = { open: open, close: close, isOpen: isOpen, run: runExport };
 
       // Auto-open on page load for demo/screenshot purposes: ?openExport=1
       // Wait for fonts (so the menu doesn't flash before typography lands)
@@ -1264,10 +1264,10 @@
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
       if (e.key === 't' || e.key === 'T') {
         e.preventDefault();
-        Archify.theme.toggle();
+        Agentify.theme.toggle();
       } else if (e.key === 'e' || e.key === 'E') {
         e.preventDefault();
-        if (!Archify.exportMenu.isOpen()) Archify.exportMenu.open();
+        if (!Agentify.exportMenu.isOpen()) Agentify.exportMenu.open();
       }
     });
   </script>

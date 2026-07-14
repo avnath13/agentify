@@ -23,7 +23,7 @@ export function writeDiagram({ outPath, template, meta, footerLabel, svg, cards 
   fs.writeFileSync(outPath, applyTemplate(template, {
     title: meta.title,
     subtitle: meta.subtitle,
-    footer: `${footerLabel} &bull; Built with Archify<span class="no-print"> &bull; Press <kbd>T</kbd> for theme and <kbd>E</kbd> for export</span>`,
+    footer: `${footerLabel} &bull; Built with Agentify<span class="no-print"> &bull; Press <kbd>T</kbd> for theme and <kbd>E</kbd> for export</span>`,
     svg,
     cards: renderCards(cards),
   }));

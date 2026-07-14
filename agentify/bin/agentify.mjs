@@ -13,13 +13,13 @@ const TYPES = new Set(['architecture', 'workflow', 'sequence', 'dataflow', 'life
 
 function usage() {
   return `Usage:
-  archify render <type> <input.json> [output.html]
-  archify validate <type> <input.json> [--json] [--layout-json]
-  archify inspect <type> <input.json>
-  archify check <output.html>
-  archify examples
-  archify doctor
-  archify demo [output-directory]
+  agentify render <type> <input.json> [output.html]
+  agentify validate <type> <input.json> [--json] [--layout-json]
+  agentify inspect <type> <input.json>
+  agentify check <output.html>
+  agentify examples
+  agentify doctor
+  agentify demo [output-directory]
 
 Types:
   architecture, workflow, sequence, dataflow, lifecycle
@@ -135,7 +135,7 @@ async function commandDoctor() {
     });
   }
 
-  console.log('Archify doctor\n');
+  console.log('Agentify doctor\n');
   for (const check of checks) {
     console.log(`[${check.ok ? 'ok' : (check.failureLabel || 'missing')}] ${check.label}`);
   }
@@ -144,7 +144,7 @@ async function commandDoctor() {
   const missingFiles = checks.reduce((count, check) => count + check.missing, 0);
   const invalidRuntime = checks.reduce((count, check) => count + (check.invalid || 0), 0);
   if (nodeFailed === 0 && missingFiles === 0 && invalidRuntime === 0) {
-    console.log('\nArchify is ready.');
+    console.log('\nAgentify is ready.');
     return;
   }
 
@@ -152,7 +152,7 @@ async function commandDoctor() {
   if (nodeFailed) problems.push('Node.js 18 or newer is required');
   if (missingFiles) problems.push(`${missingFiles} required file${missingFiles === 1 ? '' : 's'} missing`);
   if (invalidRuntime) problems.push(`${invalidRuntime} runtime check${invalidRuntime === 1 ? '' : 's'} failed`);
-  console.error(`\nArchify is not ready: ${problems.join('; ')}.`);
+  console.error(`\nAgentify is not ready: ${problems.join('; ')}.`);
   process.exitCode = 1;
 }
 
@@ -160,7 +160,7 @@ function commandDemo(args) {
   if (args.length > 1) fail(usage());
 
   const outputDirectory = path.resolve(args[0] || process.cwd());
-  const output = path.join(outputDirectory, 'archify-demo.html');
+  const output = path.join(outputDirectory, 'agentify-demo.html');
   const input = path.join(skillRoot, 'examples/web-app.architecture.json');
 
   try {
@@ -174,7 +174,7 @@ function commandDemo(args) {
 
   console.log(`\nDemo ready: ${output}`);
   console.log('Next: open the HTML in your browser, then render your own diagram:');
-  console.log('  archify render architecture <input.json> <output.html>');
+  console.log('  agentify render architecture <input.json> <output.html>');
 }
 
 function commandValidate(args) {
@@ -199,7 +199,7 @@ function commandValidate(args) {
     return;
   }
 
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'archify-validate-'));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'agentify-validate-'));
   const out = path.join(tmp, `${type}.html`);
   let exitCode = 0;
 

@@ -1,6 +1,6 @@
 # Lifecycle Renderer
 
-Render `diagram_type: "lifecycle"` JSON files into the standard Archify HTML
+Render `diagram_type: "lifecycle"` JSON files into the standard Agentify HTML
 template.
 
 ```bash
