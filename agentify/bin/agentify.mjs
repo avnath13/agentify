@@ -18,6 +18,7 @@ function usage() {
   agentify inspect <type> <input.json>
   agentify check <output.html>
   agentify assemble <design.md> [output.html]
+  agentify adr <decision-log.md> [output-dir]
   agentify examples
   agentify doctor
   agentify demo [output-directory]
@@ -73,6 +74,13 @@ function commandAssemble(args) {
   if (result.status !== 0) exitFrom(result);
 }
 
+function commandAdr(args) {
+  const [log, outDir] = args;
+  if (!log) fail(usage());
+  const result = runNode([path.join(skillRoot, 'renderers/doc/adr.mjs'), log, ...(outDir ? [outDir] : [])]);
+  if (result.status !== 0) exitFrom(result);
+}
+
 function commandExamples() {
   const result = runNode([path.join(skillRoot, 'scripts/render-examples.mjs')], { cwd: skillRoot });
   if (result.status !== 0) exitFrom(result);
@@ -97,7 +105,8 @@ async function commandDoctor() {
 
   const docPath = path.join(skillRoot, 'templates/design-doc.html');
   const assembler = path.join(skillRoot, 'renderers/doc/assemble-doc.mjs');
-  const deliverableOk = fs.existsSync(docPath) && fs.existsSync(assembler);
+  const adrGen = path.join(skillRoot, 'renderers/doc/adr.mjs');
+  const deliverableOk = fs.existsSync(docPath) && fs.existsSync(assembler) && fs.existsSync(adrGen);
   checks.push({
     label: 'Design document assembler and template',
     ok: deliverableOk,
@@ -276,6 +285,9 @@ switch (command) {
     break;
   case 'assemble':
     commandAssemble(args);
+    break;
+  case 'adr':
+    commandAdr(args);
     break;
   case 'examples':
     commandExamples();

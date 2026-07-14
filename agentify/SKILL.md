@@ -115,6 +115,8 @@ Do not hand-build the HTML. Write the design as a markdown file and let the CLI 
 2. Assemble: `node bin/agentify.mjs assemble <use-case-slug>.design.md <use-case-slug>.design.html`
 3. The command fills the template, embeds the diagrams, and refuses to emit a document containing an em dash. Offer the user both the `.design.html` and the `.design.md` source.
 
+**Optional: architecture decision records.** If the user wants the decisions as ADRs (the artifact teams keep in-repo), write the key choices from the decision record as a decision log: front matter (`title`, `date`) and one `## ` heading per decision, each with `Status:`, `Context:`, `Decision:`, and `Consequences:` lines (put the rejected alternatives in Consequences). Then run `node bin/agentify.mjs adr <use-case-slug>.decisions.md`, which emits numbered ADR files plus an index in standard format.
+
 ### Step 7: Self-check
 
 Run the gate checklist at the end of `knowledge/decision-trees.md`. If any gate fails, fix the design before delivering. Verify zero em dashes. Verify every section is present or explicitly marked not applicable with a reason.

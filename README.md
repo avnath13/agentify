@@ -229,6 +229,8 @@ cd agentify
 node bin/agentify.mjs render architecture my-system.architecture.json out.html
 node bin/agentify.mjs validate architecture my-system.architecture.json
 node bin/agentify.mjs check out.html
+node bin/agentify.mjs assemble my-system.design.md out.design.html   # design doc
+node bin/agentify.mjs adr my-system.decisions.md                     # ADR files + index
 node bin/agentify.mjs doctor      # verify the install is healthy
 node bin/agentify.mjs examples    # re-render the bundled examples
 ```

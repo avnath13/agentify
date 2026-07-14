@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `agentify adr`: export the design's decisions as architecture decision records. The skill writes a decision log (one `## ` heading per decision with Status/Context/Decision/Consequences); the command emits standard numbered ADR files plus a linked index, the artifact teams keep in-repo. Example decision log and generated ADRs in `examples/support-agent-adr/`.
+
+### Fixed
+
+- The `assemble` command filled only the `<title>`, leaving the on-page `<h1>` as the `[DOC TITLE]` placeholder (String.replace replaces one occurrence); it now uses replaceAll, with a test that asserts the heading is filled.
+
 ## [0.1.1] - 2026-07-14
 
 MVP-hardening release. The design document deliverable became a real tool (`agentify assemble`), the reasoning gained a test harness, the knowledge base was audited against primary sources, and coverage grew to five gallery examples.
