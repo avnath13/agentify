@@ -7,8 +7,8 @@
 - [x] Skill definition: enterprise architect persona, clarification loop, framework decision tree, production and interview modes
 - [x] Agent-native diagram vocabulary (llm-router, retriever, vector-store, guardrail, eval-loop, tool, memory-state, queue, human-review, model-gateway)
 - [x] Self-contained design document template with embedded diagrams
-- [x] Flagship gallery example: enterprise support agent (full design doc with two embedded diagrams)
-- [ ] Two more gallery examples: legal RAG document assistant, autonomous coding system (interview mode)
+- [x] Three gallery examples: enterprise support agent, legal RAG document assistant, autonomous coding system (interview mode)
+- [x] Dual-theme diagram previews in the README (PNG via headless Chrome, plus a standalone-SVG exporter)
 
 ## Later
 

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Autonomous Coding System",
+    "subtitle": "One bounded agent per ticket with a reflection loop, sandboxed, human approves every merge",
+    "output": "coding-system.html",
+    "viewBox": [1320, 840]
+  },
+  "components": [
+    { "id": "queue", "type": "queue", "label": "Ticket Queue", "sublabel": "bugs + small features", "pos": [40, 370], "size": [150, 64] },
+    { "id": "gate", "type": "guardrail", "label": "Safety Gate", "sublabel": "no prod creds", "pos": [240, 370], "size": [140, 64], "tag": "sandboxed" },
+    { "id": "agent", "type": "agent", "label": "Coding Agent", "sublabel": "plan, edit, test loop", "pos": [440, 366], "size": [170, 72] },
+    { "id": "gateway", "type": "model-gateway", "label": "Model Gateway", "sublabel": "provider fallback", "pos": [455, 150], "size": [150, 60] },
+    { "id": "testloop", "type": "eval-loop", "label": "Test + Self-Review", "sublabel": "reflection", "pos": [670, 150], "size": [160, 60], "tag": "in-loop" },
+    { "id": "obs", "type": "cloud", "label": "Observability", "sublabel": "cost + traces", "pos": [880, 150], "size": [150, 60] },
+    { "id": "pr", "type": "backend", "label": "Pull Request", "sublabel": "never auto-merged", "pos": [900, 366], "size": [150, 64] },
+    { "id": "human", "type": "human-review", "label": "Code Review", "sublabel": "human approves merge", "pos": [1110, 366], "size": [160, 64] },
+    { "id": "sandbox", "type": "tool", "label": "Sandbox", "sublabel": "isolated exec", "pos": [300, 560], "size": [150, 60] },
+    { "id": "repo", "type": "tool", "label": "Repo Tools", "sublabel": "MCP: read, edit, branch", "pos": [500, 560], "size": [170, 60] },
+    { "id": "ci", "type": "tool", "label": "CI Runner", "sublabel": "full suite, 25 min", "pos": [720, 560], "size": [150, 60] },
+    { "id": "runstate", "type": "memory-state", "label": "Run State", "sublabel": "checkpointed", "pos": [920, 560], "size": [150, 60] }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Sandboxed runtime (no prod access)",
+      "wraps": ["agent", "sandbox", "repo", "ci"]
+    }
+  ],
+  "connections": [
+    { "from": "queue", "to": "gate", "label": "ticket" },
+    { "from": "gate", "to": "agent", "label": "admit" },
+    { "from": "agent", "to": "gateway", "label": "reason", "fromSide": "top", "toSide": "bottom" },
+    { "from": "agent", "to": "testloop", "label": "reflect", "variant": "dashed", "fromSide": "top", "toSide": "left" },
+    { "from": "agent", "to": "repo", "fromSide": "bottom", "toSide": "top" },
+    { "from": "agent", "to": "sandbox", "fromSide": "bottom", "toSide": "top" },
+    { "from": "agent", "to": "ci", "label": "run tests", "fromSide": "bottom", "toSide": "top", "labelDx": 30 },
+    { "from": "agent", "to": "runstate", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+    { "from": "agent", "to": "pr", "label": "open PR", "variant": "emphasis" },
+    { "from": "pr", "to": "human", "label": "review" },
+    { "from": "human", "to": "agent", "label": "review comments", "variant": "dashed", "fromSide": "top", "toSide": "top" },
+    { "from": "gateway", "to": "obs", "variant": "dashed" }
+  ]
+}

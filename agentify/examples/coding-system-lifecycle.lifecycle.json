@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Ticket Lifecycle",
+    "subtitle": "From queued ticket to merged, handed back, or abandoned, with a bounded retry loop",
+    "output": "coding-system-lifecycle.html",
+    "viewBox": [
+      1020,
+      680
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Happy path"
+    },
+    {
+      "id": "waiting",
+      "label": "Human in loop"
+    },
+    {
+      "id": "exceptions",
+      "label": "Retry loop"
+    },
+    {
+      "id": "terminal",
+      "label": "Terminal exits"
+    }
+  ],
+  "states": [
+    {
+      "id": "queued",
+      "type": "start",
+      "label": "Queued",
+      "sublabel": "ticket accepted",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "tag": "entry"
+    },
+    {
+      "id": "planning",
+      "type": "active",
+      "label": "Planning",
+      "sublabel": "scope the change",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "tag": "model"
+    },
+    {
+      "id": "editing",
+      "type": "active",
+      "label": "Editing",
+      "sublabel": "write code",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "tag": "work"
+    },
+    {
+      "id": "testing",
+      "type": "decision",
+      "label": "Testing",
+      "sublabel": "run CI + self-review",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "tag": "gate"
+    },
+    {
+      "id": "propen",
+      "type": "active",
+      "label": "PR Open",
+      "sublabel": "awaiting review",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "tag": "output"
+    },
+    {
+      "id": "review",
+      "type": "waiting",
+      "label": "Addressing Review",
+      "sublabel": "human comments",
+      "lane": "waiting",
+      "col": 2,
+      "tag": "human"
+    },
+    {
+      "id": "testsfailed",
+      "type": "failure",
+      "label": "Tests Failed",
+      "sublabel": "bounded retries",
+      "lane": "exceptions",
+      "col": 2,
+      "yOffset": 70,
+      "tag": "retryable"
+    },
+    {
+      "id": "merged",
+      "type": "success",
+      "label": "Merged",
+      "sublabel": "human approved",
+      "lane": "terminal",
+      "col": 0,
+      "tag": "terminal"
+    },
+    {
+      "id": "handedback",
+      "type": "failure",
+      "label": "Handed Back",
+      "sublabel": "needs a human",
+      "lane": "terminal",
+      "col": 1,
+      "tag": "terminal"
+    },
+    {
+      "id": "abandoned",
+      "type": "failure",
+      "label": "Abandoned",
+      "sublabel": "retry budget spent",
+      "lane": "terminal",
+      "col": 2,
+      "tag": "terminal"
+    }
+  ],
+  "transitions": [
+    {
+      "from": "queued",
+      "to": "planning"
+    },
+    {
+      "from": "planning",
+      "to": "editing"
+    },
+    {
+      "from": "editing",
+      "to": "testing"
+    },
+    {
+      "from": "testing",
+      "to": "propen",
+      "label": "pass",
+      "variant": "emphasis"
+    },
+    {
+      "from": "testing",
+      "to": "testsfailed",
+      "variant": "security"
+    },
+    {
+      "from": "testsfailed",
+      "to": "editing"
+    },
+    {
+      "from": "propen",
+      "to": "review"
+    },
+    {
+      "from": "review",
+      "to": "editing"
+    },
+    {
+      "from": "propen",
+      "to": "merged",
+      "label": "approved",
+      "variant": "emphasis"
+    },
+    {
+      "from": "planning",
+      "to": "handedback"
+    },
+    {
+      "from": "testsfailed",
+      "to": "abandoned"
+    }
+  ]
+}

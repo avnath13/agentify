@@ -65,16 +65,13 @@ For interview practice:
 
 ## Example gallery
 
-Complete generated designs are committed in [`examples/`](examples/); open any in a browser, each is fully self-contained:
+Three complete generated designs are committed in [`examples/`](examples/); open any in a browser, each is fully self-contained:
 
 - [**Enterprise support agent**](examples/enterprise-support-agent.design.html) for a B2B SaaS company. A single tool-using agent behind an intent router, permission-aware RAG, autonomy tiers 0 to 1 with human escalation, and the full cost and latency math.
 - [**Legal document assistant**](examples/rag-document-assistant.design.html) for a 900-lawyer firm. Deliberately not an agent: a routed retrieval workflow where daily-changing ethical walls make permission-aware retrieval the crux. Shows the anti-escalation rule rejecting an agent on the record.
+- [**Autonomous coding system**](examples/multi-agent-coding-system.design.html), in interview mode. A bounded agent per ticket with a reflection loop, sandboxed with no merge or deploy access, and an explicit single vs multi-agent economics argument. Each section carries interview coaching notes.
 
-Each design embeds a component architecture and a request sequence drawn with the agent-native diagram vocabulary. One more prompt makes a good next example to generate yourself:
-
-| Prompt | What it exercises |
-|---|---|
-| An autonomous coding system that turns tickets into reviewed pull requests | Interview mode, and an honest single vs multi-agent economics argument |
+Each design embeds diagrams drawn with the agent-native vocabulary: a component architecture plus a request sequence or a ticket lifecycle state machine.
 
 ## What a design contains
 
