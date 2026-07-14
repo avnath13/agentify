@@ -174,7 +174,7 @@ To turn a rendered diagram into README-ready images (light and dark PNGs plus a 
 
 ## Example gallery
 
-Three complete generated designs are committed in [`examples/`](examples/); open any in a browser, each is fully self-contained:
+Five complete generated designs are committed in [`examples/`](examples/); open any in a browser, each is fully self-contained:
 
 - [**Enterprise support agent**](examples/enterprise-support-agent.design.html) for a B2B SaaS company. A single tool-using agent behind an intent router, permission-aware RAG, autonomy tiers 0 to 1 with human escalation, and the full cost and latency math.
 - [**Legal document assistant**](examples/rag-document-assistant.design.html) for a 900-lawyer firm. Deliberately not an agent: a routed retrieval workflow where daily-changing ethical walls make permission-aware retrieval the crux. Shows the anti-escalation rule rejecting an agent on the record.
@@ -213,14 +213,15 @@ And a [**design comparison**](https://avnath13.github.io/agentify/examples/recip
 ```
 agentify/            the installable skill
   SKILL.md           persona, loop, and rules
-  knowledge/         the grounded knowledge base (14 documents + provenance)
+  knowledge/         the grounded knowledge base (documents, decision trees, provenance)
   schemas/           diagram JSON schemas (with agent-native component types)
-  renderers/         deterministic JSON-to-SVG/HTML renderers
+  renderers/         deterministic renderers: diagrams, plus doc assembly, ADRs, and diffs
   templates/         design document shell + per-section requirements
-  scripts/           validators, example rendering, README asset generation
-  bin/agentify.mjs   CLI: render / validate / check / examples / doctor
-examples/            generated design documents (the gallery) + diagram sources
-docs/assets/         rendered diagram previews used in this README
+  scripts/           validators, example and site rendering, README assets
+  bin/agentify.mjs   CLI: render / validate / check / assemble / adr / diff / doctor
+examples/            generated design docs, diff reports, and diagram sources (the gallery)
+eval/                reasoning eval: golden cases + checker
+docs/                the quickstart website (GitHub Pages) + diagram previews
 ```
 
 ## CLI
