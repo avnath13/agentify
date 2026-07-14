@@ -25,9 +25,9 @@ Fails if: any tree is skipped, any escalation lacks written justification, or re
 
 ## 4. System architecture
 
-Consult: knowledge/building-effective-agents.md, knowledge/enterprise-architecture.md.
-Required: the component inventory as a table: component, requirement it serves, scaling model (horizontal/vertical, stateless/stateful), failure mode and fallback, concrete technology example (category plus a named instance, e.g. "managed vector database with hybrid search, e.g. OpenSearch or pgvector"). Reference the architecture diagram. Identify trust boundaries.
-Fails if: any component lacks one of the five fields, or a component serves no stated requirement.
+Consult: knowledge/building-effective-agents.md, knowledge/enterprise-architecture.md. For a voice or multimodal system also consult knowledge/voice-and-multimodal.md.
+Required: the component inventory as a table: component, requirement it serves, scaling model (horizontal/vertical, stateless/stateful), failure mode and fallback, concrete technology example (category plus a named instance, e.g. "managed vector database with hybrid search, e.g. OpenSearch or pgvector"). Reference the architecture diagram. Identify trust boundaries. For voice or multimodal, show the modality boundary (ASR and TTS or the multimodal model, and the turn-taking components) and state the architecture choice (cascaded vs speech-to-speech, with the latency budget).
+Fails if: any component lacks one of the five fields, a component serves no stated requirement, or a voice system omits the turn-taking and latency treatment.
 
 ## 5. Data and retrieval
 

@@ -65,6 +65,22 @@ Provenance for the knowledge base. Every document in this directory cites primar
 | RAGAS documentation | https://docs.ragas.io | 2026-07-14 |
 | TruLens RAG Triad | https://www.trulens.org/getting_started/core_concepts/rag_triad/ | 2026-07-14 |
 
+## Voice and multimodal
+
+| Source | URL | Consulted |
+|---|---|---|
+| OpenAI, Realtime API Voice Activity Detection guide | https://developers.openai.com/api/docs/guides/realtime-vad | 2026-07-14 |
+| OpenAI, Voice agents guide | https://developers.openai.com/api/docs/guides/voice-agents | 2026-07-14 |
+| LiveKit, Turn Detection for Voice Agents | https://livekit.com/blog/turn-detection-voice-agents-vad-endpointing-model-based-detection | 2026-07-14 |
+| rtcleague, Pipeline vs Realtime Voice Agent Architecture | https://rtcleague.com/blogs/pipeline-vs-realtime-voice-agent-architecture | 2026-07-14 |
+| Softcery, Real-time vs Turn-based Voice Agents (2026) | https://softcery.com/lab/ai-voice-agents-real-time-vs-turn-based-tts-stt-architecture | 2026-07-14 |
+| Building Enterprise Realtime Voice Agents from Scratch | https://arxiv.org/html/2603.05413v1 | 2026-07-14 |
+| Hamming, Voice Agent Testing and Evaluation Metrics | https://hamming.ai/resources/voice-agent-evaluation-metrics-guide | 2026-07-14 |
+| Cekura, Voice AI Evaluation Metrics (2026) | https://www.cekura.ai/blogs/voice-ai-evaluation-metrics | 2026-07-14 |
+| Xie et al., A Survey on Agentic Multimodal LLMs | https://arxiv.org/pdf/2510.10991 | 2026-07-14 |
+| Mei et al., mRAG: Design Space of Multimodal RAG | https://arxiv.org/pdf/2505.24073 | 2026-07-14 |
+| A Survey of Multimodal Hallucination Evaluation and Detection | https://arxiv.org/html/2507.19024v2 | 2026-07-14 |
+
 ## Courses
 
 | Source | URL | Consulted |

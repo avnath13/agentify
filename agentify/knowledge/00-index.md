@@ -12,6 +12,7 @@ This directory is the grounding layer for agentify. Every generated design consu
 | Design: orchestration | building-effective-agents.md, multi-agent-orchestration.md |
 | Design: state and memory | context-memory.md |
 | Design: security and identity | security-governance.md |
+| Design: voice, image, or other non-text modality | voice-and-multimodal.md |
 | Design: evaluation plan | evaluation.md |
 | Design: observability and tools | interoperability-observability.md |
 | Design: NFRs, scaling, cost, DR | enterprise-architecture.md, latency-cost-reliability.md |
@@ -29,6 +30,7 @@ This directory is the grounding layer for agentify. Every generated design consu
 - evaluation.md: eval-driven development, golden datasets, LLM-as-judge with bias mitigations, agent-specific evals, rollout gates.
 - security-governance.md: threat model, layered guardrails, identity propagation, autonomy tiers, audit, OWASP and NIST mappings.
 - interoperability-observability.md: MCP, tool interface quality, OpenTelemetry GenAI tracing, debugging from traces.
+- voice-and-multimodal.md: cascaded vs speech-to-speech voice, the conversational latency budget, turn-taking (VAD, endpointing, barge-in), multimodal input and RAG, visual hallucination, audio-native evaluation.
 - context-memory.md: context budgeting, compaction, memory tiers, persistence, retention and tenant isolation.
 - latency-cost-reliability.md: streaming, caching tiers, model routing, fallbacks, SLO design, tail latency in chains.
 - SOURCES.md: provenance for every external source with retrieval dates and the update policy.

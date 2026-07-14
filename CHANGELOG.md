@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Domain-harm discovery: the clarify step now asks what happens if the system is wrong or abused (safety, financial, legal, discrimination, privacy, reputational), and the guardrail stack is scaled to that harm rather than to company size. Backed in `knowledge/genai-sysdesign-loop.md` and enforced by a new gate-checklist item. Surfaced by a cold run whose honest answer needed strong allergen guardrails at tiny scale.
 - Right-sizing: SKILL.md now classifies a design as lightweight or enterprise from the decision outcome and sizes the document to match, so a small per-user feature is not padded with tenant-isolation, DR, and full OWASP and NIST ceremony. Section templates and the gate checklist updated to match; "not applicable, with reason" is now an encouraged outcome.
+- Voice and multimodal knowledge doc (`knowledge/voice-and-multimodal.md`): cascaded vs speech-to-speech architecture, the conversational latency budget, turn-taking (VAD, endpointing, barge-in), multimodal input and RAG, visual hallucination, and audio-native evaluation, grounded in OpenAI, LiveKit, ElevenLabs, the voice-agent testing literature, and arXiv multimodal surveys. Wired into the index, sources, gate checklist, and the modality clarify dimension. Prompted by the question of whether the skill covers voice and multimodal agents (it now grounds them rather than winging it).
+- Interview-mode discoverability: when no mode is specified, the skill now makes a single one-line offer of interview mode in its first reply, so the mode is discoverable without nagging production users.
 
 ## [0.1.0] - 2026-07-14
 

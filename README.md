@@ -30,7 +30,8 @@ Agentify ships with a versioned knowledge base (in [`agentify/knowledge/`](agent
 | Agent design | Anthropic (Building Effective Agents, context engineering, multi-agent research system), OpenAI (A Practical Guide to Building Agents), Google/Kaggle Agents whitepaper, Andrew Ng's agentic patterns |
 | System design | The customer-facing GenAI design loop (Selamy), Chip Huyen's AI Engineering, the a16z LLM application stack |
 | Enterprise architecture | AWS Well-Architected Generative AI Lens, Azure WAF AI workloads, Google Cloud Architecture Framework |
-| Research | Seven arXiv surveys covering RAG, agentic RAG, multi-agent collaboration and orchestration, LLM-as-judge, and the tau-bench reliability benchmark |
+| Research | arXiv surveys covering RAG, agentic RAG, multi-agent collaboration and orchestration, LLM-as-judge, the tau-bench reliability benchmark, agentic multimodal models, and multimodal hallucination |
+| Voice and multimodal | Cascaded vs speech-to-speech architecture, turn-taking (VAD, endpointing, barge-in), the conversational latency budget, and audio-native evaluation, from OpenAI, LiveKit, ElevenLabs, and the voice-agent testing literature |
 | Standards | OWASP Top 10 for LLM Applications (2025) and for Agentic Applications (2026), NIST AI RMF and its GenAI Profile, the Model Context Protocol, OpenTelemetry GenAI semantic conventions |
 | Evaluation | RAGAS, the TruLens RAG Triad, eval-driven development practice |
 

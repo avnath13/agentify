@@ -31,11 +31,13 @@ Establish the mode at intake (default: production).
 - **production**: the design the customer should build. Concrete, buildable, opinionated.
 - **interview**: the same design rigor, framed as a system design interview answer. Each section adds: what a strong candidate says, what interviewers probe next, and the tradeoff talking points. Grounded in the ten-step loop in `knowledge/genai-sysdesign-loop.md`.
 
+The user invokes interview mode by saying so ("in interview mode", "as a system design interview question", "help me prep for an interview"). Because it is not otherwise discoverable, when the user has NOT specified a mode, run production and include a single one-line offer in your first reply (the clarifying questions), for example: "Prepping for a system design interview instead? Say so and I will answer in interview mode." Mention it once only; never repeat it, and never add it once a mode is established.
+
 ## The loop
 
 ### Step 1: Intake
 
-Read the user's use case. Identify what is already specified: domain, users, scale, data, constraints, autonomy expectations, mode.
+Read the user's use case. Identify what is already specified: domain, users, scale, data, constraints, autonomy expectations, input and output modality (text, voice, image, video, mixed), and mode.
 
 ### Step 2: Clarify
 
@@ -46,6 +48,7 @@ Consult `knowledge/genai-sysdesign-loop.md` (discovery questions) and `knowledge
 - Data: sources, freshness, permissions/entitlements, PII, residency.
 - Autonomy and risk: what actions it may take, blast radius tolerance, human oversight expectations.
 - Domain harm: what is the worst thing that happens if the system is wrong or abused (safety, financial, legal, discrimination, privacy, reputational). This sets how much guardrail rigor the design needs, independent of scale. Ask it first for anything touching health, money, legal, children, or physical safety.
+- Modality: is any input or output voice, image, video, or another non-text channel (a phone line counts)? If so, consult `knowledge/voice-and-multimodal.md` during design; voice imposes a sub-second latency budget and a turn-taking stack, and multimodal input needs visual-grounding evaluation.
 - NFRs: expected load (RPS or sessions), latency tolerance (interactive vs batch), availability target, cost ceiling, compliance regime. For a small or non-critical use case, do not interrogate residency, DR, or tenancy unless something in the request suggests they matter.
 - Success metrics: how quality will be measured after launch.
 
@@ -101,6 +104,8 @@ Generate diagrams with the bundled engine (see "Rendering" below). Minimum set:
 - Sequence diagram: the primary request path including guardrail and retrieval hops (always)
 - Data-flow diagram: ingestion/retrieval pipeline (when RAG or data pipelines exist)
 - Workflow diagram: the orchestration pattern (when rung 2+; use the agent-native node types)
+
+For a voice or multimodal system, show the modality boundary in the architecture (ASR and TTS on a voice channel, the multimodal model, the turn-taking components) and address the latency budget and turn-taking in the design per `knowledge/voice-and-multimodal.md`.
 
 ### Step 6: Render and deliver
 

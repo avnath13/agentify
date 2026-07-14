@@ -138,6 +138,7 @@ Multi-tenant memory                               -> per-tenant isolation,
 10. Every architectural claim carries a citation to a knowledge document or a dated live source.
 11. Domain harm assessed (what happens if the system is wrong or abused) and the guardrails scaled to that harm, not to company size [knowledge/security-governance.md].
 12. Weight class (lightweight or enterprise) chosen and stated; the document's depth matches it, so a small design is not padded with enterprise ceremony and an enterprise design is not thinned.
+13. If input or output is voice, image, video, or any non-text modality, the modality-specific concerns are addressed (voice: architecture, latency budget, turn-taking; multimodal: grounding and visual-hallucination eval) [knowledge/voice-and-multimodal.md].
 
 ## Citations
 
