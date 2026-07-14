@@ -6,6 +6,13 @@ Agentify is an agent skill that works like a seasoned AI solutions architect. De
 
 The output is a single self-contained HTML file with a dark/light theme toggle, a navigable table of contents, and embedded SVG diagrams. No dependencies, no network calls, shareable anywhere.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/support-agent-architecture-dark.png">
+  <img alt="Architecture diagram for an enterprise support agent, showing input and output guardrails, an intent router, an agent tool loop inside a user-identity boundary, permission-aware retrieval, a vector index, session memory, ticket tools, a human review gate, and an eval and observability path" src="docs/assets/support-agent-architecture-light.png" width="100%">
+</picture>
+
+<sub>A generated architecture, drawn with agent-native components: guardrails, an intent router, the agent runtime boundary where the user identity is propagated, permission-aware retrieval, tools as an MCP server, a human-review gate, and the eval and observability loop. This is one figure from the <a href="examples/enterprise-support-agent.design.html">support agent design document</a>.</sub>
+
 ## Why
 
 Asking an LLM to "design an agentic system" produces plausible-sounding but ungrounded output: components with no justification, agents where a workflow would do, security as an afterthought. Agentify forces the design through the published engineering canon instead:
@@ -74,6 +81,13 @@ Two more prompts make good next examples to generate yourself, chosen because th
 Fourteen sections, each with a defined pass bar: executive summary, requirements and NFRs, decision record (with rejected alternatives), system architecture, data and retrieval, tools and integrations, state and memory, security and guardrails, evaluation plan, observability, scale and cost analysis, failure modes and degradation, rollout plan, references.
 
 Plus embedded diagrams rendered by the bundled engine: architecture (with agent-native component types like `agent`, `llm-router`, `retriever`, `vector-store`, `guardrail`, `eval-loop`, `human-review`, `model-gateway`), request sequence, data flow, and orchestration workflow. Diagrams support dark/light themes and export to PNG, JPEG, WebP, and SVG.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/support-agent-query-dark.png">
+  <img alt="Sequence diagram of a support agent query: the customer question passes an input guardrail, an intent router, then the agent runs retrieval under the user identity, looks up subscription data, creates a ticket, and an output guardrail checks groundedness before the reply returns" src="docs/assets/support-agent-query-light.png" width="100%">
+</picture>
+
+<sub>The request sequence for a single turn, from the same design document. Retrieval and tools run under the caller identity, and the output guardrail checks groundedness before the reply is returned.</sub>
 
 ## How it works
 

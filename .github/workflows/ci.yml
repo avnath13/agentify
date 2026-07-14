@@ -29,7 +29,8 @@ jobs:
       - name: Em dash lint (project style rule, no em dashes anywhere)
         run: |
           emdash="$(printf '\342\200\224')"
-          if grep -rn "$emdash" . --exclude-dir=.git --exclude-dir=node_modules; then
+          # -I ignores binary files (e.g. PNGs) so their bytes cannot falsely match.
+          if grep -rIn "$emdash" . --exclude-dir=.git --exclude-dir=node_modules; then
             echo "Em dashes found. Replace with commas, colons, parentheses, or separate sentences."
             exit 1
           fi
