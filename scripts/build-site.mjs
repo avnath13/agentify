@@ -26,12 +26,13 @@ fs.cpSync(docs, site, {
   },
 });
 
-// Copy the current design documents in as the live gallery.
+// Copy the current design documents and diff reports in as the live gallery.
 const examplesOut = path.join(site, 'examples');
 fs.mkdirSync(examplesOut, { recursive: true });
-const designs = fs.readdirSync(path.join(root, 'examples')).filter((f) => f.endsWith('.design.html'));
-for (const f of designs) {
+const pages = fs.readdirSync(path.join(root, 'examples'))
+  .filter((f) => f.endsWith('.design.html') || f.endsWith('.diff.html'));
+for (const f of pages) {
   fs.copyFileSync(path.join(root, 'examples', f), path.join(examplesOut, f));
 }
 
-console.log(`built _site: index + ${designs.length} gallery pages`);
+console.log(`built _site: index + ${pages.length} gallery pages`);

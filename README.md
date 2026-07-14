@@ -184,6 +184,8 @@ Three complete generated designs are committed in [`examples/`](examples/); open
 
 Each design embeds diagrams drawn with the agent-native vocabulary: a component architecture plus a request sequence, a ticket lifecycle state machine, or a voice pipeline.
 
+And a [**design comparison**](https://avnath13.github.io/agentify/examples/recipe-nutrition.diff.html) produced by `agentify diff`: the recipe assistant with health guidance added and 800k users, showing what the change did (the weight class rises to enterprise while the rung stays the same, and the skill refuses to give individualized medical advice).
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/drive-through-voice-dark.png">
   <img alt="Architecture for a drive-through voice agent: a store-edge boundary with audio edge, streaming ASR and streaming TTS; an order-agent runtime with input and output guardrails, a model gateway with a cached menu prefix, order state, a menu store, a bounded order agent, barge-in, POS submit as a tier-2 action, staff takeover for allergens and low confidence, and a voice eval gate" src="docs/assets/drive-through-voice-light.png" width="100%">

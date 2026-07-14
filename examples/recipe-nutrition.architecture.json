@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Recipe and Nutrition Assistant",
+    "subtitle": "Rung 1 per capability under deterministic dispatch. Nutrition numbers are computed, health guidance is vetted-corpus-only and fails closed. No agent, no web RAG.",
+    "output": "recipe-nutrition.architecture.html",
+    "viewBox": [1640, 950]
+  },
+  "components": [
+    { "id": "user", "type": "external", "label": "User", "sublabel": "fridge text or health question", "pos": [40, 180], "size": [120, 70] },
+    { "id": "dispatch", "type": "backend", "label": "Request Dispatch", "sublabel": "deterministic, by UI entry", "pos": [200, 183], "size": [150, 64], "tag": "Rung 0" },
+
+    { "id": "inguard", "type": "guardrail", "label": "Input Validation", "sublabel": "length + injection scan", "pos": [400, 90], "size": [140, 64], "tag": "LLM01" },
+    { "id": "extractor", "type": "model-gateway", "label": "Ingredient Extractor", "sublabel": "small LLM, JSON out", "pos": [590, 90], "size": [160, 64], "tag": "no recipe gen" },
+    { "id": "normalizer", "type": "tool", "label": "Ingredient Normalizer", "sublabel": "canonical vocab", "pos": [800, 90], "size": [160, 64] },
+    { "id": "matcher", "type": "backend", "label": "Recipe Matcher", "sublabel": "inverted index + coverage", "pos": [1010, 90], "size": [150, 64] },
+    { "id": "allergen", "type": "guardrail", "label": "Allergen / Diet Filter", "sublabel": "hard filter, fail-closed", "pos": [1210, 90], "size": [165, 64], "tag": "safety-critical" },
+    { "id": "recguard", "type": "guardrail", "label": "Recipe Output Guard", "sublabel": "catalog-only + disclaimer", "pos": [1425, 90], "size": [170, 64] },
+
+    { "id": "hin", "type": "guardrail", "label": "Health Q Guard", "sublabel": "injection + scope scan", "pos": [400, 280], "size": [140, 64], "tag": "LLM01" },
+    { "id": "ctx", "type": "backend", "label": "Context Assembler", "sublabel": "facts + flags + snippets", "pos": [590, 280], "size": [160, 64] },
+    { "id": "hgen", "type": "model-gateway", "label": "Health Guidance Gen", "sublabel": "grounded, cited, refuses advice", "pos": [800, 280], "size": [175, 64], "tag": "no medical determination" },
+    { "id": "hout", "type": "guardrail", "label": "Health Output Guard", "sublabel": "claims + groundedness", "pos": [1025, 280], "size": [175, 64], "tag": "fail-closed" },
+
+    { "id": "nutricompute", "type": "backend", "label": "Nutrition Facts", "sublabel": "deterministic per serving", "pos": [590, 470], "size": [160, 64], "tag": "not model-gen" },
+    { "id": "flagengine", "type": "backend", "label": "Dietary Flag Engine", "sublabel": "rules vs published thresholds", "pos": [800, 470], "size": [175, 64] },
+    { "id": "guidelines", "type": "database", "label": "Guideline Library", "sublabel": "curated, vetted snippets", "pos": [1025, 470], "size": [175, 64], "tag": "human-approved" },
+    { "id": "catalog", "type": "database", "label": "Recipe Catalog", "sublabel": "12k + allergen tags", "pos": [1250, 470], "size": [150, 64] },
+    { "id": "profile", "type": "database", "label": "User Profile", "sublabel": "diet, allergies, health attrs", "pos": [1450, 470], "size": [165, 64], "tag": "sensitive PII" },
+
+    { "id": "vocab", "type": "database", "label": "Ingredient Vocab", "sublabel": "canonical + synonyms", "pos": [380, 650], "size": [155, 64] },
+    { "id": "nutridb", "type": "database", "label": "Nutrition Composition DB", "sublabel": "USDA FoodData Central", "pos": [590, 650], "size": [180, 64] },
+    { "id": "listbuilder", "type": "backend", "label": "Shopping List Builder", "sublabel": "recipe minus fridge", "pos": [1010, 650], "size": [165, 64] },
+    { "id": "shoplist", "type": "tool", "label": "Shopping List", "sublabel": "in-app store", "pos": [1250, 650], "size": [150, 64], "tag": "tier 1 write" },
+
+    { "id": "enrich", "type": "backend", "label": "Offline Enrichment", "sublabel": "vocab + allergen + nutrition tags", "pos": [540, 830], "size": [200, 64], "tag": "batch build" },
+    { "id": "review", "type": "human-review", "label": "Clinical Review", "sublabel": "RD signs off corpus + rules", "pos": [800, 830], "size": [185, 64], "tag": "offline gate" },
+    { "id": "evalsuite", "type": "eval-loop", "label": "Eval Suite", "sublabel": "extraction + allergen + health safety", "pos": [1040, 830], "size": [200, 64], "tag": "100% safety gates" }
+  ],
+  "boundaries": [
+    { "kind": "security-group", "label": "Deterministic allergen path (LLM excluded)", "wraps": ["matcher", "allergen"] },
+    { "kind": "security-group", "label": "Health-safety boundary: computed facts, vetted-corpus guidance, fail-closed output", "wraps": ["ctx", "hgen", "hout", "nutricompute", "flagengine", "guidelines"] }
+  ],
+  "connections": [
+    { "from": "user", "to": "dispatch" },
+    { "from": "dispatch", "to": "inguard", "label": "recipe entry", "fromSide": "top", "toSide": "left" },
+    { "from": "inguard", "to": "extractor" },
+    { "from": "extractor", "to": "normalizer" },
+    { "from": "normalizer", "to": "matcher" },
+    { "from": "normalizer", "to": "vocab", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+    { "from": "matcher", "to": "catalog", "fromSide": "bottom", "toSide": "top" },
+    { "from": "matcher", "to": "allergen" },
+    { "from": "profile", "to": "allergen", "label": "diet + allergy", "fromSide": "top", "toSide": "bottom" },
+    { "from": "allergen", "to": "recguard", "label": "safe set", "variant": "security" },
+    { "from": "recguard", "to": "user", "label": "recipes + facts", "variant": "dashed", "fromSide": "top", "toSide": "top", "labelAt": [720, 46] },
+    { "from": "matcher", "to": "listbuilder", "label": "selected recipe", "fromSide": "bottom", "toSide": "top" },
+    { "from": "listbuilder", "to": "shoplist" },
+
+    { "from": "dispatch", "to": "hin", "label": "health question", "fromSide": "bottom", "toSide": "left" },
+    { "from": "hin", "to": "ctx" },
+    { "from": "ctx", "to": "hgen" },
+    { "from": "hgen", "to": "hout" },
+    { "from": "hout", "to": "user", "label": "guidance or refusal", "variant": "dashed", "fromSide": "bottom", "toSide": "bottom", "labelAt": [300, 470] },
+    { "from": "nutricompute", "to": "ctx", "fromSide": "top", "toSide": "bottom" },
+    { "from": "flagengine", "to": "ctx", "variant": "dashed", "fromSide": "top", "toSide": "bottom" },
+    { "from": "nutricompute", "to": "flagengine", "variant": "dashed" },
+    { "from": "guidelines", "to": "hgen", "label": "vetted snippets", "fromSide": "top", "toSide": "bottom" },
+    { "from": "profile", "to": "ctx", "label": "conditions", "variant": "dashed", "fromSide": "bottom", "toSide": "bottom" },
+    { "from": "nutricompute", "to": "nutridb", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+
+    { "from": "enrich", "to": "vocab", "variant": "dashed", "label": "offline build", "fromSide": "left", "toSide": "bottom" },
+    { "from": "enrich", "to": "nutridb", "variant": "dashed", "fromSide": "top", "toSide": "bottom" },
+    { "from": "review", "to": "guidelines", "variant": "dashed", "label": "approves", "fromSide": "top", "toSide": "bottom", "labelAt": [900, 640] },
+    { "from": "review", "to": "flagengine", "variant": "dashed", "fromSide": "top", "toSide": "bottom" },
+    { "from": "evalsuite", "to": "allergen", "variant": "dashed", "fromSide": "top", "toSide": "bottom" },
+    { "from": "evalsuite", "to": "hout", "variant": "dashed", "fromSide": "top", "toSide": "bottom" }
+  ]
+}
