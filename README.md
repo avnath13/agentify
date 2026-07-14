@@ -2,6 +2,8 @@
 
 **Design production-grade agentic AI systems from a plain-English use case.**
 
+[**Quickstart site**](https://avnath13.github.io/agentify/) &middot; [Example gallery](https://avnath13.github.io/agentify/#gallery) &middot; [Releases](https://github.com/avnath13/agentify/releases)
+
 Agentify is an agent skill that works like a seasoned AI solutions architect. Describe what you want to build ("an AI support agent for our customer portal", "a document assistant for our law firm"), answer a short round of clarifying questions, and receive a detailed, defensible system design document: requirements and NFRs, an explicit decision record, a justified component architecture, security and evaluation plans, cost math, a rollout plan, and interactive architecture diagrams embedded inline. Every architectural decision cites an authoritative source.
 
 The output is a single self-contained HTML file with a dark/light theme toggle, a navigable table of contents, and embedded SVG diagrams. No dependencies, no network calls, shareable anywhere.
