@@ -41,7 +41,7 @@ Example design documents are the project gallery. A new example must:
 ## Development workflow
 
 ```bash
-git clone https://github.com/<you>/agentify
+git clone https://github.com/avnath13/agentify   # or your fork
 cd agentify/agentify
 npm install
 npm test

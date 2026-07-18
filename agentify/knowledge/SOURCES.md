@@ -7,7 +7,7 @@ Provenance for the knowledge base. Every document in this directory cites primar
 - Vendor guides and standards: re-check quarterly, or when a major revision ships (e.g. a new OWASP list edition).
 - arXiv surveys: pin the version consulted; newer surveys may be proposed via the "Knowledge source proposal" issue template.
 - Model and pricing facts are deliberately NOT stored in the knowledge base. Designs source them live at generation time and mark them with the retrieval date.
-- CI runs a link check on this directory. Dead links open an issue, not a silent removal.
+- CI runs a link check on this directory (on pull requests and pushes) and fails the build on a dead link. Fix or replace the source rather than silently removing it.
 - Accuracy audit (2026-07-14): load-bearing numeric and attribution claims were spot-checked against primary sources. Nearly all verified exactly (Ng's HumanEval figures, Anthropic's multi-agent token multipliers and 90.2 percent result, tau-bench pass rates, OpenAI's tool-count wording, OWASP LLM Top 10 IDs, the internal latency and cost math). Fixes applied: corrected the LLMs-as-Judges survey author, softened one voice-latency share claim, corrected the Anthropic prompt-cache minimum. Still to spot-check: the OWASP Agentic Top 10 (ASI) item IDs against genai.owasp.org.
 
 ## Vendor engineering guides

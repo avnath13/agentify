@@ -35,4 +35,14 @@ for (const f of pages) {
   fs.copyFileSync(path.join(root, 'examples', f), path.join(examplesOut, f));
 }
 
-console.log(`built _site: index + ${pages.length} gallery pages`);
+// The gallery cards in index.html are hand-written; a renamed or removed
+// example must fail the build here, not 404 on the published site.
+const index = fs.readFileSync(path.join(docs, 'index.html'), 'utf8');
+const linked = [...index.matchAll(/href="examples\/([^"#?]+)"/g)].map((m) => m[1]);
+const dead = linked.filter((f) => !pages.includes(f));
+if (dead.length) {
+  console.error(`index.html links to example page(s) missing from examples/: ${dead.join(', ')}`);
+  process.exit(1);
+}
+
+console.log(`built _site: index + ${pages.length} gallery pages (${linked.length} linked from index)`);

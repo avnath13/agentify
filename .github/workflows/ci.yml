@@ -29,10 +29,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Reasoning eval (case shape + seeded gallery expectations)
+      - name: Reasoning eval (grader tests + case shape + seeded gallery expectations)
         run: |
+          node --test eval/check.test.mjs
           node eval/check.mjs --validate
           node eval/check.mjs --seeded
+
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Gallery examples pass the post-render checks
+        run: node scripts/check-examples.mjs
+      - name: Landing-page gallery links resolve
+        run: node scripts/build-site.mjs
 
   style:
     runs-on: ubuntu-latest
@@ -50,15 +63,15 @@ jobs:
 
   links:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
-      - name: Knowledge base link check
+      - name: Link check (knowledge base and repo docs)
         uses: lycheeverse/lychee-action@v2
         with:
+          # Runs on PRs too, so a broken link is caught before merge, not after.
           # 403/429 are anti-bot responses and 415 is a PDF host rejecting the
           # checker's request; all three mean the resource exists, so accept them.
           # Exclude our own Pages site: it deploys in a separate workflow after
           # this one, so a newly added page 404s here until that finishes.
-          args: --no-progress --accept 200,203,206,301,302,403,415,429 --exclude "avnath13\.github\.io" "agentify/knowledge/**/*.md" "README.md"
+          args: --no-progress --accept 200,203,206,301,302,403,415,429 --exclude "avnath13\.github\.io" "agentify/knowledge/**/*.md" "agentify/SKILL.md" "README.md" "CONTRIBUTING.md" "ROADMAP.md" "CHANGELOG.md" "docs/*.md"
           fail: true

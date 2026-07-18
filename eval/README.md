@@ -4,8 +4,15 @@ The skill's value is its design reasoning (does it de-escalate correctly, apply 
 
 ## What is here
 
-- `cases.jsonl`: one case per line. Each has a `prompt`, canned stakeholder `answers` (so a run is reproducible), and an `expect` block: the escalation `rung`, `weightClass`, concepts that `mustMention`, and over-engineering markers that `mustNot` appear. Some cases also carry a `design` path to a committed example so they run automatically.
+- `cases.jsonl`: one case per line. Each has a `prompt`, canned stakeholder `answers` (so a run is reproducible), and an `expect` block: the escalation `rung`, `weightClass`, concepts that `mustMention`, and over-engineering markers that `mustNot` be recommended. Some cases also carry a `design` path to a committed example so they run automatically.
 - `check.mjs`: grades a produced design against a case, and validates the case file. It does not call a model.
+- `check.test.mjs`: unit tests for the grader, run in CI.
+
+Matching semantics:
+
+- `mustMention` entries are substring matches, so stems like `"escalat"` match "escalation" and "escalates".
+- `mustNot` entries are whole-word matches against the design's visible text (markup, style, and script are stripped first), so `"agent"` does not match "Agentify". A trailing `*` makes an entry a stem: `"diagnos*"` matches "diagnosis" and "diagnose".
+- A `mustNot` marker only fails the case where the design is recommending it. The section templates require naming rejected alternatives, so an occurrence with rejection or negation language nearby ("we rejected a vector database", "instead of", "Rejected: overkill") does not count. This is a heuristic window check, not semantic parsing; see the cues in `check.mjs`.
 
 ## How to run it
 
