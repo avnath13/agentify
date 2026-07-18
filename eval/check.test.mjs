@@ -46,6 +46,8 @@ test('a trailing * makes a mustNot entry a stem', () => {
     'The feature provides a likely diagnosis for the symptoms.').length, 1);
   assert.deepEqual(checkDesign(mustNotCase(['diagnos*']),
     'The feature does not diagnose; it gives general guidance.'), []);
+  assert.deepEqual(checkDesign(mustNotCase(['diagnos*']),
+    'The feature never diagnoses a condition.'), []);
 });
 
 test('mustNot ignores markup, style, and script text', () => {

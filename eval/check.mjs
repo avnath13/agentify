@@ -83,7 +83,7 @@ export function stripHtml(text) {
 // recommending it: decision-record language ("rejected", "alternatives
 // considered"), comparative language ("instead of", "rather than"), and plain
 // negation ("not", "no need", "without", "avoid").
-const NEGATION_CUES = /(reject|declin|rule[sd]?\s+out|instead|rather\s+than|alternativ|unnecessar|overkill|over-engineer|avoid|without|skip|defer|\bnot?\b|n['’]t\b)/;
+const NEGATION_CUES = /(reject|declin|rule[sd]?\s+out|instead|rather\s+than|alternativ|unnecessar|overkill|over-engineer|avoid|without|skip|defer|\bnever\b|\bnot?\b|n['’]t\b)/;
 
 function markerPattern(marker) {
   const stem = marker.endsWith('*');
