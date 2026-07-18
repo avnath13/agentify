@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Invoice Approval Router",
+    "subtitle": "Rung 0: a deterministic rules engine over structured fields. No model calls, no generative AI.",
+    "output": "invoice-approval-router.architecture.html",
+    "viewBox": [1180, 700]
+  },
+  "components": [
+    {
+      "id": "intake",
+      "type": "external",
+      "label": "Invoice Feed",
+      "sublabel": "ERP / AP inbox, structured",
+      "pos": [40, 290],
+      "size": [140, 60]
+    },
+    {
+      "id": "validation",
+      "type": "guardrail",
+      "label": "Field Validation",
+      "sublabel": "schema + required fields",
+      "pos": [260, 290],
+      "size": [150, 60],
+      "tag": "reject malformed"
+    },
+    {
+      "id": "rules",
+      "type": "backend",
+      "label": "Rules Engine",
+      "sublabel": "amount / vendor / dept rules",
+      "pos": [490, 290],
+      "size": [150, 60],
+      "tag": "deterministic"
+    },
+    {
+      "id": "approverdir",
+      "type": "database",
+      "label": "Approver Directory",
+      "sublabel": "rule to approver map",
+      "pos": [720, 110],
+      "size": [150, 60]
+    },
+    {
+      "id": "dispatcher",
+      "type": "backend",
+      "label": "Routing Dispatcher",
+      "sublabel": "assign + notify",
+      "pos": [720, 290],
+      "size": [150, 60]
+    },
+    {
+      "id": "approverqueue",
+      "type": "queue",
+      "label": "Approver Queue",
+      "sublabel": "routed approver's inbox",
+      "pos": [950, 290],
+      "size": [150, 60]
+    },
+    {
+      "id": "exceptions",
+      "type": "queue",
+      "label": "Exceptions Queue",
+      "sublabel": "no rule matched",
+      "pos": [475, 480],
+      "size": [180, 60]
+    },
+    {
+      "id": "reviewer",
+      "type": "human-review",
+      "label": "AP Analyst",
+      "sublabel": "resolves exceptions by hand",
+      "pos": [150, 480],
+      "size": [150, 60]
+    },
+    {
+      "id": "auditlog",
+      "type": "database",
+      "label": "Audit Log",
+      "sublabel": "immutable decision trail",
+      "pos": [720, 480],
+      "size": [150, 60]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Deterministic rules engine (no model, no generative AI, no learned scoring)",
+      "wraps": ["validation", "rules", "approverdir", "dispatcher"],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    { "from": "intake", "to": "validation" },
+    { "from": "validation", "to": "rules" },
+    { "from": "rules", "to": "dispatcher" },
+    { "from": "approverdir", "to": "dispatcher", "label": "lookup", "fromSide": "bottom", "toSide": "top", "labelAt": [795, 230] },
+    { "from": "dispatcher", "to": "approverqueue" },
+    { "from": "rules", "to": "exceptions", "label": "no match", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelAt": [565, 415] },
+    { "from": "exceptions", "to": "reviewer", "label": "escalate", "variant": "dashed", "fromSide": "left", "toSide": "right" },
+    { "from": "dispatcher", "to": "auditlog", "label": "record", "fromSide": "bottom", "toSide": "top", "labelAt": [795, 415] }
+  ]
+}

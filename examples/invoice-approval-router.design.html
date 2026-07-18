@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="agentify 0.1.1">
+  <title>Invoice Approval Router</title>
+  <script>
+    // Apply the theme before first paint to avoid a flash.
+    (function () {
+      try {
+        var theme = null;
+        try {
+          var param = new URLSearchParams(window.location.search).get('theme');
+          if (param === 'light' || param === 'dark') theme = param;
+        } catch (_) {}
+        if (!theme) {
+          try { theme = localStorage.getItem('agentify-theme'); } catch (_) {}
+        }
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (_) {}
+    })();
+  </script>
+  <style>
+    :root, [data-theme="dark"] {
+      --bg: #0b1220;
+      --bg-raised: #0f172a;
+      --grid: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --text-faint: #64748b;
+      --panel: #0f172a;
+      --panel-border: #1e293b;
+      --lane-fill: rgba(15, 23, 42, 0.55);
+      --lane-stroke: #334155;
+      --arrow: #64748b;
+      --arrow-emphasis: #34d399;
+      --mask: #0f172a;
+      --accent: #818cf8;
+      --link: #7dd3fc;
+
+      --frontend-fill:    rgba(8, 51, 68, 0.4);
+      --frontend-stroke:  #22d3ee;
+      --backend-fill:     rgba(6, 78, 59, 0.4);
+      --backend-stroke:   #34d399;
+      --database-fill:    rgba(76, 29, 149, 0.4);
+      --database-stroke:  #a78bfa;
+      --cloud-fill:       rgba(120, 53, 15, 0.3);
+      --cloud-stroke:     #fbbf24;
+      --security-fill:    rgba(136, 19, 55, 0.4);
+      --security-stroke:  #fb7185;
+      --messagebus-fill:  rgba(251, 146, 60, 0.3);
+      --messagebus-stroke:#fb923c;
+      --external-fill:    rgba(30, 41, 59, 0.5);
+      --external-stroke:  #94a3b8;
+      --agent-fill:       rgba(49, 46, 129, 0.45);
+      --agent-stroke:     #818cf8;
+      --model-fill:       rgba(19, 78, 74, 0.45);
+      --model-stroke:     #2dd4bf;
+      --retrieval-fill:   rgba(30, 58, 138, 0.4);
+      --retrieval-stroke: #60a5fa;
+      --eval-fill:        rgba(54, 83, 20, 0.4);
+      --eval-stroke:      #a3e635;
+      --human-fill:       rgba(112, 26, 117, 0.35);
+      --human-stroke:     #e879f9;
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-raised: #ffffff;
+      --grid: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --text-faint: #64748b;
+      --panel: #ffffff;
+      --panel-border: #e2e8f0;
+      --lane-fill: rgba(248, 250, 252, 0.65);
+      --lane-stroke: #cbd5e1;
+      --arrow: #94a3b8;
+      --arrow-emphasis: #059669;
+      --mask: #ffffff;
+      --accent: #4f46e5;
+      --link: #0369a1;
+
+      --frontend-fill:    rgba(34, 211, 238, 0.15);
+      --frontend-stroke:  #0891b2;
+      --backend-fill:     rgba(52, 211, 153, 0.18);
+      --backend-stroke:   #059669;
+      --database-fill:    rgba(167, 139, 250, 0.2);
+      --database-stroke:  #7c3aed;
+      --cloud-fill:       rgba(251, 191, 36, 0.18);
+      --cloud-stroke:     #d97706;
+      --security-fill:    rgba(251, 113, 133, 0.15);
+      --security-stroke:  #e11d48;
+      --messagebus-fill:  rgba(251, 146, 60, 0.15);
+      --messagebus-stroke:#ea580c;
+      --external-fill:    rgba(148, 163, 184, 0.18);
+      --external-stroke:  #64748b;
+      --agent-fill:       rgba(129, 140, 248, 0.16);
+      --agent-stroke:     #4f46e5;
+      --model-fill:       rgba(45, 212, 191, 0.16);
+      --model-stroke:     #0d9488;
+      --retrieval-fill:   rgba(96, 165, 250, 0.16);
+      --retrieval-stroke: #2563eb;
+      --eval-fill:        rgba(163, 230, 53, 0.2);
+      --eval-stroke:      #65a30d;
+      --human-fill:       rgba(232, 121, 249, 0.14);
+      --human-stroke:     #c026d3;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      max-width: 1240px;
+      margin: 0 auto;
+      gap: 32px;
+      padding: 32px 24px 96px;
+    }
+
+    /* Sidebar / TOC */
+    nav.toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      font-size: 13px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    nav.toc .toc-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    nav.toc ol { list-style: none; }
+    nav.toc li { margin: 2px 0; }
+    nav.toc a {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: block;
+      padding: 4px 10px;
+      border-left: 2px solid var(--panel-border);
+      transition: color 120ms, border-color 120ms;
+    }
+    nav.toc a:hover { color: var(--text); }
+    nav.toc a.active { color: var(--accent); border-left-color: var(--accent); }
+
+    /* Header */
+    header.doc-header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 20px;
+    }
+    header.doc-header h1 { font-size: 26px; line-height: 1.25; letter-spacing: -0.01em; }
+    header.doc-header .subtitle { color: var(--text-muted); margin-top: 6px; font-size: 14px; }
+    header.doc-header .meta-line { color: var(--text-dim); font-size: 12px; margin-top: 10px; }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      margin-right: 6px;
+    }
+
+    #btn-theme {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #btn-theme:hover { border-color: var(--text-dim); }
+
+    /* Content */
+    main { min-width: 0; }
+    section.doc-section { margin-bottom: 44px; scroll-margin-top: 24px; }
+    section.doc-section h2 {
+      font-size: 19px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--panel-border);
+      letter-spacing: -0.01em;
+    }
+    section.doc-section h3 {
+      font-size: 15px;
+      margin: 20px 0 8px;
+      color: var(--text);
+    }
+    section.doc-section p { margin: 10px 0; color: var(--text); }
+    section.doc-section p.lead { font-size: 16px; }
+    section.doc-section ul, section.doc-section ol { margin: 10px 0 10px 22px; }
+    section.doc-section li { margin: 4px 0; }
+    section.doc-section a { color: var(--link); }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin: 14px 0;
+      display: block;
+      overflow-x: auto;
+    }
+    th, td {
+      text-align: left;
+      padding: 8px 12px;
+      border: 1px solid var(--panel-border);
+      vertical-align: top;
+    }
+    th {
+      background: var(--panel);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(even) { background: color-mix(in srgb, var(--panel) 45%, transparent); }
+
+    /* Callouts */
+    .callout {
+      border: 1px solid var(--panel-border);
+      border-left: 3px solid var(--accent);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+    .callout.assumption { border-left-color: var(--cloud-stroke); }
+    .callout.risk { border-left-color: var(--security-stroke); }
+    .callout.decision { border-left-color: var(--eval-stroke); }
+    .callout .callout-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* Interview mode blocks */
+    details.interview {
+      border: 1px dashed var(--panel-border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+    details.interview summary {
+      cursor: pointer;
+      color: var(--human-stroke);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Citations */
+    .cite {
+      font-size: 12px;
+      color: var(--text-dim);
+      vertical-align: super;
+      line-height: 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88em;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+    pre {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+    pre code { background: none; border: none; padding: 0; }
+
+    /* Embedded diagrams */
+    figure.diagram-slot {
+      background: var(--bg-raised);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+    figure.diagram-slot svg { width: 100%; height: auto; display: block; }
+    figure.diagram-slot figcaption {
+      margin-top: 10px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* SVG classes shared with the diagram engine, so embedded SVGs theme correctly */
+    .c-mask       { fill: var(--mask); stroke: none; }
+    .c-frontend   { fill: var(--frontend-fill);   stroke: var(--frontend-stroke); }
+    .c-backend    { fill: var(--backend-fill);    stroke: var(--backend-stroke); }
+    .c-database   { fill: var(--database-fill);   stroke: var(--database-stroke); }
+    .c-cloud      { fill: var(--cloud-fill);      stroke: var(--cloud-stroke); }
+    .c-security   { fill: var(--security-fill);   stroke: var(--security-stroke); }
+    .c-messagebus { fill: var(--messagebus-fill); stroke: var(--messagebus-stroke); }
+    .c-external   { fill: var(--external-fill);   stroke: var(--external-stroke); }
+    .c-agent      { fill: var(--agent-fill);      stroke: var(--agent-stroke); }
+    .c-model      { fill: var(--model-fill);      stroke: var(--model-stroke); }
+    .c-retrieval  { fill: var(--retrieval-fill);  stroke: var(--retrieval-stroke); }
+    .c-eval       { fill: var(--eval-fill);       stroke: var(--eval-stroke); }
+    .c-human      { fill: var(--human-fill);      stroke: var(--human-stroke); stroke-dasharray: 6,3; }
+    .c-security-group { fill: transparent; stroke: var(--security-stroke); stroke-dasharray: 4,4; }
+    .c-region     { fill: var(--lane-fill); stroke: var(--lane-stroke); }
+
+    .t-primary    { fill: var(--text); }
+    .t-muted      { fill: var(--text-muted); }
+    .t-dim        { fill: var(--text-dim); }
+    .t-frontend   { fill: var(--frontend-stroke); }
+    .t-backend    { fill: var(--backend-stroke); }
+    .t-database   { fill: var(--database-stroke); }
+    .t-cloud      { fill: var(--cloud-stroke); }
+    .t-security   { fill: var(--security-stroke); }
+    .t-messagebus { fill: var(--messagebus-stroke); }
+    .t-external   { fill: var(--external-stroke); }
+    .t-agent      { fill: var(--agent-stroke); }
+    .t-model      { fill: var(--model-stroke); }
+    .t-retrieval  { fill: var(--retrieval-stroke); }
+    .t-eval       { fill: var(--eval-stroke); }
+    .t-human      { fill: var(--human-stroke); }
+
+    .a-default    { stroke: var(--arrow); fill: none; }
+    .a-emphasis   { stroke: var(--arrow-emphasis); fill: none; }
+    .a-security   { stroke: var(--security-stroke); fill: none; stroke-dasharray: 5,5; }
+    .a-dashed     { stroke: var(--arrow); fill: none; stroke-dasharray: 5,5; }
+    .arrowhead          { fill: var(--arrow); }
+    .arrowhead-emphasis { fill: var(--arrow-emphasis); }
+    .arrowhead-security { fill: var(--security-stroke); }
+    .lane         { fill: var(--lane-fill); stroke: var(--lane-stroke); }
+
+    /* Print */
+    @media print {
+      :root, [data-theme="dark"], [data-theme="light"] {
+        --bg: #ffffff;
+        --bg-raised: #ffffff;
+        --text: #0f172a;
+        --text-muted: #475569;
+        --text-dim: #94a3b8;
+        --panel: #ffffff;
+        --panel-border: #e2e8f0;
+        --mask: #ffffff;
+        --lane-fill: rgba(248, 250, 252, 0.65);
+        --lane-stroke: #cbd5e1;
+        --arrow: #94a3b8;
+        --arrow-emphasis: #059669;
+        --link: #0369a1;
+        --accent: #4f46e5;
+        --frontend-fill:    rgba(34, 211, 238, 0.15);
+        --frontend-stroke:  #0891b2;
+        --backend-fill:     rgba(52, 211, 153, 0.18);
+        --backend-stroke:   #059669;
+        --database-fill:    rgba(167, 139, 250, 0.2);
+        --database-stroke:  #7c3aed;
+        --cloud-fill:       rgba(251, 191, 36, 0.18);
+        --cloud-stroke:     #d97706;
+        --security-fill:    rgba(251, 113, 133, 0.15);
+        --security-stroke:  #e11d48;
+        --messagebus-fill:  rgba(251, 146, 60, 0.15);
+        --messagebus-stroke:#ea580c;
+        --external-fill:    rgba(148, 163, 184, 0.18);
+        --external-stroke:  #64748b;
+        --agent-fill:       rgba(129, 140, 248, 0.16);
+        --agent-stroke:     #4f46e5;
+        --model-fill:       rgba(45, 212, 191, 0.16);
+        --model-stroke:     #0d9488;
+        --retrieval-fill:   rgba(96, 165, 250, 0.16);
+        --retrieval-stroke: #2563eb;
+        --eval-fill:        rgba(163, 230, 53, 0.2);
+        --eval-stroke:      #65a30d;
+        --human-fill:       rgba(232, 121, 249, 0.14);
+        --human-stroke:     #c026d3;
+      }
+      .layout { grid-template-columns: 1fr; padding: 0; }
+      nav.toc, #btn-theme { display: none !important; }
+      section.doc-section { break-inside: avoid-page; }
+      figure.diagram-slot { break-inside: avoid; }
+      details.interview { display: none; }
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; max-height: none; order: -1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <header class="doc-header">
+      <div>
+        <h1>Invoice Approval Router</h1>
+        <div class="subtitle">A design that routes structured invoices to the right approver by amount, vendor, and department rules</div>
+        <div class="meta-line">
+          <span class="badge">agentify design document</span>
+          <span class="badge">production mode</span>
+          <span class="badge">2026-07-18</span>
+        </div>
+      </div>
+      <button id="btn-theme" type="button" aria-pressed="false">
+        <span id="theme-icon">&#9790;</span> <span id="theme-label">Dark</span>
+      </button>
+    </header>
+
+    <nav class="toc" aria-label="Table of contents">
+      <div class="toc-title">Contents</div>
+      <ol id="toc-list"></ol>
+    </nav>
+
+    <main id="doc-body">
+<section class="doc-section" id="executive-summary">
+<h2>1. Executive summary</h2>
+<p>Incoming invoices carry structured fields already (amount, vendor id, department), and the routing policy is a set of known, stable rules, so this is a deterministic classification problem, not a generative one. The right architecture is Rung 0 on the escalation ladder: a deterministic rules engine that evaluates the fields against a versioned rule table and assigns each invoice to an approver, with an exceptions queue to a human for anything no rule matches. You do not need generative AI, and you do not need any model call at all, because the inputs are already structured and the mapping from fields to approver is an explicit, auditable policy rather than a judgment over unstructured text [knowledge/decision-trees.md, Tree 1]. The one decision that shapes everything is keeping the routing logic deterministic and data-driven, so every routing decision is exact, explainable, reproducible, and cheap. At 2000 invoices per day the compute cost is a rounding error (a small always-on service, dollars per month), latency per invoice is single-digit milliseconds, and rollout is a shadow-then-cutover against the current manual routing with the human exceptions path live from day one.</p>
+</section>
+
+<section class="doc-section" id="requirements-and-nfrs">
+<h2>2. Requirements and NFRs</h2>
+<p>Functional requirements, as system-visible behaviors:</p>
+<ul>
+<li>Accept an invoice record with structured fields (at least amount, vendor id, department) from the upstream feed.</li>
+<li>Evaluate the record against the routing rule set and assign it to exactly one approver (or approver group).</li>
+<li>When no rule matches, or a required field is missing or malformed, route the invoice to a human exceptions queue rather than guessing.</li>
+<li>Record every routing decision (input fields, matched rule id, chosen approver, timestamp) in an immutable audit log.</li>
+</ul>
+<p>Explicit non-goals for v1:</p>
+<ul>
+<li>No approval or payment: the system routes an invoice to an approver; a human approves. It never approves, pays, or posts to the ledger.</li>
+<li>No generative AI, no free-text understanding, no model call of any kind (the fields are already structured).</li>
+<li>No vendor master data cleanup or OCR: upstream systems deliver clean structured fields.</li>
+<li>No learned or probabilistic scoring of approvers.</li>
+</ul>
+<p>NFRs (numbers the design is sized to):</p>
+<table>
+<thead><tr><th>NFR</th><th>Target</th><th>Basis</th></tr></thead>
+<tbody>
+<tr><td>Load</td><td>2000 invoices/day (about 0.02/s average; assume peaks under 5/s)</td><td>stakeholder supplied; peak is an assumption</td></tr>
+<tr><td>Latency</td><td>p95 routing decision under 50 ms (batch-tolerant; not user-interactive)</td><td>rule evaluation over a few fields</td></tr>
+<tr><td>Availability</td><td>99.9 percent; on outage, invoices queue upstream and drain, none dropped</td><td>AP is time-sensitive but tolerant of minutes</td></tr>
+<tr><td>Cost ceiling</td><td>low tens of dollars per month of compute; no per-request model cost</td><td>deterministic compute only</td></tr>
+<tr><td>Compliance</td><td>none named by the stakeholder; treated as financial-controls sensitive (see section 8)</td><td>assumption, flagged</td></tr>
+<tr><td>Team and timeline</td><td>assume a small team, ship in weeks</td><td>assumption, flagged</td></tr>
+</tbody>
+</table>
+<div class="callout assumption">
+<span class="callout-label">Assumptions to validate</span>
+Peak arrival rate (assumed under 5 per second) should be confirmed against the upstream batch schedule; it does not change the architecture at any plausible value. Compliance regime is assumed to be internal financial controls (segregation of duties, an audit trail) rather than a named external regime; confirm whether SOX or an equivalent applies, since it only tightens the audit and access requirements already in the design. The rule set is assumed to be expressible as ordered predicate rules over the three fields; if approver selection actually needs data the fields do not carry, that is a data problem to solve upstream, not a reason to add a model.
+</div>
+</section>
+
+<section class="doc-section" id="decision-record">
+<h2>3. Decision record</h2>
+<div class="callout decision">
+<span class="callout-label">Weight class</span>
+LIGHTWEIGHT. The design lands at Rung 0 (deterministic code, no model), uses only Tier 0 and Tier 1 tools, holds ordinary per-record application data with no multi-tenant retrieval store, and carries no named compliance regime. Per the SKILL.md right-sizing rule, sections 1 to 4, 6, 9, and 11 are written in full; sections 5, 7, 8, 10, 12, and 13 are short form, with the domain-safety treatment in section 8 kept at full depth because the domain touches money and financial controls. This is the shortest document the skill produces, because the honest answer is that no AI is required.
+</div>
+<p>Every decision tree from knowledge/decision-trees.md was walked in order.</p>
+<p><strong>Tree 1: do you need generative AI at all.</strong> No. The first gate asks whether the task is deterministic with well-defined inputs and outputs. It is: the inputs are structured fields (amount, vendor id, department), and the output is one approver selected by known, stable rules. The tree says to stop at deterministic automation and not introduce any model [knowledge/decision-trees.md, Tree 1]. There is no unstructured input to interpret and no content to generate, so the second and third gates (search, tolerate non-determinism) are never reached. The non-AI path is the whole design: a rules engine. Stated plainly, you do not need generative AI here, and adding it would make routing slower, costlier, less auditable, and non-deterministic for zero benefit.</p>
+<p><strong>Tree 2: the escalation ladder.</strong> Final rung: Rung 0 (deterministic code, no model).</p>
+<table>
+<thead><tr><th>Rung</th><th>Verdict</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Rung 0, deterministic only</td><td>Chosen</td><td>The fields are structured and the rules are explicit and stable, so a rule table plus an evaluator produces an exact, reproducible approver assignment. This is the floor of the ladder and the task never leaves it [knowledge/decision-trees.md, Tree 2].</td></tr>
+<tr><td>Rung 1, single augmented model call</td><td>Rejected</td><td>The 0-to-1 criterion is that the task requires understanding or generating natural language, or judgment over unstructured input. None of that is present, so a model call is unjustified and would only add latency, cost, and a non-deterministic failure surface [knowledge/building-effective-agents.md, escalation ladder].</td></tr>
+<tr><td>Rung 2, workflow</td><td>Rejected</td><td>There are no model steps to orchestrate; the flow is plain code (validate, match, dispatch, log).</td></tr>
+<tr><td>Rung 3, single agent</td><td>Rejected. You do not need an agent: the path is fully predetermined and nothing depends on open-ended tool selection or iterative exploration, so there is no open-ended decision for a loop to make [knowledge/building-effective-agents.md].</td></tr>
+<tr><td>Rung 4, multi-agent</td><td>Rejected. There is no agentic behavior to add and no decomposition, so nothing multi-agent is warranted.</td></tr>
+</tbody>
+</table>
+<p>Anti-escalation check: a deterministic rules engine delivers 100 percent of the value at the lowest cost and the highest predictability, so the anti-escalation rule forbids climbing above Rung 0 [knowledge/decision-trees.md, Tree 2, anti-escalation rule].</p>
+<p><strong>Tree 3: workflow pattern selection.</strong> Not applicable: the design is Rung 0, so there is no LLM workflow pattern to select.</p>
+<p><strong>Tree 4: knowledge strategy.</strong> Not applicable in the retrieval sense, and no vector store. The system needs no knowledge beyond its own rule table and approver directory, both of which are ordinary structured data it owns. A vector database is explicitly rejected: routing is an exact predicate match over structured fields, not a semantic-similarity search, so embeddings would make an exact decision fuzzy, slower, and unauditable for no gain [knowledge/decision-trees.md, Tree 4; knowledge/rag-patterns.md, when RAG is not the answer]. Fine-tuning and long context are moot because there is no model.</p>
+<p><strong>Tree 5: multi-agent topology.</strong> Not applicable: not Rung 4.</p>
+<p><strong>Tree 6: autonomy tiers.</strong> Every action is Tier 0 or Tier 1. Reading fields, evaluating rules, and looking up an approver are Tier 0 (read-only). Assigning an invoice to an approver's queue and writing the audit record are Tier 1 (reversible, internal writes, no external effect and no payment). There is no Tier 2 or Tier 3 action because the system never approves, sends money, or changes access. Full table in section 6 [knowledge/security-governance.md, autonomy tiers].</p>
+<p><strong>Tree 7: memory tier.</strong> No memory beyond the record. Each invoice is routed independently with no cross-invoice state and no personalization, so per Tree 7 there is no memory store to design. The rule table, approver directory, and audit log are ordinary application data, not a conversational or agent memory store [knowledge/decision-trees.md, Tree 7].</p>
+</section>
+
+<section class="doc-section" id="system-architecture">
+<h2>4. System architecture</h2>
+<p>The request path is a short deterministic pipeline: validate the fields, evaluate the rules, look up the approver, dispatch, and log. No model sits anywhere in it. The architecture diagram wraps the decision core in a boundary to make the load-bearing point visual: the routing decision is a pure function of structured fields and a versioned rule table, so it is exact and reproducible.</p>
+<figure class="diagram-slot"><svg viewBox="0 0 1180 700" role="img" aria-label="Invoice Approval Router: Rung 0: a deterministic rules engine over structured fields. No model calls, no generative AI. (architecture diagram)">
+        <!-- Definitions -->
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-default" />
+          </marker>
+          <marker id="arrowhead-emphasis" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-emphasis" />
+          </marker>
+          <marker id="arrowhead-security" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-security" />
+          </marker>
+          <marker id="arrowhead-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-dashed" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" class="c-grid" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <!-- Background Grid -->
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- Boundaries (behind everything) -->
+        <rect x="236" y="86" width="658" height="284" rx="8" class="c-security-group" stroke-width="1"/>
+        <text x="244" y="104" class="t-security" font-size="9" font-weight="600">Deterministic rules engine (no model, no generative AI, no learned scoring)</text>
+
+        <!-- Connection paths (before components for correct z-order) -->
+        <path d="M 180 320 L 260 320" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 410 320 L 490 320" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 640 320 L 720 320" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 795 170 L 795 290" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 870 320 L 950 320" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 565 350 L 565 480" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path d="M 475 510 L 300 510" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path d="M 795 350 L 795 480" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- Components -->
+        <rect x="40" y="290" width="140" height="60" rx="6" class="c-mask"/>
+        <rect x="40" y="290" width="140" height="60" rx="6" class="c-external" stroke-width="1.5"/>
+        <text x="110" y="318" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Invoice Feed</text>
+        <text x="110" y="334" class="t-muted" font-size="9" text-anchor="middle">ERP / AP inbox, structured</text>
+
+        <rect x="260" y="290" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="260" y="290" width="150" height="60" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="335" y="318" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Field Validation</text>
+        <text x="335" y="334" class="t-muted" font-size="9" text-anchor="middle">schema + required fields</text>
+        <text x="335" y="342" class="t-security" font-size="7" text-anchor="middle">reject malformed</text>
+
+        <rect x="490" y="290" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="490" y="290" width="150" height="60" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="565" y="318" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Rules Engine</text>
+        <text x="565" y="334" class="t-muted" font-size="9" text-anchor="middle">amount / vendor / dept rules</text>
+        <text x="565" y="342" class="t-backend" font-size="7" text-anchor="middle">deterministic</text>
+
+        <rect x="720" y="110" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="720" y="110" width="150" height="60" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="795" y="138" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Approver Directory</text>
+        <text x="795" y="154" class="t-muted" font-size="9" text-anchor="middle">rule to approver map</text>
+
+        <rect x="720" y="290" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="720" y="290" width="150" height="60" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="795" y="318" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Routing Dispatcher</text>
+        <text x="795" y="334" class="t-muted" font-size="9" text-anchor="middle">assign + notify</text>
+
+        <rect x="950" y="290" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="950" y="290" width="150" height="60" rx="6" class="c-messagebus" stroke-width="1.5"/>
+        <text x="1025" y="318" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Approver Queue</text>
+        <text x="1025" y="334" class="t-muted" font-size="9" text-anchor="middle">routed approver&#39;s inbox</text>
+
+        <rect x="475" y="480" width="180" height="60" rx="6" class="c-mask"/>
+        <rect x="475" y="480" width="180" height="60" rx="6" class="c-messagebus" stroke-width="1.5"/>
+        <text x="565" y="508" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Exceptions Queue</text>
+        <text x="565" y="524" class="t-muted" font-size="9" text-anchor="middle">no rule matched</text>
+
+        <rect x="150" y="480" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="150" y="480" width="150" height="60" rx="6" class="c-human" stroke-width="1.5"/>
+        <text x="225" y="508" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">AP Analyst</text>
+        <text x="225" y="524" class="t-muted" font-size="9" text-anchor="middle">resolves exceptions by hand</text>
+
+        <rect x="720" y="480" width="150" height="60" rx="6" class="c-mask"/>
+        <rect x="720" y="480" width="150" height="60" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="795" y="508" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Audit Log</text>
+        <text x="795" y="524" class="t-muted" font-size="9" text-anchor="middle">immutable decision trail</text>
+
+        <!-- Connection labels -->
+
+
+
+        <rect x="775.6" y="220" width="38.8" height="14" rx="3" class="c-mask"/>
+        <text x="795" y="230" class="t-muted" font-size="8" text-anchor="middle">lookup</text>
+
+        <rect x="540.8" y="405" width="48.4" height="14" rx="3" class="c-mask"/>
+        <text x="565" y="415" class="t-messagebus" font-size="8" text-anchor="middle">no match</text>
+        <rect x="363.3" y="490" width="48.4" height="14" rx="3" class="c-mask"/>
+        <text x="387.5" y="500" class="t-messagebus" font-size="8" text-anchor="middle">escalate</text>
+        <rect x="775.6" y="405" width="38.8" height="14" rx="3" class="c-mask"/>
+        <text x="795" y="415" class="t-muted" font-size="8" text-anchor="middle">record</text>
+
+        <!-- Legend -->
+        <text x="40" y="671" class="t-primary" font-size="9" font-weight="600">Legend</text>
+        <rect x="40" y="676" width="14" height="9" rx="2" class="c-external" stroke-width="1"/>
+        <text x="60" y="684" class="t-muted" font-size="8">External</text>
+        <rect x="138" y="676" width="14" height="9" rx="2" class="c-security" stroke-width="1"/>
+        <text x="158" y="684" class="t-muted" font-size="8">Guardrail</text>
+        <rect x="241" y="676" width="14" height="9" rx="2" class="c-backend" stroke-width="1"/>
+        <text x="261" y="684" class="t-muted" font-size="8">Backend</text>
+        <rect x="334" y="676" width="14" height="9" rx="2" class="c-database" stroke-width="1"/>
+        <text x="354" y="684" class="t-muted" font-size="8">Database</text>
+        <rect x="432" y="676" width="14" height="9" rx="2" class="c-messagebus" stroke-width="1"/>
+        <text x="452" y="684" class="t-muted" font-size="8">Queue</text>
+        <rect x="515" y="676" width="14" height="9" rx="2" class="c-human" stroke-width="1"/>
+        <text x="535" y="684" class="t-muted" font-size="8">Human review</text>
+      </svg><figcaption>Figure 1. Routing path: field validation, a deterministic rules engine, an approver-directory lookup, dispatch to the approver's queue, and an immutable audit log. Anything with no matching rule (or a malformed field) goes to the exceptions queue and a human analyst. The boundary marks the deterministic decision core, which contains no model.</figcaption></figure>
+<table>
+<thead><tr><th>Component</th><th>Requirement it serves</th><th>Scaling model</th><th>Failure mode and fallback</th><th>Technology example</th></tr></thead>
+<tbody>
+<tr><td>Invoice Feed</td><td>Deliver structured invoice records from upstream</td><td>External; push or poll</td><td>If upstream is down, nothing arrives; records queue upstream and drain later</td><td>ERP or AP system export, message on a bus</td></tr>
+<tr><td>Field Validation</td><td>Reject malformed or incomplete records before routing</td><td>Stateless, horizontal</td><td>On invalid or missing required field, send to the exceptions queue (fail to human, never guess)</td><td>schema check (JSON Schema) in the service tier</td></tr>
+<tr><td>Rules Engine</td><td>Evaluate amount, vendor, and department against the rule table and select the matching rule</td><td>Stateless compute over a small in-memory rule set</td><td>If evaluation errors or no rule matches, route to the exceptions queue</td><td>ordered predicate rules or a decision-table engine, e.g. a small rules library or plain code</td></tr>
+<tr><td>Approver Directory</td><td>Map the matched rule (and department) to a current approver or group</td><td>Read-heavy; tiny; cache</td><td>If the mapped approver is unknown or inactive, route to exceptions</td><td>relational table, e.g. Postgres</td></tr>
+<tr><td>Routing Dispatcher</td><td>Assign the invoice to the chosen approver's queue and notify</td><td>Stateless, horizontal</td><td>On assign failure, retry with an idempotency key, then exceptions</td><td>internal service writing to a work queue</td></tr>
+<tr><td>Approver Queue</td><td>Hold invoices awaiting the assigned approver</td><td>Per-approver; durable</td><td>Standard durable queue semantics</td><td>work queue or a table, e.g. Postgres or SQS</td></tr>
+<tr><td>Exceptions Queue</td><td>Hold invoices no rule matched or that failed validation</td><td>Durable</td><td>This is itself the fallback path; monitored for depth</td><td>durable queue or table</td></tr>
+<tr><td>AP Analyst (human)</td><td>Resolve exceptions by routing them by hand and, over time, propose new rules</td><td>Human; staffed to exception volume</td><td>Backstop for everything the rules do not cover</td><td>existing AP staff and tooling</td></tr>
+<tr><td>Audit Log</td><td>Immutable record of every routing decision for financial controls</td><td>Append-only; retained</td><td>Write-ahead of the assign; if the log write fails, the assign is not committed</td><td>append-only store, e.g. Postgres with an append-only table or an object-store log</td></tr>
+</tbody>
+</table>
+<p>Trust boundary: the security group in Figure 1 wraps Field Validation, the Rules Engine, the Approver Directory, and the Routing Dispatcher. This is the deterministic decision core. Because it contains no model and reads only structured fields plus a versioned rule table, a routing decision cannot be caused by anything other than the stated rules, which is exactly the property financial controls want.</p>
+</section>
+
+<section class="doc-section" id="data-and-retrieval">
+<h2>5. Data and retrieval</h2>
+<p>Short form: there is no retrieval layer, no embeddings, and no vector store (Tree 4). The only data the system holds is the routing rule table, the approver directory, and the audit log, all structured and owned by the service.</p>
+<ul>
+<li>The rule set is versioned configuration, not code: each rule has an id, an ordered priority, a predicate over the fields (for example amount thresholds, a vendor allowlist, or a department key), and a target approver or group. Versioning the rule set is what makes a routing decision reproducible after the fact and lets a changed rule be reviewed and rolled back.</li>
+<li>Freshness: rules and the approver directory change occasionally (a new threshold, a staffing change) and are edited through a reviewed change process, not at request time. There is no ingestion pipeline and no reindexing to design.</li>
+<li>Chunking, embeddings, hybrid search, and reranking are all not applicable because there is no unstructured corpus and no similarity search anywhere in the design.</li>
+</ul>
+</section>
+
+<section class="doc-section" id="tools-and-integrations">
+<h2>6. Tools and integrations</h2>
+<p>Every action the system can take, with its autonomy tier and enforcement gate. Nothing exceeds Tier 1, which is the core evidence for the lightweight weight class [knowledge/security-governance.md, autonomy tiers].</p>
+<table>
+<thead><tr><th>Tool</th><th>Interface</th><th>Autonomy tier</th><th>Enforcement gate</th><th>Idempotency and retry</th></tr></thead>
+<tbody>
+<tr><td>Read invoice fields</td><td>Internal function</td><td>Tier 0, read-only</td><td>Reads only the structured record delivered by the feed</td><td>Pure; safe to retry</td></tr>
+<tr><td>Evaluate rules</td><td>Internal function over the rule table</td><td>Tier 0, read-only</td><td>Deterministic evaluation; on no match it must route to exceptions, never invent an approver</td><td>Pure function of (fields, rule version); reproducible</td></tr>
+<tr><td>Look up approver</td><td>Internal service call</td><td>Tier 0, read-only</td><td>Reads the approver directory; unknown or inactive approver routes to exceptions</td><td>Idempotent</td></tr>
+<tr><td>Assign to approver queue</td><td>Internal service call</td><td>Tier 1, reversible internal write</td><td>Segregation of duties enforced in the directory (an invoice is never routed to its own submitter as approver); reassignable</td><td>Stable idempotency key per invoice id prevents duplicate assignment on retry</td></tr>
+<tr><td>Write audit record</td><td>Append-only internal write</td><td>Tier 1, reversible only by compensating entry</td><td>Written ahead of committing the assignment; append-only</td><td>Idempotency key per (invoice id, decision) prevents duplicate entries</td></tr>
+</tbody>
+</table>
+<p>There are no send-money, post-to-ledger, approve, publish, delete, or access-control tools, so there is no Tier 2 or Tier 3 gate to build. If a future request adds auto-approval under a threshold, that is a Tier 2 or Tier 3 action and must re-open sections 6 and 8.</p>
+</section>
+
+<section class="doc-section" id="state-and-memory">
+<h2>7. State and memory</h2>
+<p>Short form: no agent memory and no cross-request state (Tree 7). Each invoice is routed independently. The rule table, approver directory, and audit log are ordinary durable application data with a normal backup and retention policy, not a conversational or persistent memory store. There is no session to compact and no multi-tenant memory isolation concern.</p>
+</section>
+
+<section class="doc-section" id="security-identity-and-guardrails">
+<h2>8. Security, identity, and guardrails</h2>
+<p>Short form on general security, full depth on domain safety, because the domain touches money and financial controls.</p>
+<p><strong>Domain-harm statement.</strong> The worst realistic outcome is financial and control harm: an invoice routed to the wrong approver, or approved by someone without the authority for that amount, enabling erroneous or fraudulent payment, or a segregation-of-duties breach (a submitter approving their own invoice). A secondary harm is process and audit failure: a routing decision that cannot be explained or reproduced during a financial audit. These harms are independent of company size or traffic, so the guardrails are sized to the harm, not to 2000 invoices per day [SKILL.md rule 8; knowledge/security-governance.md].</p>
+<p>Guardrails, sized to that harm:</p>
+<ul>
+<li>Deterministic decision as the control. Routing is a pure function of structured fields and a versioned rule table, evaluated in code. There is no model and no probabilistic scoring, so a routing decision is always exact, explainable by citing the matched rule id, and reproducible from the audit record. This is the primary financial control and is shown architecturally by the deterministic-core boundary in Figure 1.</li>
+<li>Fail to a human, never guess. Any invoice that matches no rule, carries a missing or malformed required field, or maps to an unknown or inactive approver is sent to the exceptions queue for an analyst, not routed on a best guess. Ambiguity resolves to a human, which is the fail-closed posture for a money-adjacent decision.</li>
+<li>Segregation of duties. The approver directory enforces that an invoice is never routed to its own submitter and that the selected approver holds the authority tier the amount requires; this rule lives in the deterministic core, not in a person's discretion.</li>
+<li>No approval or payment authority. The system routes for approval; it never approves, pays, or posts. The blast radius of a wrong routing decision is therefore a misdirected review, caught by the approver and the audit log, not an unauthorized payment.</li>
+<li>Immutable audit trail. Every decision (input fields, matched rule id and version, chosen approver, timestamp) is written append-only, ahead of committing the assignment, so the trail is complete even if the assignment write later fails.</li>
+</ul>
+<div class="callout risk">
+<span class="callout-label">The one rule that must not be broken</span>
+No model and no probabilistic scoring may enter the routing decision, and the system must never gain approval or payment authority. Either change would void the deterministic, auditable, fail-to-human guarantees this design rests on, and must re-open this section and the section 9 gates.
+</div>
+<p>General security, short form:</p>
+<ul>
+<li>Identity propagation (one line): the service reads only the structured invoice record and its own rule and approver tables; it takes no action on behalf of an end user and has no shared multi-tenant data store to isolate.</li>
+<li>Input validation: field and schema validation on the incoming record is the input guardrail; malformed input routes to exceptions rather than through the rules.</li>
+</ul>
+</section>
+
+<section class="doc-section" id="evaluation-plan">
+<h2>9. Evaluation plan</h2>
+<p>Evaluation here is almost entirely deterministic testing, which is exactly right for a deterministic system: the correct approver for a given invoice is a checkable fact, so code graders are preferred over any model judge [knowledge/evaluation.md, grader selection order].</p>
+<p>Golden dataset:</p>
+<ul>
+<li>A labeled set of invoice records paired with the correct approver, built from historical invoices and their known-correct routing. Stratify across the rule dimensions: amount bands (including exactly on each threshold boundary), each major vendor class, each department, and the negative cases (no rule matches, missing field, inactive approver) that must land in the exceptions queue. Refresh whenever a rule changes; every real misroute becomes a case.</li>
+</ul>
+<p>Metrics:</p>
+<ul>
+<li>Routing correctness: fraction of records routed to the labeled-correct approver, which must be 100 percent on the covered rule set (a deterministic system either encodes the rule or does not).</li>
+<li>Exceptions behavior: every negative case must route to the exceptions queue, never to a guessed approver (recall on must-exception cases equals 1.0).</li>
+<li>Boundary tests: threshold-edge invoices (an amount exactly at a limit) route as the policy intends; these are the most common source of rule-logic bugs.</li>
+<li>Rule-change safety: a regression suite runs on every rule-set edit, so a new or edited rule cannot silently change the routing of unrelated invoices.</li>
+</ul>
+<p>There is no LLM-as-judge because there is no generation to grade; correctness is exact.</p>
+<p>Gate table:</p>
+<table>
+<thead><tr><th>Promotion</th><th>Gate</th></tr></thead>
+<tbody>
+<tr><td>To shadow</td><td>100 percent routing correctness on the golden set; all negative cases route to exceptions</td></tr>
+<tr><td>Shadow to cutover</td><td>Shadow routing matches the current manual routing on the live stream within an agreed tolerance, and every disagreement is reviewed and resolved into either a rule fix or a corrected label</td></tr>
+<tr><td>Post-cutover</td><td>Every misroute or new invoice pattern becomes a golden case and, where appropriate, a reviewed rule change before the fix ships</td></tr>
+</tbody>
+</table>
+</section>
+
+<section class="doc-section" id="observability">
+<h2>10. Observability</h2>
+<p>Short form. Trace each invoice with the input field values, the matched rule id and version (or the exception reason), the chosen approver, and the per-stage latency, following standard structured logging [knowledge/interoperability-observability.md]. The metrics that matter at this size: throughput, exception rate (a rising exception rate usually means reality drifted from the rules), routing latency, and any validation-failure spike. Alert on exception-queue depth and on any assignment or audit-write error. Sampled traces and every exception feed the golden set in section 9.</p>
+</section>
+
+<section class="doc-section" id="scale-and-cost-analysis">
+<h2>11. Scale and cost analysis</h2>
+<p>Back-of-envelope, shown rather than asserted. There are no model calls, so there is no token cost and no model-pricing table to source; the cost story is deterministic compute plus a small database.</p>
+<ul>
+<li>Work per invoice: validate a handful of fields, evaluate an ordered rule set (tens of rules at most) held in memory, one indexed approver-directory read, one queue write, one append-only audit write. This is microseconds of CPU plus a couple of small database operations, on the order of single-digit milliseconds end to end.</li>
+<li>Volume: 2000 invoices per day is about 0.02 per second on average. Even at a generous assumed peak under 5 per second, a single small stateless instance handles the load with wide headroom; two instances behind a load balancer give the 99.9 percent availability target.</li>
+<li>Cost: the dominant cost is an always-on small service and a small database, on the order of low tens of dollars per month, independent of invoice count at this scale. Per-invoice marginal cost is effectively zero because there is no metered model call. This is the concrete payoff of staying at Rung 0: the cost curve is flat, not per-request.</li>
+</ul>
+<p>The 10x scenario (20,000 invoices per day, about 0.23 per second, assumed peaks under 50 per second): nothing structural changes. The Rules Engine is stateless and scales horizontally, so add instances; the rule set is still small and stays in memory. What to watch first is not compute but the audit log and approver-queue write throughput, both ordinary database scaling (indexing, partitioning by date), not an architectural change. There is no caching tier or model-routing decision to make because there is no model in the path.</p>
+</section>
+
+<section class="doc-section" id="failure-modes-and-degradation">
+<h2>12. Failure modes and degradation</h2>
+<p>Short form. Degradation ladder: full service, then exceptions-to-human, then queue-and-drain, never a wrong routing and never a dropped invoice.</p>
+<ul>
+<li>No rule matches, or a malformed or missing field: route to the exceptions queue for an analyst (the designed fallback, not an error).</li>
+<li>Approver directory returns an unknown or inactive approver: route to exceptions rather than assign to a stale approver.</li>
+<li>Downstream queue or database write fails: retry with the invoice-id idempotency key; on persistent failure, hold the invoice and page an operator so nothing is lost or double-assigned.</li>
+<li>Upstream feed outage: invoices queue upstream and drain when the feed returns; none are dropped.</li>
+<li>There are no loops to bound and no runaway-cost or model-timeout failure mode, because there is no model and no agent loop in the design.</li>
+<li>Incident signals that page a human: a spike in the exception or validation-failure rate (reality drifting from the rules), exception-queue depth crossing a threshold, or any audit-write failure.</li>
+</ul>
+</section>
+
+<section class="doc-section" id="rollout-plan">
+<h2>13. Rollout plan</h2>
+<p>Short form, gated by the section 9 evals, and simpler than a crawl-walk-run because there is no autonomy to unlock incrementally.</p>
+<ul>
+<li>Shadow: run the rules engine alongside the current manual routing on the live stream, assigning nothing, and compare its choice to the human routing. Promote only when routing correctness is 100 percent on the golden set and shadow disagreements are all resolved into rule fixes or corrected labels.</li>
+<li>Cutover: enable real routing with the human exceptions path live from the first invoice. Keep manual override available.</li>
+<li>Steady state: every misroute or new invoice pattern becomes a golden case and, where the policy should change, a reviewed and versioned rule edit, so the rule set and its test suite ratchet forward together.</li>
+</ul>
+</section>
+
+<section class="doc-section" id="references">
+<h2>14. References</h2>
+<p>Knowledge base documents cited (each carries its primary sources):</p>
+<ul>
+<li>knowledge/decision-trees.md (Trees 1, 2, 4, 6, 7 and the anti-escalation rule and gate checklist; carries Anthropic Building Effective Agents, OpenAI Practical Guide, Selamy GenAI loop).</li>
+<li>knowledge/building-effective-agents.md (the escalation ladder and the workflow-versus-agent boundary).</li>
+<li>knowledge/rag-patterns.md (when retrieval and a vector store are not the answer).</li>
+<li>knowledge/security-governance.md (autonomy tiers, tool-layer enforcement, audit trail).</li>
+<li>knowledge/evaluation.md (golden datasets, grader selection order, rollout gates).</li>
+<li>knowledge/interoperability-observability.md (structured tracing and debugging from traces).</li>
+<li>knowledge/latency-cost-reliability.md (capacity and the flat deterministic cost curve).</li>
+</ul>
+<p>Live-sourced citations: none. This design makes no model call, so there is no model pricing or model-choice claim to source.</p>
+</section>
+    </main>
+  </div>
+
+  <script>
+    // Build the TOC from section h2s.
+    (function () {
+      var list = document.getElementById('toc-list');
+      var sections = document.querySelectorAll('main section.doc-section');
+      sections.forEach(function (sec) {
+        var h2 = sec.querySelector('h2');
+        if (!h2 || !sec.id) return;
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + sec.id;
+        a.textContent = h2.textContent;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+
+      // Highlight the section in view.
+      var links = list.querySelectorAll('a');
+      if ('IntersectionObserver' in window && links.length) {
+        var byId = {};
+        links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var link = byId[entry.target.id];
+            if (!link) return;
+            if (entry.isIntersecting) {
+              links.forEach(function (a) { a.classList.remove('active'); });
+              link.classList.add('active');
+            }
+          });
+        }, { rootMargin: '0px 0px -70% 0px' });
+        sections.forEach(function (sec) { observer.observe(sec); });
+      }
+    })();
+
+    // Theme toggle: persists to localStorage, respects system preference.
+    (function () {
+      var STORAGE_KEY = 'agentify-theme';
+      var html = document.documentElement;
+      var btn = document.getElementById('btn-theme');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+
+      function readStored() {
+        try { return localStorage.getItem(STORAGE_KEY); } catch (_) { return null; }
+      }
+      function writeStored(value) {
+        try { localStorage.setItem(STORAGE_KEY, value); } catch (_) {}
+      }
+      function urlOverride() {
+        try {
+          var param = new URLSearchParams(window.location.search).get('theme');
+          if (param === 'light' || param === 'dark') return param;
+        } catch (_) {}
+        return null;
+      }
+      function resolveInitial() {
+        var fromUrl = urlOverride();
+        if (fromUrl) return fromUrl;
+        var saved = readStored();
+        if (saved === 'light' || saved === 'dark') return saved;
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      function apply(theme) {
+        html.setAttribute('data-theme', theme);
+        icon.innerHTML = theme === 'dark' ? '&#9790;' : '&#9788;';
+        label.textContent = theme === 'dark' ? 'Dark' : 'Light';
+        btn.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
+      }
+      function toggle() {
+        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        apply(next);
+        writeStored(next);
+      }
+      apply(resolveInitial());
+      btn.addEventListener('click', toggle);
+
+      try {
+        var media = window.matchMedia('(prefers-color-scheme: light)');
+        var onChange = function (e) {
+          if (readStored() || urlOverride()) return;
+          apply(e.matches ? 'light' : 'dark');
+        };
+        if (media.addEventListener) media.addEventListener('change', onChange);
+      } catch (_) {}
+    })();
+  </script>
+</body>
+</html>
