@@ -10,15 +10,45 @@
 - [x] Three gallery examples: enterprise support agent, legal RAG document assistant, autonomous coding system (interview mode)
 - [x] Dual-theme diagram previews in the README (PNG via headless Chrome, plus a standalone-SVG exporter)
 
-## Next
+## Shipped since launch
 
-- Run the skill against a wide set of unscripted prompts and tune the clarification loop from what it asks (and fails to ask)
-- Knowledge base refresh automation: link checking plus a staleness report per source
+- [x] `agentify assemble`: the design document deliverable as a real tool, with every embedded diagram gated on the post-render check
 - [x] Design diffing: compare two generated designs for the same use case (`agentify diff`)
 - [x] Export to ADR (architecture decision record) format (`agentify adr`)
-- Model-graded eval to complement the current substring and rung checks
+- [x] Domain-harm discovery and right-sizing (lightweight vs enterprise designs)
+- [x] Voice and multimodal knowledge doc plus `asr`/`tts` diagram components
+- [x] Knowledge base grown to 14 grounded documents (platform primitives, named retrieval techniques, agent benchmarks, injection defenses)
+- [x] Gallery grown to six design documents, all generated through the real render-then-assemble pipeline
+
+## Next
+
+Stackranked by leverage; the evidence behind the ranking is in [docs/codebase-analysis-2026-07.md](docs/codebase-analysis-2026-07.md).
+
+### Tier 1: make the guarantees true
+
+- Fix the eval `mustNot` grading bug (word boundaries plus negation context; today a design that correctly names a rejected alternative can fail the over-engineering check)
+- Seed the seven eval cases that have no committed design, so CI regression-guards all 13 cases instead of 6
+- CI hardening: link check on PRs with wider scope, `agentify check` over `examples/`, dead-gallery-link detection in the site build
+- Release automation: build `agentify.zip` in CI, smoke-test it standalone (`doctor`), attach it to releases
+
+### Tier 2: deepen the eval
+
+- `agentify lint`: a structural linter for produced designs (all sections present or N/A-with-reason, all seven trees covered, citations per decision), run in CI and in the skill's self-check step
+- Model-graded eval to complement the current substring and rung checks, including grading of the clarification round (what the skill asks, and fails to ask)
+
+### Tier 3: capability expansion
+
 - Additional diagram views: orchestration topology, eval pipeline, cost breakdown
-- Community example gallery with a submission workflow
+- Knowledge base refresh automation: scheduled link checking plus a staleness report per source; pin arXiv versions as the sources policy states
+- New knowledge docs the eval cases already lean on: text-to-SQL / structured-data querying, human-in-the-loop approval patterns; then fine-tuning mechanics and compliance regimes
+- Sequence renderer auto-stacking: computed message spacing (ordering stays semantic), removing the manual `y` authoring burden
+
+### Tier 4: polish and community
+
+- CLI UX: `--version`, targeted error messages, `inspect` on all types, `demo` runs the post-render check, fenced code blocks in `assemble`
+- Code health: one shared geometry and text-metrics module for renderers and checker; retire residual `archify` identifiers; cover the doc subcommands through the CLI dispatcher
+- Contributor UX: PR template, issue chooser config, feature-request template
+- Community example gallery with a submission workflow (after `examples/` validation lands in CI)
 
 ## Not planned
 
